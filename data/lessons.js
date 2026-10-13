@@ -161,7 +161,7 @@ window.LESSONS = [
   {
     id: "b6", n: 6, title: "Chip, transistor và relay",
     summary: "Dùng dòng nhỏ của chip điều khiển tải lớn qua transistor và relay.",
-    labs: ["rl"],
+    labs: ["rl", "tim"],
     keywords: "chip vi dieu khien transistor relay role cuon day tiep diem diode dap xung dien tro nen chan b c e npn bjt dong nho dieu khien tai",
     blocks: [
       { h: "Vì sao cần transistor", kw: "chip chi cap dong nho transistor cong tac dieu khien tai",
@@ -176,9 +176,14 @@ window.LESSONS = [
             "Ví dụ: cuộn relay 12 V có điện trở 400 Ω thì dòng qua cuộn là 12 ÷ 400 = 30 mA."] },
       { h: "Diode dập xung", kw: "diode dap xung flyback xung dien ap ngat cuon bao ve transistor",
         p: ["Diode mắc song song với cuộn relay, ngược chiều với nguồn. Khi tắt dòng, cuộn sinh ra xung điện áp cao, diode hấp thụ xung này để bảo vệ transistor.",
-            "Mất diode thì xung ở chân C lúc ngắt rất cao và có thể làm hỏng transistor."] }
+            "Mất diode thì xung ở chân C lúc ngắt rất cao và có thể làm hỏng transistor."] },
+      { h: "Tìm lỗi: giắc quạt không có điện", kw: "tim loi mat dien giac quat dan nong do chia doi mach no com tiep diem mat n dong ho",
+        p: ["Quạt dàn nóng không có điện ra giắc dù cuộn dây và tụ còn tốt: đi theo dòng điện từ nguồn vào đến giắc ra, đo từng điểm để biết điện mất ở khâu nào.",
+            "Thứ tự đo: nguồn vào board (L–N), rail 12 V, B–E transistor (≈ 0,7 V), điện áp hai đầu cuộn relay (≈ 12 V), rồi COM–N, NO–N và giắc. Điểm 8 là dây N, đo thông mạch khi đã tắt điện.",
+            "COM có 220 V mà NO không có: tiếp điểm relay hỏng. NO có mà giắc không có: đứt vết mạch, nứt mối hàn hoặc mất dây N."] }
     ],
     quiz: [
+      { q: "Đo thấy NO có 220 V nhưng giắc quạt 0 V, dây N thông. Nghi ngờ nhất là gì?", o: ["Tiếp điểm relay hỏng", "Đứt vết mạch hoặc nứt mối hàn từ NO ra giắc", "Mất nguồn vào board", "Chip không ra lệnh"], a: 1, why: "Điện đã tới NO nên relay và mạch lái tốt. Điện mất sau NO, trên đường ra giắc." },
       { q: "Cuộn relay 12 V, điện trở cuộn 400 Ω. Dòng qua cuộn là?", o: ["3 mA", "30 mA", "300 mA", "4,8 A"], a: 1, why: "I = 12 ÷ 400 = 0,03 A = 30 mA." },
       { q: "Vì sao không nối chip trực tiếp vào cuộn relay?", o: ["Chip chỉ cấp được dòng rất nhỏ, không đủ hút relay", "Relay không dùng điện", "Chip chỉ làm việc với điện xoay chiều", "Để cho đẹp mạch"], a: 0, why: "Cần transistor khuếch đại dòng để hút cuộn relay." },
       { q: "Diode mắc song song cuộn relay dùng để làm gì?", o: ["Tăng lực hút", "Hấp thụ xung điện áp lúc ngắt, bảo vệ transistor", "Giảm dòng nền", "Đổi xoay chiều thành một chiều"], a: 1, why: "Cuộn sinh xung cao khi tắt dòng; diode dập xung đó." },

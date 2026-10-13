@@ -60,3 +60,18 @@ svg.res{width:100%;height:auto;display:block;background:var(--soft);border-radiu
 @media (prefers-reduced-motion:reduce){.gauge i{transition:none}}
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)}
 *{box-sizing:border-box}
+.tm-w{stroke:var(--ink);stroke-width:2;fill:none}
+.tm-n{stroke:var(--muted);stroke-width:2;fill:none;stroke-dasharray:5 4}
+.tm-b{fill:var(--surface);stroke:var(--ink);stroke-width:1.6}
+.tm-t{fill:var(--muted);font:11px var(--font)}
+.tm-s{fill:var(--ink);font:600 11.5px var(--font)}
+.pt{cursor:pointer}
+.pt circle{fill:var(--surface);stroke:var(--volt);stroke-width:2}
+.pt text{font:600 12px var(--mono);fill:var(--ink);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.pt.ok circle{stroke:var(--ok)}.pt.bad circle{stroke:var(--bad)}.pt.sel circle{stroke-width:4.5}
+.pv{font:600 10.5px var(--mono);text-anchor:middle}.pv.ok{fill:var(--ok)}.pv.bad{fill:var(--bad)}
+#tm-fb{font-family:var(--font);font-size:14px;line-height:1.5}
+.ans{display:grid;gap:6px;margin:6px 0 10px}
+.ans button{font:inherit;font-size:14px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}
+.ans button.right{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.ans button.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}

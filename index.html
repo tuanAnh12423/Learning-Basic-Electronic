@@ -45,6 +45,7 @@
           <button class="tab" role="tab" data-lab="cau" aria-selected="false">Cầu chỉnh lưu</button>
           <button class="tab" role="tab" data-lab="lanh" aria-selected="false">Chu trình lạnh</button>
           <button class="tab" role="tab" data-lab="rl" aria-selected="false">Relay + transistor</button>
+          <button class="tab" role="tab" data-lab="tim" aria-selected="false">Tìm lỗi quạt</button>
         </div>
         <button class="pause" id="pause" type="button">Tạm dừng</button>
       </div>
@@ -257,6 +258,30 @@
       </ul>
     </div>
     <p class="note">Số liệu là ví dụ: chip 3,3 V, cuộn relay 12 V với điện trở cuộn 400 Ω, transistor có hệ số khuếch đại 100. Thực tế đọc theo thông số linh kiện và tài liệu hãng.</p>
+  </div>
+</section>
+
+<!-- ============ TÌM LỖI QUẠT ============ -->
+<section id="lab-tim" class="lab" hidden>
+  <div class="card">
+    <h2>Bài 6, câu 2: Tìm lỗi mất điện ra giắc quạt</h2>
+    <p class="lead">Máy đang chạy lạnh, bo phải bật quạt dàn nóng. Cuộn dây và tụ quạt đều tốt nhưng giắc quạt không có điện. Bấm số trên sơ đồ để đo từng điểm, rồi chọn kết luận. Mỗi lần ra đề, lỗi sẽ khác.</p>
+    <svg id="tm-svg" class="res" viewBox="0 0 340 395" role="img" aria-label="Sơ đồ bo điều khiển quạt: nguồn vào, relay, giắc quạt ở bên trái; nguồn 12 V, cuộn relay, transistor và chip ở bên phải. Có 8 điểm đo đánh số"></svg>
+    <div class="lcd" id="tm-lcd" aria-live="polite">— — —</div>
+    <div class="note" id="tm-mode" style="margin-top:6px">Chọn một điểm đo.</div>
+    <div class="seg" id="tm-pts" role="group" aria-label="Chọn điểm đo" style="margin-top:8px"></div>
+    <p class="band-t">Kết luận của bạn: lỗi nằm ở đâu?</p>
+    <div class="ans" id="tm-ans"></div>
+    <div class="formula" id="tm-fb" hidden></div>
+    <div class="seg"><button class="btn" id="tm-new" type="button">Ra đề mới</button><button class="btn" id="tm-rev" type="button">Xem đáp án</button></div>
+    <div class="warn"><b>An toàn:</b> các điểm 1, 5, 6, 7 là điện 220 V xoay chiều đang có thật. Chỉ chạm que đo vào chân, không chạm tay vào kim loại. Điểm 8 đo điện trở nên phải tắt điện và xả tụ trước.</div>
+    <div class="try"><b>Cách đo gọn:</b>
+      <ul>
+        <li>Đo ở giữa mạch để chia đôi vùng nghi ngờ, ví dụ điểm 6 (NO) rồi đi về phía có lỗi.</li>
+        <li>Không có điện ở NO: xem cuộn relay (điểm 4), rồi mạch lái (điểm 3, 2).</li>
+        <li>Có điện ở NO mà giắc mất: đứt mạch hoặc mất N (điểm 8).</li>
+      </ul>
+    </div>
   </div>
 </section>
 

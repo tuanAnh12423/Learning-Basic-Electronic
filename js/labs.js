@@ -674,6 +674,137 @@ labs.rl=(function(){
   return {resize:resize,frame:frame};
 })();
 
+/* ================= TÌM LỖI QUẠT ================= */
+labs.tim=(function(){
+  var NAMES=['Nguồn vào L–N (AC)','Rail 12 V (DC)','B–E transistor (DC)','Cuộn relay (DC)','COM–N (AC)','NO–N (AC)','Giắc quạt L–N (AC)','Dây N, thông mạch (Ω)'];
+  var SHORT=['Nguồn vào','Rail 12 V','B–E','Cuộn relay','COM','NO','Giắc','Dây N'];
+  var KIND=['ac','dc','be','dc','ac','ac','ac','ohm'];
+  var NORM=[220,12,0.7,11.8,220,220,220,0.3];
+  var POS=[[112,62],[318,46],[221,215],[318,100],[116,110],[116,175],[116,224],[22,215]];
+  var F={
+    a:{n:'Mất nguồn vào board',t:[0,0,0,0,0,0,0,0.3],
+       sign:'điểm 1 = 0 V',
+       ex:'Điểm 1 đã là 0 V nên điện không vào được board, mọi điểm sau đều 0. Kiểm tra cầu chì, dây nguồn và các tiếp điểm trước board.'},
+    b:{n:'Chip không ra lệnh bật quạt',t:[220,12,0.01,0,220,0,0,0.3],
+       sign:'điểm 1 = 220 V, điểm 2 = 12 V, nhưng điểm 3 ≈ 0 V',
+       ex:'Nguồn vào và rail 12 V đều có, nhưng B–E ≈ 0 V nghĩa là chân B không nhận điện áp từ chip. Transistor không dẫn nên cuộn không có dòng. Xem lại tín hiệu ra của chip, điện trở nền, và tra mã lỗi vì chip có thể đang chặn quạt do bảo vệ.'},
+    c:{n:'Mất nguồn 12 V cấp cho cuộn',t:[220,0,0.7,0,220,0,0,0.3],
+       sign:'điểm 1 = 220 V, điểm 2 = 0 V',
+       ex:'Điểm 2 = 0 V: rail 12 V cấp cho cuộn bị mất nên cuộn không có dòng dù transistor đã được lệnh. Kiểm tra mạch nguồn 12 V (chỉnh lưu, tụ lọc, IC nguồn).'},
+    d:{n:'Transistor hở giữa C và E',t:[220,12,0.7,0,220,0,0,0.3],
+       sign:'điểm 2 = 12 V, điểm 3 ≈ 0,7 V, nhưng điểm 4 = 0 V',
+       ex:'Có 12 V và B–E ≈ 0,7 V (đã được lệnh), nhưng cuộn vẫn 0 V: transistor không dẫn từ C sang E. Thay transistor và kiểm tra điện trở nền, diode dập xung.'},
+    e:{n:'Tiếp điểm relay hỏng',t:[220,12,0.7,11.8,220,0,0,0.3],
+       sign:'điểm 4 ≈ 12 V, điểm 5 = 220 V, nhưng điểm 6 = 0 V',
+       ex:'Cuộn có 12 V (relay đã hút, thường nghe tiếng "tách") và COM có 220 V, nhưng NO không có điện: tiếp điểm bị cháy rỗ hoặc bẩn. Thay relay.'},
+    f:{n:'Đứt vết mạch hoặc nứt mối hàn từ NO ra giắc',t:[220,12,0.7,11.8,220,220,0,0.3],
+       sign:'điểm 6 = 220 V, điểm 7 = 0 V, điểm 8 ≈ 0 Ω',
+       ex:'NO có 220 V nhưng giắc 0 V, và dây N vẫn thông: đứt vết mạch cháy hoặc mối hàn nứt ở chân relay hoặc chân giắc. Hàn lại hoặc vá dây.'},
+    g:{n:'Đứt dây N (trung tính) tới giắc',t:[220,12,0.7,11.8,220,220,0,'OL'],
+       sign:'điểm 6 = 220 V, điểm 7 = 0 V, điểm 8 = OL (hở)',
+       ex:'NO có 220 V, giắc đo 0 V và dây N hở (OL). Quạt cần đủ cả L lẫn N, mất N thì quạt không chạy dù L có điện.'}
+  };
+  var KEYS=Object.keys(F),fault,meas,done,sel,jit;
+  var svg=$('#tm-svg'),lcd=$('#tm-lcd'),mode=$('#tm-mode'),fb=$('#tm-fb'),ptsEl=$('#tm-pts'),ansEl=$('#tm-ans');
+  function build(){
+    var h='';
+    // đường L (bên trái), N, 12 V (bên phải)
+    h+='<rect class="tm-b" x="40" y="8" width="80" height="28" rx="4"/><text class="tm-s" x="80" y="26" text-anchor="middle">Nguồn vào</text>';
+    h+='<path class="tm-w" d="M80 36V105M80 115V170M80 180V262"/>';
+    h+='<path class="tm-n" d="M80 110V175"/><circle cx="80" cy="110" r="4" class="tm-b"/><circle cx="80" cy="175" r="4" class="tm-b"/>';
+    h+='<text class="tm-t" x="72" y="114" text-anchor="end">COM</text><text class="tm-t" x="72" y="179" text-anchor="end">NO</text>';
+    h+='';
+    h+='<rect class="tm-b" x="40" y="262" width="80" height="28" rx="4"/><text class="tm-s" x="80" y="280" text-anchor="middle">Giắc quạt</text>';
+    h+='<path class="tm-w" d="M80 290V320"/><circle class="tm-b" cx="80" cy="345" r="24"/><text class="tm-s" x="80" y="349" text-anchor="middle">Quạt</text>';
+    h+='<path class="tm-n" d="M56 345H22V22H40"/><text class="tm-t" x="12" y="16">N</text>';
+    h+='<path class="tm-n" d="M22 290H40"/>';
+    // 12 V, cuộn, transistor, chip
+    h+='<text class="tm-s" x="270" y="14" text-anchor="middle" style="fill:var(--bad)">+12 V</text><path class="tm-w" d="M270 20V70"/>';
+    h+='<rect class="tm-b" x="252" y="70" width="36" height="60" rx="3"/><text class="tm-t" x="270" y="104" text-anchor="middle">Cuộn</text><path class="tm-w" d="M270 130V190L262 205"/>';
+    h+='<path class="tm-w" d="M262 200V230"/><circle cx="270" cy="215" r="22" fill="none" style="stroke:var(--ink);stroke-width:1.5"/>';
+    h+='<path class="tm-w" d="M262 225L270 240V268"/><path class="tm-w" d="M262 215H180"/>';
+    h+='<rect class="tm-b" x="130" y="198" width="50" height="34" rx="4"/><text class="tm-s" x="155" y="219" text-anchor="middle">Chip</text>';
+    h+='<path class="tm-w" d="M262 218"/><path class="tm-w" d="M258 268H282M262 273H278M266 278H274"/>';
+    h+='<text class="tm-t" x="286" y="212">C</text><text class="tm-t" x="236" y="236">B</text><text class="tm-t" x="286" y="246">E</text>';
+    h+='<path d="M252 100H146V150H92" fill="none" style="stroke:var(--volt);stroke-width:1.5;stroke-dasharray:3 4"/><text class="tm-t" x="190" y="94" text-anchor="middle" style="fill:var(--volt)">từ trường hút tiếp điểm</text>';
+    for(var i=0;i<8;i++){
+      h+='<g class="pt" data-i="'+i+'" role="button" aria-label="Điểm đo '+(i+1)+': '+NAMES[i]+'"><circle cx="'+POS[i][0]+'" cy="'+POS[i][1]+'" r="14"/><text x="'+POS[i][0]+'" y="'+POS[i][1]+'">'+(i+1)+'</text></g>';
+      h+='<text class="pv" id="tm-v'+i+'" x="'+POS[i][0]+'" y="'+(POS[i][1]+28)+'"></text>';
+    }
+    svg.innerHTML=h;
+    ptsEl.innerHTML=SHORT.map(function(n,i){return '<button type="button" data-i="'+i+'" aria-pressed="false">'+(i+1)+' '+n+'</button>'}).join('');
+    ansEl.innerHTML=KEYS.map(function(k){return '<button type="button" data-k="'+k+'">'+F[k].n+'</button>'}).join('');
+  }
+  function val(i){
+    var t=F[fault].t[i];if(t==='OL')return 'OL';
+    if(t===0)return 0;
+    return t+jit[i];
+  }
+  function fmt(i,v){
+    if(v==='OL')return 'OL';
+    var k=KIND[i];
+    if(k==='ac')return nf(v,0)+' V';
+    if(k==='be')return nf(v,2)+' V';
+    if(k==='ohm')return nf(v,1)+' Ω';
+    return nf(v,1)+' V';
+  }
+  function okv(i,v){
+    if(v==='OL')return false;
+    if(KIND[i]==='ohm')return v<2;
+    if(KIND[i]==='be')return v>0.5&&v<0.9;
+    return Math.abs(v-NORM[i])/NORM[i]<0.15;
+  }
+  function modeText(i){
+    var k=KIND[i];
+    if(k==='ac')return 'Thang AC V, máy đang có điện. Chỉ chạm que vào chân, giữ tay xa kim loại.';
+    if(k==='ohm')return 'Thang Ω. Đã tắt điện và xả tụ. OL nghĩa là hở mạch.';
+    return 'Thang DC V, máy đang có điện.';
+  }
+  function measure(i){
+    sel=i;meas[i]=true;
+    var v=val(i),g=okv(i,v);
+    lcd.textContent=fmt(i,v);lcd.style.color=g?'':'#FFB4AB';
+    mode.textContent='Điểm '+(i+1)+': '+NAMES[i]+'. '+modeText(i);
+    var ve=$('#tm-v'+i);ve.textContent=fmt(i,v);ve.setAttribute('class','pv '+(g?'ok':'bad'));
+    paint();
+  }
+  function paint(){
+    $$('#tm-svg .pt').forEach(function(e){var i=+e.getAttribute('data-i'),c='pt';if(meas[i]){c+=okv(i,val(i))?' ok':' bad'}if(sel===i)c+=' sel';e.setAttribute('class',c)});
+    $$('#tm-pts button').forEach(function(b){b.setAttribute('aria-pressed',(+b.dataset.i===sel)?'true':'false')});
+  }
+  function count(){var n=0;for(var i=0;i<8;i++)if(meas[i])n++;return n}
+  function finish(k,ownGuess){
+    done=true;
+    $$('#tm-ans button').forEach(function(b){b.classList.toggle('right',b.dataset.k===fault)});
+    var n=count(),msg=(ownGuess?'<b class="good">Đúng.</b> ':'<b>Đáp án:</b> ')+F[fault].n+'.<br>'+F[fault].ex+'<br>Dấu hiệu: '+F[fault].sign+'.';
+    if(ownGuess){msg+='<br>Bạn đã đo '+n+' điểm.'+(n>4?' Lần sau thử chia đôi mạch: đo NO trước, rồi đi về phía có lỗi.':' Đo gọn như vậy là tốt.')}
+    fb.innerHTML=msg;fb.hidden=false;
+  }
+  function guess(k){
+    if(done)return;
+    if(k===fault){finish(k,true);return}
+    var b=$('#tm-ans button[data-k="'+k+'"]');if(b){b.classList.add('wrong')}
+    fb.innerHTML='<b class="badc">Chưa đúng.</b> Nếu lỗi là "'+F[k].n+'" thì sẽ thấy: '+F[k].sign+'. Hãy đo các điểm đó rồi so với số đo của bạn.';fb.hidden=false;
+  }
+  function reset(){
+    var prev=fault,k;do{k=KEYS[Math.floor(Math.random()*KEYS.length)]}while(k===prev);
+    fault=k;meas={};done=false;sel=-1;jit=[];
+    for(var i=0;i<8;i++){var r=Math.random()*2-1;jit.push(KIND[i]==='ac'?Math.round(r*4):KIND[i]==='be'?r*0.04:KIND[i]==='ohm'?r*0.15:r*0.25)}
+    lcd.textContent='— — —';lcd.style.color='';mode.textContent='Chọn một điểm đo.';fb.hidden=true;
+    for(var j=0;j<8;j++){var e=$('#tm-v'+j);e.textContent='';e.setAttribute('class','pv')}
+    $$('#tm-ans button').forEach(function(b){b.classList.remove('right','wrong')});
+    paint();
+  }
+  build();
+  svg.addEventListener('click',function(e){var g=e.target.closest?e.target.closest('.pt'):null;if(g)measure(+g.getAttribute('data-i'))});
+  ptsEl.addEventListener('click',function(e){var b=e.target.closest('button');if(b)measure(+b.dataset.i)});
+  ansEl.addEventListener('click',function(e){var b=e.target.closest('button');if(b)guess(b.dataset.k)});
+  $('#tm-new').addEventListener('click',reset);
+  $('#tm-rev').addEventListener('click',function(){if(!done)finish(fault,false)});
+  reset();
+  return {resize:function(){}};
+})();
+
 window.Labs={enter:function(id){show(labs[id]?id:curId)},leave:function(){cur=null}};
 requestAnimationFrame(function(t){last=t;loop(t)});
 })();
