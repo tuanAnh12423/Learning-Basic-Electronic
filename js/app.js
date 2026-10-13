@@ -128,41 +128,100 @@
   }
 
   // ---- chat ----
-  var chatReady = false;
-  function addMsg(who, data) {
-    var log = $("#chat-log"), m = el("div", { class: "msg " + who });
-    if (who === "me") m.textContent = data;
-    else {
-      if (data.title) m.appendChild(el("h4", { text: data.title }));
-      (data.paras || []).forEach(function (t) { m.appendChild(el("p", { text: t })); });
-      if (data.links && data.links.length) {
-        var acts = el("div", { class: "acts" });
-        data.links.forEach(function (l) { acts.appendChild(el("a", { href: l.href, text: l.text })); });
-        m.appendChild(acts);
-      }
-      if (data.chips && data.chips.length) {
-        var sg = el("div", { class: "sugg" });
-        data.chips.forEach(function (c) {
-          var b = el("button", { type: "button", text: c.text });
-          b.addEventListener("click", function () { ask(c.ask || c.text); });
-          sg.appendChild(b);
-        });
-        m.appendChild(sg);
-      }
+  // 13/10/2026: giống web Tra cứu mã lỗi — "Đang suy nghĩ" + 3 chấm, rồi CHỮ HIỆN DẦN (~90 chữ/giây,
+  // bài dài nhanh dần để xong trong ~3,6 giây, dừng ở cuối từ), con trỏ nhấp nháy.
+  // Bấm vào tin để hiện hết ngay. Nút/gợi ý chỉ hiện SAU khi chữ chạy xong. Máy bật "giảm chuyển động" thì hiện luôn.
+  var chatReady = false, current = null; // current = tin đang chạy chữ (để bấm hiện hết / hỏi tiếp thì xong ngay)
+  var REDUCED = false;
+  try { REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { /* bỏ qua */ }
+  function scrollLog() { var log = $("#chat-log"); log.scrollTop = log.scrollHeight; }
+
+  function extras(m, data) {
+    if (data.links && data.links.length) {
+      var acts = el("div", { class: "acts" });
+      data.links.forEach(function (l) { acts.appendChild(el("a", { href: l.href, text: l.text })); });
+      m.appendChild(acts);
     }
-    log.appendChild(m);
-    log.scrollTop = log.scrollHeight;
+    if (data.chips && data.chips.length) {
+      var sg = el("div", { class: "sugg" });
+      data.chips.forEach(function (c) {
+        var b = el("button", { type: "button", text: c.text });
+        b.addEventListener("click", function () { ask(c.ask || c.text); });
+        sg.appendChild(b);
+      });
+      m.appendChild(sg);
+    }
   }
+
+  function addMsg(who, data, animate) {
+    var log = $("#chat-log"), m = el("div", { class: "msg " + who });
+    log.appendChild(m);
+    if (who === "me") { m.textContent = data; scrollLog(); return; }
+    if (data.title) m.appendChild(el("h4", { text: data.title }));
+    var paras = data.paras || [], ps = paras.map(function () { return m.appendChild(el("p")); });
+    if (!animate || REDUCED) {
+      ps.forEach(function (p, i) { p.textContent = paras[i]; });
+      extras(m, data); scrollLog(); return;
+    }
+    // chữ chạy dần
+    var full = paras.map(function (t) { return Array.from(t); });
+    var total = full.reduce(function (a, c) { return a + c.length; }, 0);
+    var rate = Math.max(90, total / 3.6), t0 = performance.now(), raf = 0, done = false;
+    m.classList.add("streaming");
+    function show(n) {
+      var left = n, active = -1;
+      ps.forEach(function (p, i) {
+        var len = full[i].length, take = Math.max(0, Math.min(len, left));
+        if (active < 0 && left <= len) active = i;          // đoạn đang chạy chữ
+        p.textContent = full[i].slice(0, take).join("");
+        p.hidden = take === 0 && i !== active;              // đoạn chưa tới thì ẩn
+        p.classList.toggle("caret", i === active && n < total);
+        left -= len;
+      });
+    }
+    function finish() {
+      if (done) return; done = true; cancelAnimationFrame(raf);
+      show(total); ps.forEach(function (p) { p.classList.remove("caret"); });
+      m.classList.remove("streaming"); extras(m, data); scrollLog();
+      if (current && current.m === m) current = null;
+    }
+    function frame(now) {
+      var n = Math.min(total, Math.floor((now - t0) / 1000 * rate));
+      // dừng ở cuối từ (kéo thêm tối đa 8 ký tự)
+      var flat = [].concat.apply([], full), extra = 0;
+      while (n > 0 && n < total && extra < 8 && !/\s/.test(flat[n - 1] || " ")) { n++; extra++; }
+      show(n); scrollLog();
+      if (n >= total) finish(); else raf = requestAnimationFrame(frame);
+    }
+    m.addEventListener("click", finish);
+    current = { m: m, finish: finish };
+    show(0); raf = requestAnimationFrame(frame);
+  }
+
+  function thinking() {
+    var row = el("div", { class: "msg bot typing", "aria-label": "Đang suy nghĩ" },
+      [el("span", { class: "typing-label", text: "Đang suy nghĩ" }), el("i"), el("i"), el("i")]);
+    $("#chat-log").appendChild(row); scrollLog();
+    return row;
+  }
+
+  var pending = null; // câu trả lời đang "suy nghĩ"
   function ask(text) {
     text = String(text || "").trim(); if (!text) return;
+    if (current) current.finish();                       // tin trước chưa chạy xong thì hiện hết luôn
+    if (pending) { clearTimeout(pending.timer); pending.row.remove(); addMsg("bot", pending.r, false); pending = null; }
     addMsg("me", text);
-    var r = window.Chat.answer(text);
-    addMsg("bot", r || { none: true, title: "Chưa có trong giáo trình", paras: ["Hãy gõ từ khóa ngắn trong phạm vi điện tử, điện lạnh cơ bản."] });
+    var r = window.Chat.answer(text) || { none: true, title: "Chưa có trong giáo trình", paras: ["Hãy gõ từ khóa ngắn trong phạm vi điện tử, điện lạnh cơ bản."] };
+    var len = (r.paras || []).join(" ").length;
+    var row = thinking();
+    pending = { r: r, row: row, timer: setTimeout(function () {
+      row.remove(); pending = null; addMsg("bot", r, true);
+    }, REDUCED ? 0 : 500 + Math.min(len, 600) * 0.6) };
   }
   function initChat() {
     if (chatReady) return; chatReady = true;
     addMsg("bot", { title: "Trợ lý giáo trình", paras: ["Mình chỉ tra trong 6 bài của giáo trình này, không dùng AI và không đoán ngoài nội dung. Chọn một gợi ý hoặc gõ từ khóa:"],
-      chips: window.Chat.starters.map(function (s) { return { text: s, ask: s }; }) });
+      chips: window.Chat.starters.map(function (s) { return { text: s, ask: s }; }) }, true);
   }
   $("#chat-form").addEventListener("submit", function (e) {
     e.preventDefault();
