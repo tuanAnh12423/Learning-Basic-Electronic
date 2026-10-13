@@ -1,0 +1,99 @@
+/* Khung ứng dụng — thiết kế cho điện thoại trước (mobile-first). Màu dùng chung biến của labs.css. */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.55;overscroll-behavior:none}
+#app{height:100dvh;display:flex;flex-direction:column;max-width:760px;margin:0 auto;background:var(--bg)}
+
+/* thanh trên */
+.top{flex:none;display:flex;align-items:center;gap:8px;min-height:52px;padding:calc(env(safe-area-inset-top,0px) + 6px) 14px 6px;border-bottom:1px solid var(--line);background:var(--surface)}
+.top h1{flex:1;min-width:0;margin:0;font-size:18px;line-height:1.25;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icon-btn{flex:none;width:44px;height:44px;margin-left:-8px;border:0;background:transparent;color:var(--ink);font-size:24px;border-radius:12px;cursor:pointer}
+.chip{flex:none;font-size:12.5px;color:var(--muted);background:var(--soft);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.chip:empty{display:none}
+
+/* vùng nội dung */
+#main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.view{padding:14px 14px 28px}
+.view[hidden]{display:none}
+.view.chat{display:flex;flex-direction:column;padding:0;height:100%}
+h2{font-size:18px}
+.lead2{color:var(--muted);margin:0 0 12px}
+
+/* thanh dưới */
+.bottom{flex:none;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:var(--surface);padding-bottom:env(safe-area-inset-bottom,0px)}
+.bottom a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:58px;padding:6px 2px;color:var(--muted);text-decoration:none;font-size:12px}
+.bottom svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bottom a[aria-current="page"]{color:var(--volt);font-weight:600}
+.bottom a:active{background:var(--soft)}
+
+/* danh sách bài */
+.progress{height:8px;border-radius:4px;background:var(--soft);overflow:hidden;margin:4px 0 16px}
+.progress i{display:block;height:100%;background:var(--ok);width:0}
+.lesson-card{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;text-decoration:none;cursor:pointer}
+.lesson-card:active{background:var(--soft)}
+.lesson-card .num{flex:none;width:40px;height:40px;border-radius:50%;background:var(--volt);color:#fff;display:grid;place-items:center;font-weight:600}
+@media (prefers-color-scheme:dark){.lesson-card .num{color:#08121C}}
+.lesson-card.done .num{background:var(--ok)}
+.lesson-card h3{margin:0 0 2px;font-size:16.5px;line-height:1.3}
+.lesson-card p{margin:0;color:var(--muted);font-size:14px}
+.lesson-card small{display:block;margin-top:4px;color:var(--ok);font-size:13px}
+
+/* trang bài học */
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.sec h3{margin:0 0 6px;font-size:17px;line-height:1.3}
+.sec p{margin:0 0 8px}
+.sec p:last-child{margin-bottom:0}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.btn2{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:500;text-decoration:none;cursor:pointer}
+.btn2.primary{background:var(--volt);border-color:var(--volt);color:#fff}
+@media (prefers-color-scheme:dark){.btn2.primary{color:#08121C}}
+.btn2[disabled]{opacity:.45}
+.nav-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+
+/* bài tập */
+.q{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.q .qt{font-weight:600;margin:0 0 10px}
+.q .opt{display:block;width:100%;text-align:left;font:inherit;min-height:48px;padding:10px 12px;margin-bottom:8px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);cursor:pointer}
+.q .opt.right{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.q .opt.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.q .why{margin:6px 0 0;font-size:14.5px;color:var(--muted)}
+.score{font-weight:600}
+
+/* thuật ngữ */
+.search{width:100%;min-height:48px;font:inherit;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);margin-bottom:12px}
+.term{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.term b{display:block}
+.term p{margin:2px 0 6px;font-size:15px}
+.term a{font-size:14px;color:var(--volt)}
+.empty{color:var(--muted);text-align:center;padding:24px 0}
+
+/* chat */
+.chat-log{flex:1;min-height:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+.msg{max-width:88%;padding:10px 12px;border-radius:16px;font-size:15.5px;overflow-wrap:anywhere}
+.msg.me{align-self:flex-end;background:var(--volt);color:#fff;border-bottom-right-radius:4px}
+@media (prefers-color-scheme:dark){.msg.me{color:#08121C}}
+.msg.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.bot h4{margin:0 0 4px;font-size:14px;color:var(--muted);font-weight:500}
+.msg.bot p{margin:0 0 6px}
+.msg.bot p:last-of-type{margin-bottom:0}
+.msg .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.msg .acts a,.msg .acts button{font:inherit;font-size:14px;min-height:40px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--volt);text-decoration:none;cursor:pointer}
+.sugg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.sugg button{font:inherit;font-size:14px;min-height:40px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.chat-form{flex:none;display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line);background:var(--surface)}
+.chat-form input{flex:1;min-width:0;min-height:48px;font:inherit;font-size:16px;padding:10px 14px;border:1px solid var(--line);border-radius:24px;background:var(--bg);color:var(--ink)}
+.chat-form button{flex:none;min-height:48px;padding:0 18px;border:0;border-radius:24px;background:var(--volt);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+@media (prefers-color-scheme:dark){.chat-form button{color:#08121C}}
+
+/* chỉnh lại phần mô phỏng cho khung mới */
+#v-lab .bar{top:-14px;margin:-14px -14px 14px;padding:8px 14px}
+#v-lab h2{font-size:17px}
+.tab{min-height:40px}
+.pause{min-height:40px}
+.seg button,.btn{min-height:44px}
+.opts button{min-height:48px}
+
+@media (min-width:720px){
+  #app{border-left:1px solid var(--line);border-right:1px solid var(--line)}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
