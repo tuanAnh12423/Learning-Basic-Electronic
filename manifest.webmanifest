@@ -8,6 +8,11 @@
   "display": "standalone",
   "background_color": "#F4F5F7",
   "theme_color": "#E60012",
+  "shortcuts": [
+    { "name": "Ôn tập", "url": "./index.html#/on" },
+    { "name": "Thực hành", "url": "./index.html#/lab" },
+    { "name": "Hỏi giáo trình", "url": "./index.html#/hoi" }
+  ],
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Học Điện Tử, Điện Lạnh</title>
-<meta name="description" content="Học điện tử và điện lạnh cơ bản trên điện thoại: bài học, mô phỏng, bài tập và trợ lý tra giáo trình.">
+<meta name="description" content="Học điện tử và điện lạnh cơ bản trên điện thoại: 12 bài học, 14 mô phỏng, bài tập, ôn tập, thẻ ghi nhớ và trợ lý tra giáo trình.">
 <meta name="theme-color" content="#E60012">
 <meta name="color-scheme" content="light">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +25,11 @@
     <button id="back" class="icon-btn" type="button" aria-label="Quay lại" hidden>&#8592;</button>
     <h1 id="title">Học Điện Tử, Điện Lạnh</h1>
     <span id="prog" class="chip" aria-label="Tiến độ"></span>
+    <button id="fs" class="icon-btn fs-btn" type="button" aria-label="Đổi cỡ chữ">Aa</button>
   </header>
+  <div id="update" class="update" role="status" hidden>
+    <span>Đã có bản mới của web.</span><button id="update-go" type="button">Tải lại</button>
+  </div>
 
   <main id="main">
     <!-- HỌC: danh sách bài -->
@@ -46,6 +50,10 @@
           <button class="tab" role="tab" data-lab="lanh" aria-selected="false">Chu trình lạnh</button>
           <button class="tab" role="tab" data-lab="rl" aria-selected="false">Relay + transistor</button>
           <button class="tab" role="tab" data-lab="tim" aria-selected="false">Tìm lỗi quạt</button>
+          <button class="tab" role="tab" data-lab="vom" aria-selected="false">Chọn thang đo</button>
+          <button class="tab" role="tab" data-lab="nen" aria-selected="false">3 chân máy nén</button>
+          <button class="tab" role="tab" data-lab="ntc" aria-selected="false">Cảm biến NTC</button>
+          <button class="tab" role="tab" data-lab="pwm" aria-selected="false">Inverter, PWM</button>
         </div>
         <button class="pause" id="pause" type="button">Tạm dừng</button>
       </div>
@@ -360,8 +368,144 @@
     </div>
   </div>
 </section>
+<!-- ============ CHỌN THANG ĐO (bài 7) ============ -->
+<section id="lab-vom" class="lab" hidden>
+  <div class="card">
+    <h2>Bài 7: Chọn thang đo và cách nối</h2>
+    <p class="lead">Mỗi đề là một việc cần đo. Chọn thang trên đồng hồ và cách nối que, rồi bấm Đo. Chọn sai sẽ thấy hậu quả, giống như khi đo thật.</p>
+    <p class="band-t">Việc cần đo</p>
+    <div class="formula" id="vom-task" style="white-space:normal;font-family:var(--font);font-size:15px"></div>
+    <p class="band-t">Thang đo</p>
+    <div class="seg" id="vom-mode" role="group" aria-label="Thang đo">
+      <button type="button" data-v="vdc" aria-pressed="false">V⎓ (DC)</button>
+      <button type="button" data-v="vac" aria-pressed="false">V~ (AC)</button>
+      <button type="button" data-v="a" aria-pressed="false">A</button>
+      <button type="button" data-v="ohm" aria-pressed="false">Ω</button>
+      <button type="button" data-v="beep" aria-pressed="false">Thông mạch</button>
+    </div>
+    <p class="band-t">Cách nối</p>
+    <div class="seg" id="vom-how" role="group" aria-label="Cách nối que đo">
+      <button type="button" data-v="par" aria-pressed="false">Song song (2 que vào 2 điểm)</button>
+      <button type="button" data-v="ser" aria-pressed="false">Nối tiếp (cắt mạch, dòng đi qua đồng hồ)</button>
+      <button type="button" data-v="off" aria-pressed="false">Cắt nguồn, xả tụ rồi đo</button>
+    </div>
+    <div class="seg"><button type="button" class="btn go" id="vom-go">Đo</button><button type="button" class="btn" id="vom-new">Đề khác</button><span class="note" id="vom-sc" style="align-self:center"></span></div>
+    <div class="lcd" id="vom-lcd" aria-live="polite">— — —</div>
+    <div class="formula" id="vom-fb" style="white-space:normal;font-family:var(--font);font-size:14px" hidden></div>
+    <div class="try"><b>Nhớ nhanh:</b>
+      <ul>
+        <li>Điện áp: song song. Dòng điện: nối tiếp (hoặc dùng ampe kìm kẹp một dây).</li>
+        <li>Ω, thông mạch, đo tụ: cắt nguồn và xả tụ trước.</li>
+        <li>Điện lưới, điện cấp cho quạt và máy nén: V~. Pin, nguồn trên bo: V⎓.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 CHÂN MÁY NÉN (bài 8) ============ -->
+<section id="lab-nen" class="lab" hidden>
+  <div class="card">
+    <h2>Bài 8: Tìm chân C, R, S và kiểm tra máy nén</h2>
+    <p class="lead">Máy nén đã cắt nguồn. Ba chân được đánh số 1, 2, 3 nhưng chưa biết chân nào là C, R, S. Đo từng cặp, đo xuống vỏ, rồi chọn kết luận. Mỗi đề có số đo và tình trạng khác nhau.</p>
+    <svg id="nen-svg" class="res" viewBox="0 0 340 200" role="img" aria-label="Cụm ba chân máy nén đánh số 1, 2, 3 và que đo"></svg>
+    <div class="seg" id="nen-pairs" role="group" aria-label="Chọn cặp đo">
+      <button type="button" data-p="12">Đo 1–2</button>
+      <button type="button" data-p="13">Đo 1–3</button>
+      <button type="button" data-p="23">Đo 2–3</button>
+      <button type="button" data-p="g">Đo cách điện xuống vỏ</button>
+    </div>
+    <div class="lcd" id="nen-lcd" aria-live="polite">— — —</div>
+    <div class="read" id="nen-read"></div>
+    <p class="band-t">Chân C là</p>
+    <div class="seg" id="nen-c" role="group" aria-label="Chân C"><button type="button" data-v="1">Chân 1</button><button type="button" data-v="2">Chân 2</button><button type="button" data-v="3">Chân 3</button></div>
+    <p class="band-t">Chân R là</p>
+    <div class="seg" id="nen-r" role="group" aria-label="Chân R"><button type="button" data-v="1">Chân 1</button><button type="button" data-v="2">Chân 2</button><button type="button" data-v="3">Chân 3</button></div>
+    <p class="band-t">Tình trạng máy nén</p>
+    <div class="seg" id="nen-st" role="group" aria-label="Tình trạng"><button type="button" data-v="ok">Cuộn dây tốt</button><button type="button" data-v="open">Đứt cuộn</button><button type="button" data-v="case">Chạm vỏ</button></div>
+    <div class="seg"><button type="button" class="btn go" id="nen-chk">Kiểm tra kết luận</button><button type="button" class="btn" id="nen-new">Đề mới</button></div>
+    <div class="formula" id="nen-fb" style="white-space:normal;font-family:var(--font);font-size:14px" hidden></div>
+    <div class="try"><b>Cách làm:</b>
+      <ul>
+        <li>Cặp lớn nhất là R–S, chân còn lại là C.</li>
+        <li>Trong hai cặp có C: nhỏ hơn là C–R, lớn hơn là C–S. Kiểm tra lại: C–R + C–S ≈ R–S.</li>
+        <li>Xuống vỏ phải rất lớn (cỡ MΩ). Một cặp không lên là đứt cuộn.</li>
+      </ul>
+    </div>
+    <p class="note">Số đo là ví dụ minh họa. Giá trị thật của từng máy xem tài liệu service.</p>
+  </div>
+</section>
+
+<!-- ============ NTC (bài 9) ============ -->
+<section id="lab-ntc" class="lab" hidden>
+  <div class="card">
+    <h2>Bài 9: Cảm biến nhiệt NTC và mạch chia áp</h2>
+    <p class="lead">NTC nối lên 5 V, điện trở cố định Rf nối xuống mass. Chip đọc điện áp điểm giữa rồi đổi ra nhiệt độ. Kéo nhiệt độ và thử làm hỏng cảm biến để xem bo hiểu sai thế nào.</p>
+    <div class="seg" id="ntc-type" role="group" aria-label="Loại NTC">
+      <button type="button" data-v="5000" aria-pressed="false">NTC 5 kΩ</button>
+      <button type="button" data-v="10000" aria-pressed="true">NTC 10 kΩ</button>
+      <button type="button" data-v="20000" aria-pressed="false">NTC 20 kΩ</button>
+    </div>
+    <canvas id="ntc-c" role="img" aria-label="Đồ thị điện áp điểm giữa theo nhiệt độ, kèm sơ đồ chia áp"></canvas>
+    <div class="ctrl"><label for="ntc-t">Nhiệt độ thật tại cảm biến</label><output id="ntc-tv"></output><input id="ntc-t" type="range" min="-20" max="80" step="1" value="25"></div>
+    <div class="seg" id="ntc-f" role="group" aria-label="Tình trạng cảm biến">
+      <button type="button" data-v="ok" aria-pressed="true">Bình thường</button>
+      <button type="button" data-v="open" aria-pressed="false">Đứt / tuột giắc</button>
+      <button type="button" data-v="short" aria-pressed="false">Chập</button>
+      <button type="button" data-v="drift" aria-pressed="false">Lệch giá trị</button>
+    </div>
+    <div class="read">
+      <div><small>Điện trở NTC</small><b id="ntc-r"></b></div>
+      <div><small>Điện áp điểm giữa</small><b id="ntc-u"></b></div>
+      <div><small>Bo hiểu là</small><b id="ntc-b"></b></div>
+    </div>
+    <div class="formula" id="ntc-fm" style="white-space:pre-line"></div>
+    <div id="ntc-warn" class="warn" hidden></div>
+    <div class="try"><b>Thử:</b>
+      <ul>
+        <li>Kéo nhiệt độ lên: điện trở NTC giảm, điện áp điểm giữa tăng.</li>
+        <li>Chọn "Đứt / tuột giắc" rồi "Chập": điện áp về sát 0 V hoặc 5 V, bo báo lỗi cảm biến.</li>
+        <li>Chọn "Lệch giá trị": bo vẫn chạy nhưng hiểu sai nhiệt độ. Đây là lỗi khó tìm nhất, phải đo và so bảng.</li>
+      </ul>
+    </div>
+    <p class="note">Ví dụ dùng hệ số B = 3950 và Rf bằng giá trị NTC ở 25 °C. Bảng thật của từng máy xem tài liệu service.</p>
+  </div>
+</section>
+
+<!-- ============ INVERTER / PWM (bài 10) ============ -->
+<section id="lab-pwm" class="lab" hidden>
+  <div class="card">
+    <h2>Bài 10: PWM, điện áp trung bình</h2>
+    <p class="lead">Khóa công suất đóng ngắt DC bus thật nhanh. Tỉ lệ thời gian đóng (duty) quyết định điện áp trung bình mà động cơ "cảm thấy".</p>
+    <canvas id="pwm-c" role="img" aria-label="Dạng xung PWM và đường điện áp trung bình"></canvas>
+    <div class="ctrl"><label for="pwm-d">Duty (tỉ lệ thời gian đóng)</label><output id="pwm-dv"></output><input id="pwm-d" type="range" min="0" max="100" step="1" value="50"></div>
+    <div class="read">
+      <div><small>DC bus</small><b>310 V</b></div>
+      <div><small>Điện áp trung bình</small><b id="pwm-avg"></b></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Ba pha U, V, W và tốc độ máy nén</h2>
+    <p class="lead">Thay đổi duty theo hình sin, ba pha lệch nhau 1/3 chu kỳ, sẽ tạo từ trường quay. Tần số càng cao, rô-to quay càng nhanh.</p>
+    <canvas id="pwm-3" role="img" aria-label="Ba đường sin U, V, W và rô-to quay theo tần số"></canvas>
+    <div class="ctrl"><label for="pwm-f">Tần số cấp cho máy nén</label><output id="pwm-fv"></output><input id="pwm-f" type="range" min="0" max="120" step="1" value="30"></div>
+    <div class="read">
+      <div><small>Tốc độ (ví dụ 4 cực)</small><b id="pwm-rpm"></b></div>
+      <div><small>Mức chạy</small><b id="pwm-lv"></b></div>
+    </div>
+    <div class="try"><b>Thử:</b>
+      <ul>
+        <li>Duty 50% thì điện áp trung bình bằng nửa DC bus: 155 V.</li>
+        <li>Kéo tần số lên cao: phòng còn nóng, máy nén chạy nhanh. Kéo xuống thấp: gần đạt nhiệt độ, chạy chậm và êm.</li>
+        <li>Tần số 0: máy nén dừng. Máy thường chỉ có hai trạng thái: chạy hết tốc độ hoặc dừng.</li>
+      </ul>
+    </div>
+    <p class="note">Hình minh họa nguyên lý. Tần số và tốc độ thực tế do bo của từng máy quyết định. Tụ DC bus giữ điện áp cao sau khi rút điện: đo về gần 0 V rồi mới chạm.</p>
+  </div>
+</section>
       <p class="foot">Mô phỏng minh họa nguyên lý theo mô hình đơn giản, không phải số đo của một mạch hay thiết bị cụ thể. Khi sửa chữa, luôn cắt nguồn, xả tụ và đo xác nhận.</p>
     </section>
+    <!-- ÔN TẬP: kiểm tra tổng hợp, câu sai, thẻ ghi nhớ, kết quả -->
+    <section id="v-on" class="view" hidden></section>
     <!-- THUẬT NGỮ -->
     <section id="v-tn" class="view" hidden>
       <input id="tn-q" class="search" type="search" placeholder="Tìm thuật ngữ, ví dụ: tụ, diode, gas" autocomplete="off" enterkeyhint="search">
@@ -380,9 +524,11 @@
   <nav class="bottom" aria-label="Điều hướng chính">
     <a href="#/hoc" data-nav="hoc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/></svg><span>Học</span></a>
     <a href="#/lab" data-nav="lab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-6 4 12 2-6h6" /></svg><span>Thực hành</span></a>
+    <a href="#/on" data-nav="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h11"/></svg><span>Ôn tập</span></a>
     <a href="#/tn" data-nav="tn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM8 8h8M8 12h8"/></svg><span>Thuật ngữ</span></a>
     <a href="#/hoi" data-nav="hoi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Hỏi</span></a>
   </nav>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 </div>
 <script src="data/lessons.js"></script>
 <script src="js/labs.js"></script>
