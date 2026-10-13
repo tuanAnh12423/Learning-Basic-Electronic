@@ -1,5 +1,5 @@
 /* Cho phép dùng offline sau lần mở đầu. Đổi số VERSION mỗi khi sửa file để điện thoại tải bản mới. */
-var VERSION = "hdt-v3";
+var VERSION = "hdt-v5";
 var FILES = [
   "./", "index.html", "css/labs.css", "css/app.css",
   "data/lessons.js", "js/labs.js", "js/chat.js", "js/app.js",
@@ -18,7 +18,7 @@ self.addEventListener("fetch", function (e) {
   var req = e.request;
   if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
   e.respondWith(
-    fetch(req).then(function (res) {
+    fetch(req, { cache: "no-cache" }).then(function (res) { // no-cache: luôn hỏi GitHub bản mới nhất, không dùng cache 10 phút của trình duyệt
       var copy = res.clone();
       caches.open(VERSION).then(function (c) { c.put(req, copy); });
       return res;

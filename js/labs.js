@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
-var FONT="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif",MONO="ui-monospace,Menlo,Consolas,monospace";
+var FONT="'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif",MONO="ui-monospace,Menlo,Consolas,monospace";
 var PAL={};
 function readPal(){var cs=getComputedStyle(document.documentElement);['bg','surface','ink','muted','line','soft','volt','amp','ok','bad'].forEach(function(k){PAL[k]=cs.getPropertyValue('--'+k).trim()})}
 readPal();
