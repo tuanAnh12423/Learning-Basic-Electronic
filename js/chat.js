@@ -4,8 +4,7 @@
 (function () {
   "use strict";
   var LESSONS = window.LESSONS || [], GLOSSARY = window.GLOSSARY || [];
-  var LAB_NAME = { ohm: "Ohm", mau: "Mã màu", mach: "Nối tiếp, song song", tu: "Tụ nạp, xả", doi: "Xả tụ đôi",
-    diode: "Diode", cau: "Cầu chỉnh lưu", lanh: "Chu trình lạnh", rl: "Relay + transistor" };
+  var LAB_NAME = window.LAB_NAME || {};
 
   // Bỏ dấu, hạ chữ thường, chỉ giữ chữ-số.
   function fold(s) {
@@ -18,8 +17,24 @@
    "ve hoi giai thich cach nhe oi ban voi hoac vay a u ah thi bi dang se da can muon biet xin chao")
     .split(" ").forEach(function (w) { STOP[w] = 1; });
 
-  function tokens(s) {
-    return fold(s).split(" ").filter(function (t) { return t && !STOP[t]; });
+  // 13/10/2026: cách nói quen của KTV → từ trong giáo trình. Áp dụng cho câu hỏi (không áp dụng cho chỉ mục).
+  var SYN = [
+    [/\btu loc\b/g, "tu_loc"],                                    // giữ "tụ lọc" trước khi đổi "lốc"
+    [/\b(block|blok|bloc|lock|loc|compressor|compresser)\b/g, "may nen"],
+    [/\btu_loc\b/g, "tu loc"],
+    [/\bcuc nong\b/g, "dan nong"], [/\bcuc lanh\b/g, "dan lanh"],
+    [/\b(ro le|role|rele)\b/g, "relay"], [/\b(capa|cap|tu quat|tu block)\b/g, "tu"],
+    [/\b(sensor|sen so|thermistor|cam bien nhiet do)\b/g, "ntc cam bien"],
+    [/\b(ga|gaz)\b/g, "gas"], [/\b(dong ho do|vom|multimeter|dong ho van nang)\b/g, "dong ho van nang"],
+    [/\b(aptomat|cau dao)\b/g, "cb"], [/\b(chong giat|elcb|rcd|rcbo)\b/g, "chong giat"],
+    [/\b(bien tan)\b/g, "inverter"], [/\b(vol|volt|von)\b/g, "dien ap"], [/\b(amp|ampe|am pe)\b/g, "dong dien"],
+    [/\b(om|ohm)\b/g, "ohm dien tro"], [/\b(dio|diot|di ot)\b/g, "diode"], [/\b(tran|tranzito|transitor|bjt)\b/g, "transistor"],
+    [/\b(mo to|motor)\b/g, "dong co"], [/\b(tiep dat|noi mat)\b/g, "tiep dia"]
+  ];
+  function synonyms(f) { SYN.forEach(function (s) { f = f.replace(s[0], s[1]); }); return f; }
+  function tokens(s, syn) {
+    var f = fold(s); if (syn) f = synonyms(f);
+    return f.split(" ").filter(function (t) { return t && !STOP[t]; });
   }
 
   // ---- Dựng chỉ mục ----
@@ -62,13 +77,13 @@
     return { s: s, conf: total ? matched / total : 0 };
   }
 
-  function search(text) {
-    var q = tokens(text);
+  function search(text, minConf) {
+    var q = tokens(text, true);
     if (!q.length) return [];
-    var out = [];
+    var out = [], min = minConf == null ? 0.6 : minConf;
     docs.forEach(function (d) {
       var r = score(d, q);
-      if (r.s > 0 && r.conf >= 0.6) out.push({ d: d, s: r.s, conf: r.conf });
+      if (r.s > 0 && r.conf >= min) out.push({ d: d, s: r.s, conf: r.conf });
     });
     out.sort(function (a, b) { return b.s - a.s; });
     return out;
@@ -83,7 +98,9 @@
   function lessonList() {
     return LESSONS.map(function (L) { return { text: "Bài " + L.n + ": " + L.title, ask: "bài " + L.n }; });
   }
-  var STARTERS = ["Định luật Ohm", "Xả tụ an toàn", "Chu trình làm lạnh", "Đọc mã màu điện trở", "Diode đo thế nào"];
+  var STARTERS = ["Định luật Ohm", "Xả tụ an toàn", "Chu trình làm lạnh", "Đo dòng điện", "Tìm chân C R S máy nén", "NTC là gì", "Gas R32"];
+  function docLabel(d) { return d.type === "term" ? d.term.t : d.block.h; }
+  function docAsk(d) { return d.type === "term" ? d.term.t : d.lesson.title + " " + d.block.h; }
 
   function answer(text) {
     var f = fold(text);
@@ -99,14 +116,26 @@
     }
     // danh sách / giúp đỡ
     if (/^(giao trinh|danh sach|muc luc|menu|help|huong dan|tro giup|co nhung bai nao|bai hoc)$/.test(f)) {
-      return { title: "Giáo trình", paras: ["Chọn một bài, hoặc gõ câu hỏi ngắn bằng từ khóa."], chips: lessonList() };
+      return { title: "Giáo trình", paras: ["Giáo trình có " + LESSONS.length + " bài. Chọn một bài, hoặc gõ câu hỏi ngắn bằng từ khóa."], chips: lessonList() };
+    }
+    if (/^(on tap|on bai|kiem tra|lam bai kiem tra|thi thu|cau sai|on cau sai|ket qua|the ghi nho|flashcard)$/.test(f)) {
+      return { title: "Ôn tập", paras: ["Vào mục Ôn tập để làm bài kiểm tra tổng hợp, ôn lại các câu đã làm sai, học thuật ngữ bằng thẻ ghi nhớ và xem kết quả."],
+        links: [{ text: "Mở Ôn tập", href: "#/on" }, { text: "Ôn câu sai", href: "#/on/sai" }, { text: "Thẻ ghi nhớ", href: "#/on/the" }] };
     }
 
     var res = search(text);
     if (!res.length) {
+      // không đủ chắc: gợi ý các mục gần giống (khớp được một phần câu hỏi), không tự trả lời
+      var near = search(text, 0.3), seenN = {}, chips = [];
+      near.forEach(function (x) {
+        if (chips.length >= 4 || seenN[docLabel(x.d)]) return;
+        seenN[docLabel(x.d)] = 1; chips.push({ text: docLabel(x.d), ask: docAsk(x.d) });
+      });
+      if (chips.length) return { none: true, title: "Chưa chắc bạn hỏi phần nào",
+        paras: ["Mình không tìm thấy mục khớp đủ với câu hỏi. Có thể bạn muốn hỏi một trong các phần dưới đây:"], chips: chips };
       return { none: true, title: "Chưa có trong giáo trình",
-        paras: ["Mình chỉ trả lời trong phạm vi điện tử và điện lạnh cơ bản của 6 bài này, và không đoán ngoài giáo trình.",
-                "Thử gõ từ khóa ngắn như: tụ điện, diode, relay, máy nén, nối tiếp."],
+        paras: ["Mình chỉ trả lời trong phạm vi điện tử và điện lạnh cơ bản của " + LESSONS.length + " bài này, và không đoán ngoài giáo trình.",
+                "Thử gõ từ khóa ngắn như: tụ điện, diode, relay, máy nén, NTC, inverter, gas."],
         chips: lessonList() };
     }
     var top = res[0].d, r = { paras: [], links: [], chips: [] };
@@ -121,16 +150,16 @@
     }
     // gợi ý các mục liên quan khác
     var seen = {}; seen[top.id] = 1;
-    res.slice(1).forEach(function (x) {
+    var more = res.length > 1 ? res : search(text, 0.4); // ít kết quả thì nới ngưỡng để vẫn có gợi ý liên quan
+    more.slice(1).forEach(function (x) {
       if (r.chips.length >= 3 || seen[x.d.id]) return;
-      var label = x.d.type === "term" ? x.d.term.t : x.d.block.h;
-      var ask = x.d.type === "term" ? x.d.term.t : x.d.lesson.title + " " + x.d.block.h;
-      if (label === (top.type === "term" ? top.term.t : top.block.h)) return;
+      var label = docLabel(x.d), ask = docAsk(x.d);
+      if (label === docLabel(top)) return;
       seen[x.d.id] = 1;
       r.chips.push({ text: label, ask: ask });
     });
     return r;
   }
 
-  window.Chat = { answer: answer, starters: STARTERS, fold: fold };
+  window.Chat = { answer: answer, starters: STARTERS, fold: fold, search: search };
 })();

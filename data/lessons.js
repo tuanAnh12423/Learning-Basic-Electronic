@@ -1,7 +1,12 @@
 /* Giáo trình: Điện tử và điện lạnh cơ bản.
-   Nguồn nội dung: 6 bài đã học trong project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" + mô phỏng "Thực hành điện tử".
+   Nguồn nội dung: bài 1–6 từ project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" + mô phỏng "Thực hành điện tử"; bài 7–12 bổ sung 13/10/2026.
    Thêm bài mới: thêm 1 object vào LESSONS (id, n, title, summary, labs, keywords, blocks, quiz) rồi thêm tên file vào sw.js nếu tạo file mới.
    Chatbot chỉ trả lời từ dữ liệu trong file này. */
+/* Tên mô phỏng (dùng chung cho bài học, chatbot). Thêm mô phỏng mới: thêm tên ở đây + tab + <section id="lab-..."> trong index.html + code trong js/labs.js. */
+window.LAB_NAME = { ohm: "Ohm", mau: "Mã màu điện trở", mach: "Nối tiếp, song song", tu: "Tụ nạp, xả", doi: "Xả tụ đôi",
+  diode: "Diode", cau: "Cầu chỉnh lưu", lanh: "Chu trình lạnh", rl: "Relay + transistor", tim: "Tìm lỗi quạt",
+  vom: "Chọn thang đo", nen: "Đo 3 chân máy nén", ntc: "Cảm biến NTC", pwm: "Inverter, PWM" };
+
 window.LESSONS = [
   {
     id: "b1", n: 1, title: "Điện áp, dòng điện, điện trở",
@@ -190,6 +195,221 @@ window.LESSONS = [
       { q: "Chip đã ra mức cao nhưng relay không hút. Nguyên nhân có thể là?", o: ["Điện trở nền quá lớn nên Ib quá nhỏ", "Điện trở nền quá nhỏ", "Quạt quá nhẹ", "Không thể có nguyên nhân nào"], a: 0, why: "Ib quá nhỏ thì transistor không dẫn đủ cho cuộn relay." },
       { q: "Tiếp điểm relay có tác dụng gì?", o: ["Đóng ngắt tải, đồng thời cách ly mạch điều khiển với mạch tải", "Chỉ để phát tiếng tách", "Lọc nhiễu nguồn", "Đo dòng điện"], a: 0, why: "Cuộn hút thì tiếp điểm đóng tải, hai mạch tách biệt nhau." }
     ]
+  },
+  {
+    id: "b7", n: 7, title: "Đồng hồ vạn năng: đo đúng, đo an toàn",
+    summary: "Chọn thang, cắm que, đo điện áp, dòng điện, điện trở, thông mạch và ampe kìm.",
+    labs: ["vom"],
+    keywords: "dong ho van nang vom multimeter thang do que do cong com v a ma ohm thong mach bip ampe kim do dong do ap do tu cat cau chi",
+    blocks: [
+      { h: "Các thang đo chính", kw: "thang do v dc ac a ohm thong mach diode ky hieu",
+        p: ["V⎓ (DC, một chiều): đo pin, nguồn một chiều trên bo như 5 V, 12 V.",
+            "V~ (AC, xoay chiều): đo điện lưới 220 V, điện cấp cho quạt, máy nén.",
+            "A: đo dòng điện. Ω: đo điện trở. Thông mạch (tiếng bíp): kiểm tra dây có đứt không. Thang diode: đo diode như bài 4.",
+            "Một số đồng hồ có thêm thang đo tụ (µF) và đo nhiệt độ."] },
+      { h: "Đo điện áp: mắc song song", kw: "do dien ap song song que den com que do v chon thang 220 v nham thang",
+        p: ["Que đen cắm cổng COM, que đỏ cắm cổng V. Đặt hai que vào hai điểm cần đo, tức là mắc song song.",
+            "Đồng hồ không tự chọn thang thì chọn thang lớn hơn điện áp dự kiến rồi hạ dần.",
+            "Đo điện lưới mà để nhầm V⎓ thì số hiện gần 0 hoặc nhảy lung tung, dễ kết luận sai là mất điện."] },
+      { h: "Đo dòng điện: mắc nối tiếp", kw: "do dong dien noi tiep cong a ma cat mach chap nguon chay cau chi ampe kim kep mot day",
+        p: ["Phải cắt mạch, chuyển que đỏ sang cổng A (hoặc mA) rồi nối đồng hồ vào chỗ cắt để dòng đi qua đồng hồ, tức là mắc nối tiếp.",
+            "Để que ở cổng A mà đặt song song vào nguồn là chập nguồn qua đồng hồ: cháy cầu chì đồng hồ, có thể nổ, rất nguy hiểm.",
+            "Đo dòng tải lớn như máy nén, quạt nên dùng ampe kìm: kẹp quanh MỘT dây (L hoặc N), không cần cắt mạch. Kẹp cả hai dây thì từ trường triệt nhau, hiện gần 0."] },
+      { h: "Đo điện trở, thông mạch và tụ", kw: "do dien tro thong mach bip do tu cat nguon xa tu thao ra khoi mach sai so",
+        p: ["Cắt nguồn và xả tụ trước khi đo Ω, thông mạch hay đo tụ. Đo trên mạch còn điện cho số sai và có thể hỏng đồng hồ.",
+            "Thông mạch kêu bíp khi điện trở rất nhỏ: dây tốt thì kêu, dây đứt thì không kêu.",
+            "Đo tụ: xả tụ, tháo ra khỏi mạch rồi đo. So với điện dung ghi trên thân, nằm trong khoảng sai số ghi trên thân là đạt."] },
+      { h: "Thói quen an toàn khi đo", kw: "an toan khi do que nut cat ii iii chuyen ve v off do thu nguon biet truoc",
+        p: ["Kiểm tra que và dây đo không nứt vỏ. Chọn đúng thang và đúng cổng TRƯỚC khi chạm que.",
+            "Đo xong chuyển về thang V hoặc OFF, để lần sau không vô tình đo điện áp khi đang ở thang A.",
+            "Dùng đồng hồ có cấp an toàn (CAT II, CAT III) phù hợp nơi đo.",
+            "Trước khi kết luận \"không có điện\", thử đồng hồ trên một nguồn đã biết là có điện: đo thử, đo thật, đo thử lại."] }
+    ],
+    quiz: [
+      { q: "Đo điện áp ổ cắm 220 V trong nhà, chọn thang nào?", o: ["V⎓ (DC)", "V~ (AC)", "A", "Ω"], a: 1, why: "Điện lưới là điện xoay chiều nên dùng V~." },
+      { q: "Đo dòng điện bằng que đo của đồng hồ vạn năng thì mắc thế nào?", o: ["Song song với tải", "Nối tiếp: cắt mạch, cho dòng đi qua đồng hồ", "Chạm que vào hai lỗ ổ cắm", "Cắt nguồn rồi đo"], a: 1, why: "Dòng điện phải đi qua đồng hồ, nên đồng hồ mắc nối tiếp." },
+      { q: "Que đỏ đang ở cổng A, chạm hai que vào hai lỗ ổ cắm. Chuyện gì xảy ra?", o: ["Đo được điện áp", "Chập nguồn qua đồng hồ, cháy cầu chì, có thể nổ", "Hiện 0 và không sao", "Đo được dòng của cả nhà"], a: 1, why: "Thang A có điện trở rất nhỏ, đặt song song vào nguồn là chập mạch." },
+      { q: "Ampe kìm kẹp cùng lúc cả dây L và dây N của một quạt. Đồng hồ hiện?", o: ["Gấp đôi dòng quạt", "Gần 0", "Đúng dòng quạt", "Báo quá tải"], a: 1, why: "Dòng đi và dòng về ngược chiều nên từ trường triệt nhau. Chỉ kẹp một dây." },
+      { q: "Trước khi đo điện trở cuộn dây quạt trên máy, cần làm gì?", o: ["Để máy chạy cho cuộn dây ấm", "Cắt nguồn, xả tụ rồi mới đo", "Chuyển sang V~", "Không cần làm gì"], a: 1, why: "Đo Ω trên mạch còn điện cho số sai và có thể hỏng đồng hồ." }
+    ]
+  },
+  {
+    id: "b8", n: 8, title: "Động cơ, tụ khởi động và máy nén",
+    summary: "Cuộn chạy, cuộn đề, tụ ngậm, tụ đề, tìm chân C R S và kiểm tra chạm vỏ.",
+    labs: ["nen"],
+    keywords: "dong co mot pha cuon chay cuon de tu ngam tu de tu khoi dong may nen chan c r s chung chay de cham vo olp ro le nhiet ptc khoi dong lock block",
+    blocks: [
+      { h: "Động cơ một pha cần gì để tự quay", kw: "dong co mot pha cuon chay cuon de lech pha tu tu quay keu u",
+        p: ["Động cơ một pha có hai cuộn: cuộn chạy (R, Run) và cuộn đề (S, Start).",
+            "Chỉ có một cuộn thì động cơ không tự quay được, chỉ rung và kêu ù.",
+            "Tụ mắc nối tiếp với cuộn đề làm lệch pha dòng điện giữa hai cuộn, tạo từ trường quay nên động cơ tự khởi động và chạy êm."] },
+      { h: "Tụ ngậm và tụ đề", kw: "tu ngam tu chay run capacitor tu de start capacitor tu yeu tu hong thay tu uf dien ap quat keu quay cham day tay kho khoi dong",
+        p: ["Tụ ngậm (tụ chạy) nối suốt khi động cơ chạy, điện dung nhỏ, thường vài µF đến vài chục µF.",
+            "Tụ đề chỉ nối lúc khởi động rồi được ngắt ra, điện dung lớn hơn nhiều, có thể tới hàng trăm µF.",
+            "Tụ yếu hoặc hỏng: động cơ khó khởi động, kêu ù, nóng, nhảy bảo vệ; quạt quay chậm hoặc phải đẩy tay mới quay.",
+            "Thay tụ: đúng điện dung (µF), điện áp bằng hoặc cao hơn tụ cũ. Nhớ xả tụ cũ trước khi tháo (bài 3)."] },
+      { h: "Tìm ba chân C, R, S của máy nén", kw: "ba chan may nen c r s chung chay de do dien tro tung cap lon nhat tong",
+        p: ["Máy nén một pha có ba chân: C (chung), R (chạy) và S (đề). Cắt nguồn rồi đo điện trở từng cặp.",
+            "Cặp có điện trở lớn nhất là R–S (bằng tổng hai cuộn). Chân còn lại là C.",
+            "Trong hai cặp có C: cặp nhỏ hơn là C–R (cuộn chạy), cặp lớn hơn là C–S (cuộn đề).",
+            "Ví dụ: C–R = 3 Ω, C–S = 5 Ω thì R–S = 8 Ω. Đây là số ví dụ, giá trị thật xem tài liệu của máy."] },
+      { h: "Đứt cuộn, chập cuộn và chạm vỏ", kw: "dut cuon chap vong cham vo do xuong vo cach dien mega om nguy hiem",
+        p: ["Một cặp đo không lên (vô cùng): đứt cuộn. Nhỏ bất thường so với tài liệu: nghi chập vòng.",
+            "Đo từ mỗi chân xuống vỏ (chỗ ống đồng đã cạo sạch) phải rất lớn, thường từ vài MΩ trở lên khi đo bằng đồng hồ đo cách điện.",
+            "Đo xuống vỏ thấy vài Ω hoặc vài kΩ là chạm vỏ: nguy hiểm điện giật, không được cho chạy."] },
+      { h: "Bảo vệ quá tải và khởi động tủ lạnh", kw: "olp ro le nhiet bao ve qua tai ptc khoi dong tu lanh",
+        p: ["Rơ-le nhiệt (OLP) mắc nối tiếp ở chân C, ngắt khi máy nén quá nóng hoặc dòng quá lớn, nguội thì tự đóng lại.",
+            "Tủ lạnh dùng máy nén thường hay có PTC khởi động: lúc nguội điện trở nhỏ, cho dòng vào cuộn đề; nóng lên thì điện trở tăng rất lớn, coi như ngắt cuộn đề.",
+            "Máy nén inverter không dùng tụ hay PTC. Bo inverter cấp điện ba pha cho nó (xem bài 10)."] }
+    ],
+    quiz: [
+      { q: "Đo ba chân máy nén: 1–2 = 3 Ω, 1–3 = 5 Ω, 2–3 = 8 Ω. Chân C là chân nào?", o: ["Chân 1", "Chân 2", "Chân 3", "Không xác định được"], a: 0, why: "Cặp lớn nhất 2–3 là R–S, nên chân còn lại (1) là C." },
+      { q: "Cùng số đo trên (1–2 = 3 Ω, 1–3 = 5 Ω). Chân R là chân nào?", o: ["Chân 1", "Chân 2", "Chân 3", "Chân nào cũng được"], a: 1, why: "C là chân 1. Cặp có C nhỏ hơn là 1–2, đó là C–R, nên R là chân 2." },
+      { q: "Đo từ chân máy nén xuống vỏ thấy vài Ω. Kết luận?", o: ["Bình thường", "Chạm vỏ, không được cho chạy", "Tụ ngậm yếu", "Thiếu gas"], a: 1, why: "Cách điện tốt phải rất lớn (cỡ MΩ). Vài Ω là cuộn dây chạm vỏ." },
+      { q: "Quạt chỉ kêu ù, lấy tay đẩy cánh thì quay được. Nghi ngờ trước tiên?", o: ["Tụ quạt yếu hoặc hỏng", "Thừa gas", "Cảm biến nhiệt hỏng", "Dây nguồn quá dài"], a: 0, why: "Thiếu tụ thì không có từ trường quay để tự khởi động." },
+      { q: "Thay tụ ngậm cho quạt, chọn tụ mới thế nào?", o: ["Điện dung lớn gấp đôi cho khỏe", "Đúng điện dung, điện áp bằng hoặc cao hơn tụ cũ", "Điện áp thấp hơn cũng được", "Tụ nào vừa chỗ là được"], a: 1, why: "Sai điện dung làm động cơ chạy sai; điện áp thấp hơn thì tụ dễ hỏng." }
+    ]
+  },
+  {
+    id: "b9", n: 9, title: "Cảm biến nhiệt NTC",
+    summary: "Điện trở thay đổi theo nhiệt độ, mạch chia áp và cách kiểm tra cảm biến.",
+    labs: ["ntc"],
+    keywords: "cam bien nhiet ntc sensor thermistor nhiet tro dien tro theo nhiet do chia ap 5 v dut chap lech gia tri bang tra",
+    blocks: [
+      { h: "NTC là gì", kw: "ntc la gi nhiet tro he so nhiet am nhiet do tang dien tro giam",
+        p: ["NTC là điện trở thay đổi theo nhiệt độ, có hệ số nhiệt âm: nhiệt độ tăng thì điện trở giảm.",
+            "Bo mạch dùng NTC để biết nhiệt độ ở nhiều chỗ, ví dụ không khí trong phòng, dàn lạnh, dàn nóng, ống đẩy máy nén, ngăn tủ."] },
+      { h: "Đọc giá trị NTC", kw: "gia tri ntc 25 do 10 k he so b 3950 bang nhiet do dien tro",
+        p: ["NTC thường được gọi theo điện trở ở 25 °C, ví dụ NTC 10 kΩ, kèm hệ số B (ví dụ 3950).",
+            "Ví dụ NTC 10 kΩ, B = 3950: khoảng 33,6 kΩ ở 0 °C; 10 kΩ ở 25 °C; khoảng 3,6 kΩ ở 50 °C.",
+            "Mỗi hãng, mỗi vị trí có thể dùng loại khác (5 kΩ, 10 kΩ, 15 kΩ, 20 kΩ...). Luôn tra bảng nhiệt độ – điện trở trong tài liệu service."] },
+      { h: "Mạch chia áp trên bo", kw: "chia ap dien tro co dinh 5 v chip doc dien ap diem giua",
+        p: ["Bo thường nối NTC với một điện trở cố định thành mạch chia áp từ 5 V (hoặc 3,3 V). Chip đọc điện áp ở điểm giữa rồi đổi ra nhiệt độ.",
+            "Ví dụ NTC nối lên 5 V, điện trở cố định Rf nối xuống mass: U giữa = 5 × Rf ÷ (Rf + R_NTC).",
+            "Với cách mắc này, nhiệt độ tăng thì R_NTC giảm nên U giữa tăng. Có bo mắc ngược lại, khi đó xu hướng cũng ngược lại."] },
+      { h: "Đứt, chập và lệch giá trị", kw: "ntc dut chap tuot giac lech gia tri bao loi cam bien hieu sai nhiet do",
+        p: ["Đứt NTC hoặc tuột giắc: với cách mắc ở trên, điện áp điểm giữa về gần 0 V. Chập NTC: lên gần 5 V.",
+            "Giá trị vô lý như vậy thì bo nhận ra và thường báo lỗi cảm biến.",
+            "Khó hơn là NTC bị lệch giá trị: bo vẫn chạy nhưng hiểu sai nhiệt độ, dẫn tới đóng ngắt sai, làm lạnh hoặc xả đá sai."] },
+      { h: "Cách kiểm tra NTC", kw: "kiem tra ntc do dien tro rut giac nhiet ke so bang nam tay",
+        p: ["Rút giắc, đo điện trở NTC. Đồng thời đo nhiệt độ thực tế tại chỗ đặt cảm biến bằng nhiệt kế, rồi so với bảng của hãng.",
+            "Nắm tay vào đầu cảm biến: điện trở phải giảm từ từ, không nhảy lung tung. Không hơ lửa vào cảm biến.",
+            "Có thể cắm giắc và đo điện áp chân tín hiệu so với mass khi bo có điện, cẩn thận các vùng điện cao áp trên bo."] }
+    ],
+    quiz: [
+      { q: "NTC: nhiệt độ tăng thì điện trở thế nào?", o: ["Tăng", "Giảm", "Không đổi", "Về 0"], a: 1, why: "NTC có hệ số nhiệt âm: nóng lên thì điện trở giảm." },
+      { q: "NTC 10 kΩ (B = 3950) đo được khoảng 33 kΩ. Nhiệt độ khoảng?", o: ["0 °C", "25 °C", "50 °C", "80 °C"], a: 0, why: "Điện trở lớn hơn 10 kΩ nghĩa là lạnh hơn 25 °C; khoảng 33,6 kΩ ứng với 0 °C." },
+      { q: "NTC nối lên 5 V, điện trở cố định xuống mass. Tuột giắc NTC thì điện áp điểm giữa?", o: ["Gần 0 V", "Gần 5 V", "2,5 V", "Dao động"], a: 0, why: "Mất đường lên 5 V nên điểm giữa bị kéo xuống mass." },
+      { q: "Kiểm tra NTC đúng cách là?", o: ["Đo điện trở, đo nhiệt độ thực tế rồi so bảng của hãng", "Hơ lửa xem có cháy không", "Đo thông mạch thấy bíp là tốt", "Cấp 220 V thử"], a: 0, why: "NTC tốt phải có điện trở đúng bảng ở nhiệt độ đang đo." },
+      { q: "NTC bị lệch giá trị (vẫn có điện trở nhưng sai). Hậu quả thường gặp?", o: ["Bo luôn báo lỗi ngay", "Bo vẫn chạy nhưng hiểu sai nhiệt độ, đóng ngắt sai", "Máy nén cháy ngay", "Không ảnh hưởng"], a: 1, why: "Giá trị vẫn hợp lý nên bo không nhận ra, chỉ hiểu sai nhiệt độ." }
+    ]
+  },
+  {
+    id: "b10", n: 10, title: "Inverter cơ bản",
+    summary: "Chỉnh lưu ra DC bus, đóng ngắt PWM, tạo ba pha đổi tần số để chỉnh tốc độ máy nén.",
+    labs: ["pwm"],
+    keywords: "inverter bien tan dc bus 310 v igbt ipm pwm do rong xung duty tan so ba pha u v w bldc toc do may nen tiet kiem dien",
+    blocks: [
+      { h: "Inverter khác máy thường ở đâu", kw: "inverter la gi khac may thuong non inverter toc do thay doi tiet kiem dien em",
+        p: ["Máy thường (non-inverter) chỉ bật hoặc tắt máy nén, chạy một tốc độ cố định.",
+            "Máy inverter thay đổi tốc độ máy nén (và quạt) theo nhu cầu: phòng còn nóng thì chạy nhanh, gần đạt nhiệt độ cài đặt thì chạy chậm.",
+            "Nhờ vậy máy chạy êm hơn, nhiệt độ ổn định hơn và tiết kiệm điện hơn."] },
+      { h: "Các khối chính", kw: "khoi chinh loc nhieu chinh luu tu loc dc bus 310 v pfc igbt ipm 6 khoa u v w",
+        p: ["Điện 220 V xoay chiều → lọc nhiễu → cầu chỉnh lưu → tụ lọc lớn tạo điện áp một chiều gọi là DC bus.",
+            "DC bus khoảng 310 V (220 × 1,41). Bo có mạch PFC có thể cao hơn, khoảng 350 đến 400 V.",
+            "DC bus → khối công suất (IGBT hoặc IPM, gồm 6 khóa) → ba dây U, V, W ra máy nén. Chip điều khiển ra lệnh cho các khóa đóng ngắt."] },
+      { h: "PWM: đóng ngắt nhanh để đổi điện áp", kw: "pwm do rong xung duty dien ap trung binh tan so ba pha sin",
+        p: ["Các khóa đóng ngắt hàng nghìn lần mỗi giây. Tỉ lệ thời gian đóng (duty) quyết định điện áp trung bình: duty 50% từ 310 V cho trung bình khoảng 155 V.",
+            "Thay đổi duty theo hình sin và lệch nhau giữa ba pha thì tạo ra dòng xoay chiều ba pha có tần số thay đổi được.",
+            "Tần số càng cao thì động cơ quay càng nhanh."] },
+      { h: "An toàn với bo inverter", kw: "an toan bo inverter tu dc bus giu dien 310 v cho den tat do ve 0 xa tu",
+        p: ["Tụ DC bus giữ khoảng 310 V khá lâu sau khi rút điện.",
+            "Chờ đèn báo trên bo tắt (nếu có), đo điện áp DC bus về gần 0 V rồi mới chạm. Cần xả thì xả qua điện trở công suất như bài 3, không chập.",
+            "Không đo Ω trên bo khi bo còn điện."] },
+      { h: "Đo máy nén inverter", kw: "do may nen inverter ba pha u v w dien tro bang nhau bldc cach dien",
+        p: ["Máy nén inverter là động cơ ba pha (thường là động cơ một chiều không chổi than, BLDC).",
+            "Ba cặp U–V, V–W, W–U có điện trở nhỏ và gần bằng nhau. Một cặp lệch hẳn hoặc không lên là cuộn hỏng.",
+            "Đo cách điện xuống vỏ như máy nén thường. Không cấp trực tiếp 220 V vào máy nén inverter."] }
+    ],
+    quiz: [
+      { q: "Điện 220 V xoay chiều qua chỉnh lưu và tụ lọc, DC bus khoảng bao nhiêu (bo không có PFC)?", o: ["12 V", "155 V", "310 V", "620 V"], a: 2, why: "Điện áp đỉnh = 220 × 1,41 ≈ 310 V." },
+      { q: "DC bus 310 V, khóa đóng 50% thời gian. Điện áp trung bình khoảng?", o: ["0 V", "155 V", "220 V", "310 V"], a: 1, why: "Trung bình = duty × DC bus = 0,5 × 310 = 155 V." },
+      { q: "Đo máy nén inverter: U–V = 1,2 Ω, V–W = 1,2 Ω, W–U = 6 Ω. Kết luận?", o: ["Bình thường", "Một cuộn bất thường, máy nén nghi hỏng", "Thiếu gas", "Cần thêm tụ"], a: 1, why: "Ba cặp phải gần bằng nhau. Một cặp lệch hẳn là cuộn dây có vấn đề." },
+      { q: "Vì sao máy inverter tiết kiệm điện hơn?", o: ["Dùng gas khác", "Chỉnh tốc độ máy nén theo nhu cầu thay vì bật tắt liên tục", "Không có máy nén", "Dùng điện một chiều từ lưới"], a: 1, why: "Chạy chậm khi gần đạt nhiệt độ, tránh bật tắt liên tục." },
+      { q: "Vừa rút điện máy inverter. Trước khi chạm vào bo cần?", o: ["Chạm ngay vì đã rút điện", "Đo DC bus về gần 0 V rồi mới chạm", "Chập hai cực tụ bằng tua vít", "Đo Ω trên tụ"], a: 1, why: "Tụ DC bus còn giữ điện áp cao sau khi rút điện." }
+    ]
+  },
+  {
+    id: "b11", n: 11, title: "An toàn điện khi sửa chữa",
+    summary: "Điện giật, quy trình cắt nguồn, dây tiếp địa, CB chống giật và đo cách điện.",
+    labs: ["doi"],
+    keywords: "an toan dien dien giat cat nguon tiep dia noi dat cb aptomat chong giat rcd elcb do cach dien megom ro dien mot tay",
+    blocks: [
+      { h: "Điện giật nguy hiểm thế nào", kw: "dien giat dong qua nguoi 10 ma 30 ma rung tim tay tay da uot",
+        p: ["Thứ gây hại là dòng điện đi qua người. Khoảng 10 mA đã có thể làm co cơ, khó buông tay. Từ khoảng 30 mA trở lên đi qua ngực có thể gây rối loạn nhịp tim.",
+            "Đường đi qua tim (tay sang tay, tay xuống chân) là nguy hiểm nhất.",
+            "Tay ướt, đứng chân trần trên nền ẩm làm điện trở người giảm, dòng qua người tăng."] },
+      { h: "Quy trình trước khi chạm", kw: "quy trinh cat nguon rut phich ngat cb treo bien xa tu do xac nhan mot tay",
+        p: ["① Cắt nguồn: rút phích hoặc ngắt CB. Giữ phích bên mình hoặc treo biển để không ai cấp điện lại.",
+            "② Xả tụ (bài 3, bài 10).",
+            "③ Đo xác nhận không còn điện, bằng đồng hồ vừa thử trên một nguồn đã biết là có điện.",
+            "Khi buộc phải đo lúc có điện: đứng trên nền khô, thao tác một tay, tháo nhẫn và đồng hồ kim loại, không chạm phần kim loại của que."] },
+      { h: "Dây tiếp địa (nối đất)", kw: "tiep dia noi dat day vang xanh vo kim loai dong ro mat tiep dia",
+        p: ["Vỏ kim loại của thiết bị được nối dây tiếp địa (thường màu vàng sọc xanh).",
+            "Khi dây điện chạm vỏ, dòng rò chạy xuống đất thay vì qua người, đồng thời làm CB chống giật cắt điện.",
+            "Mất tiếp địa thì vỏ có thể mang điện mà không ai biết. Kiểm tra bằng thông mạch giữa vỏ và chân tiếp địa của phích cắm."] },
+      { h: "CB và CB chống giật", kw: "cb aptomat qua tai ngan mach chong giat rcd elcb rcbo 30 ma nhay chong giat",
+        p: ["CB (aptomat) bảo vệ quá tải và ngắn mạch, không bảo vệ người bị giật.",
+            "CB chống giật (RCD, ELCB) so sánh dòng đi trên dây L với dòng về trên dây N. Lệch quá ngưỡng (thường 30 mA để bảo vệ người) thì cắt điện rất nhanh.",
+            "Bật máy là nhảy chống giật: nghi rò điện ra vỏ hoặc bị ẩm. Phải đo cách điện tìm chỗ rò, không được nối tắt bỏ CB."] },
+      { h: "Đo cách điện", kw: "do cach dien megom met 500 v ro dien 1 m om vo day dan",
+        p: ["Dùng đồng hồ đo điện trở cách điện (mêgôm mét, thường thang 500 V) đo giữa dây dẫn và vỏ.",
+            "Thấp hơn mức hãng quy định (thường từ 1 MΩ trở lên) là rò điện, không cho chạy.",
+            "Đồng hồ vạn năng thường đo ở điện áp thấp nên có thể không phát hiện được chỗ rò chỉ xuất hiện ở điện áp cao."] }
+    ],
+    quiz: [
+      { q: "Thứ trực tiếp gây hại khi bị điện giật là?", o: ["Điện áp", "Dòng điện đi qua người", "Công suất thiết bị", "Tần số lưới"], a: 1, why: "Dòng qua người càng lớn và càng đi qua tim thì càng nguy hiểm." },
+      { q: "CB chống giật thường cắt khi dòng rò khoảng?", o: ["30 mA", "3 A", "10 A", "100 A"], a: 0, why: "Ngưỡng 30 mA là mức thường dùng để bảo vệ người." },
+      { q: "Bật máy là CB chống giật nhảy. Nên làm gì?", o: ["Nối tắt bỏ CB cho máy chạy", "Đo cách điện để tìm chỗ rò ra vỏ hoặc chỗ ẩm", "Thay CB lớn hơn", "Bật lại liên tục"], a: 1, why: "CB chống giật nhảy là có rò điện; bỏ CB là mất bảo vệ người." },
+      { q: "Thứ tự đúng trước khi chạm vào bo mạch?", o: ["Chạm thử nhanh rồi cắt nguồn", "Cắt nguồn → xả tụ → đo xác nhận không còn điện", "Xả tụ → chạm → cắt nguồn", "Đo Ω khi còn điện"], a: 1, why: "Cắt nguồn, xả tụ, rồi đo xác nhận bằng đồng hồ đã thử." },
+      { q: "Dây tiếp địa có tác dụng gì?", o: ["Làm máy chạy mạnh hơn", "Dẫn dòng rò xuống đất và giúp CB chống giật cắt điện", "Giảm tiền điện", "Thay cho cầu chì"], a: 1, why: "Khi chạm vỏ, dòng đi xuống đất thay vì qua người." }
+    ]
+  },
+  {
+    id: "b12", n: 12, title: "Gas lạnh: loại gas và cách xử lý an toàn",
+    summary: "R600a, R32, R410A, R22, R134a; nạp đúng loại, đúng thể, đúng khối lượng.",
+    labs: ["lanh"],
+    keywords: "gas lanh moi chat r600a r32 r410a r22 r134a chay no a2l a3 nap gas the long hut chan khong can khoi luong nhan may bong lanh",
+    blocks: [
+      { h: "Các loại gas thường gặp", kw: "loai gas r600a r32 r410a r22 r134a isobutane chay a2l a1 tang ozon",
+        p: ["R600a (isobutane): tủ lạnh gia dụng đời mới, lượng nạp nhỏ, dễ cháy.",
+            "R32: điều hòa đời mới, cháy nhẹ (nhóm A2L), là gas một thành phần.",
+            "R410A: hỗn hợp R32 và R125, không cháy, áp suất làm việc cao hơn R22 khoảng 1,6 lần.",
+            "R22: điều hòa đời cũ, phá hủy tầng ôzôn, đang bị loại bỏ dần. R134a: tủ lạnh đời cũ, điều hòa ô tô."] },
+      { h: "Đọc nhãn máy, đúng loại gas", kw: "nhan may loai gas khoi luong nap gram khong tron gas dau may nen",
+        p: ["Loại gas và khối lượng nạp ghi trên nhãn máy, ví dụ \"R600a 45 g\".",
+            "Phải dùng đúng loại gas ghi trên nhãn. Không trộn gas, không thay bằng gas khác.",
+            "Dầu máy nén đi theo từng loại gas, gas sai có thể làm hỏng dầu và máy nén."] },
+      { h: "Gas hỗn hợp phải nạp ở thể lỏng", kw: "gas hon hop r410a nap the long the hoi lech ti le doc nguoc binh xi phong",
+        p: ["R410A là hỗn hợp: nạp ở thể hơi thì các thành phần bay ra không đều, tỉ lệ trong máy bị lệch.",
+            "Vì vậy R410A phải nạp ở thể lỏng (dốc ngược bình, hoặc bình có ống xi-phông), nạp từ từ.",
+            "R32, R600a, R22 là gas một thành phần nên không bị lệch tỉ lệ."] },
+      { h: "Hút chân không và nạp theo khối lượng", kw: "hut chan khong khong khi hoi am tac am ong mao nap theo khoi luong can gram",
+        p: ["Sau khi hệ thống bị hở, phải hút chân không để loại không khí và hơi ẩm. Hơi ẩm có thể gây tắc ẩm ở ống mao và làm hỏng dầu.",
+            "Nạp lại theo khối lượng trên nhãn bằng cân. Tủ lạnh R600a chỉ nạp vài chục gram nên lệch vài gram cũng ảnh hưởng."] },
+      { h: "An toàn với gas", kw: "an toan gas chay thong gio khong lua den kho bong lanh kinh gang tay thu hoi",
+        p: ["R600a và R32 cháy được: làm ở nơi thông gió, không có lửa, không hút thuốc gần đó.",
+            "Không dùng đèn khò khi trong hệ thống còn gas. Dùng dụng cụ phù hợp với gas cháy.",
+            "Gas lỏng phun vào da gây bỏng lạnh: đeo kính và găng tay.",
+            "Không xả gas bừa bãi ra môi trường, thu hồi theo quy định."] }
+    ],
+    quiz: [
+      { q: "Tủ lạnh ghi nhãn \"R600a\". Đặc điểm cần chú ý nhất?", o: ["Không cháy", "Dễ cháy, lượng nạp nhỏ", "Phải nạp thể lỏng vì là hỗn hợp", "Dùng chung được với R22"], a: 1, why: "R600a là isobutane, dễ cháy, nạp chỉ vài chục gram." },
+      { q: "Vì sao R410A phải nạp ở thể lỏng?", o: ["Cho nhanh", "Là hỗn hợp, nạp thể hơi làm lệch tỉ lệ thành phần", "Vì R410A dễ cháy", "Không cần, nạp kiểu gì cũng được"], a: 1, why: "Các thành phần bay hơi không đều nên phải nạp lỏng." },
+      { q: "Sau khi hàn lại đường ống, trước khi nạp gas cần?", o: ["Nạp ngay cho kịp", "Hút chân không để loại không khí và hơi ẩm", "Thổi bằng miệng", "Nạp gas khác để thử"], a: 1, why: "Không khí và hơi ẩm làm hệ thống chạy kém và có thể gây tắc ẩm." },
+      { q: "Nạp gas cho tủ lạnh R600a nên dựa vào?", o: ["Cảm giác tay", "Khối lượng ghi trên nhãn, đo bằng cân", "Nạp đầy bình", "Nghe tiếng máy nén"], a: 1, why: "Lượng nạp rất nhỏ, phải cân đúng khối lượng." },
+      { q: "Khi làm việc với gas R32 cần?", o: ["Thông gió, không có lửa gần đó", "Dùng đèn khò khi còn gas", "Xả gas trong phòng kín", "Không cần chú ý gì"], a: 0, why: "R32 cháy nhẹ (A2L), phải tránh nguồn lửa." }
+    ]
   }
 ];
 
@@ -221,5 +441,28 @@ window.GLOSSARY = [
   { t: "Áp cao / áp thấp", k: "ap cao ap thap", d: "Hai phía áp suất của hệ thống lạnh: áp cao từ máy nén tới van tiết lưu, áp thấp từ van tiết lưu về máy nén.", l: "b5" },
   { t: "Transistor", k: "transistor npn", d: "Linh kiện dùng như công tắc hoặc bộ khuếch đại: dòng nhỏ ở chân B điều khiển dòng lớn giữa C và E.", l: "b6" },
   { t: "Relay (rơ-le)", k: "relay role", d: "Công tắc điều khiển bằng cuộn dây: cuộn có dòng thì tiếp điểm đóng. Cách ly mạch điều khiển với mạch tải.", l: "b6" },
-  { t: "Diode dập xung", k: "diode dap xung flyback", d: "Diode mắc song song cuộn relay để hấp thụ xung điện áp lúc ngắt, bảo vệ transistor.", l: "b6" }
+  { t: "Diode dập xung", k: "diode dap xung flyback", d: "Diode mắc song song cuộn relay để hấp thụ xung điện áp lúc ngắt, bảo vệ transistor.", l: "b6" },
+  { t: "Ampe kìm", k: "ampe kim kep dong", d: "Đồng hồ đo dòng bằng cách kẹp quanh một dây, không cần cắt mạch. Kẹp cả hai dây L và N thì hiện gần 0.", l: "b7" },
+  { t: "Thông mạch", k: "thong mach bip", d: "Thang đo kêu bíp khi điện trở rất nhỏ. Dùng để kiểm tra dây có bị đứt không, phải cắt nguồn trước.", l: "b7" },
+  { t: "Cổng COM", k: "cong com que den", d: "Cổng chung của đồng hồ vạn năng, luôn cắm que đen.", l: "b7" },
+  { t: "Cuộn chạy, cuộn đề", k: "cuon chay cuon de run start", d: "Hai cuộn của động cơ một pha. Cuộn đề cùng với tụ giúp động cơ tự khởi động.", l: "b8" },
+  { t: "Tụ ngậm (tụ chạy)", k: "tu ngam tu chay run capacitor", d: "Tụ nối suốt khi động cơ chạy, điện dung nhỏ, thường vài µF đến vài chục µF.", l: "b8" },
+  { t: "Tụ đề (tụ khởi động)", k: "tu de tu khoi dong start capacitor", d: "Tụ điện dung lớn chỉ nối lúc khởi động rồi được ngắt ra.", l: "b8" },
+  { t: "Chân C, R, S", k: "chan c r s chung chay de may nen", d: "Ba chân máy nén một pha: chung, chạy, đề. Cặp R–S có điện trở lớn nhất.", l: "b8" },
+  { t: "Chạm vỏ", k: "cham vo ro vo", d: "Cuộn dây hoặc dây dẫn bị thông xuống vỏ kim loại. Nguy hiểm điện giật, không được cho chạy.", l: "b8" },
+  { t: "Rơ-le nhiệt (OLP)", k: "ro le nhiet olp bao ve qua tai", d: "Bảo vệ máy nén, ngắt khi quá nóng hoặc quá dòng, nguội thì tự đóng lại.", l: "b8" },
+  { t: "PTC khởi động", k: "ptc khoi dong tu lanh", d: "Linh kiện có điện trở tăng mạnh khi nóng, dùng để cấp điện cuộn đề lúc khởi động rồi tự ngắt.", l: "b8" },
+  { t: "NTC (cảm biến nhiệt)", k: "ntc cam bien nhiet sensor thermistor", d: "Điện trở giảm khi nhiệt độ tăng. Bo đọc giá trị này để biết nhiệt độ.", l: "b9" },
+  { t: "Mạch chia áp", k: "chia ap", d: "Hai điện trở nối tiếp giữa nguồn và mass; điện áp ở điểm giữa phụ thuộc tỉ lệ hai điện trở.", l: "b9" },
+  { t: "Inverter", k: "inverter bien tan", d: "Bộ điều khiển thay đổi tốc độ máy nén bằng cách tạo điện ba pha có tần số thay đổi được.", l: "b10" },
+  { t: "DC bus", k: "dc bus dien ap mot chieu 310", d: "Điện áp một chiều sau chỉnh lưu và tụ lọc trên bo inverter, khoảng 310 V với lưới 220 V.", l: "b10" },
+  { t: "PWM (độ rộng xung)", k: "pwm do rong xung duty", d: "Đóng ngắt nhanh; tỉ lệ thời gian đóng (duty) quyết định điện áp trung bình.", l: "b10" },
+  { t: "IGBT / IPM", k: "igbt ipm khoi cong suat", d: "Khóa bán dẫn công suất đóng ngắt DC bus ra ba pha U, V, W cho máy nén inverter.", l: "b10" },
+  { t: "Dây tiếp địa", k: "tiep dia noi dat day vang xanh", d: "Dây nối vỏ kim loại xuống đất để dẫn dòng rò, bảo vệ người.", l: "b11" },
+  { t: "CB chống giật (RCD, ELCB)", k: "cb chong giat rcd elcb rcbo", d: "Cắt điện khi dòng đi và dòng về lệch nhau quá ngưỡng, thường 30 mA.", l: "b11" },
+  { t: "Mêgôm mét", k: "megom met do cach dien megger", d: "Đồng hồ đo điện trở cách điện ở điện áp cao (thường 500 V).", l: "b11" },
+  { t: "R600a", k: "r600a isobutane", d: "Gas lạnh dùng cho tủ lạnh, dễ cháy, lượng nạp nhỏ.", l: "b12" },
+  { t: "R32", k: "r32", d: "Gas lạnh một thành phần dùng cho điều hòa đời mới, cháy nhẹ (A2L).", l: "b12" },
+  { t: "R410A", k: "r410a", d: "Gas hỗn hợp cho điều hòa, áp suất cao, phải nạp ở thể lỏng.", l: "b12" },
+  { t: "Hút chân không", k: "hut chan khong", d: "Rút không khí và hơi ẩm ra khỏi hệ thống lạnh trước khi nạp gas.", l: "b12" }
 ];

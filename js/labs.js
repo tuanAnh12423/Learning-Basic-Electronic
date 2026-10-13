@@ -805,6 +805,210 @@ labs.tim=(function(){
   return {resize:function(){}};
 })();
 
+/* nút chọn 1 trong nhóm (aria-pressed) — dùng cho các mô phỏng mới */
+function pickGroup(sel,cb){
+  var box=$(sel);
+  box.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!box.contains(b))return;
+    Array.prototype.forEach.call(box.querySelectorAll('button'),function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});cb(b.dataset.v)});
+  return {clear:function(){Array.prototype.forEach.call(box.querySelectorAll('button'),function(x){x.setAttribute('aria-pressed','false')})}};
+}
+
+/* ================= 11. CHỌN THANG ĐO (bài 7) ================= */
+labs.vom=(function(){
+  var MN={vdc:'V⎓',vac:'V~',a:'A',ohm:'Ω',beep:'thông mạch'},HN={par:'song song',ser:'nối tiếp',off:'cắt nguồn, xả tụ rồi đo'};
+  var T=[
+    {t:'Đo điện áp ổ cắm trong nhà.',m:'vac',h:'par',live:1,k:'ac',val:'221',u:'V~'},
+    {t:'Đo điện áp pin 9 V trước khi lắp vào máy.',m:'vdc',h:'par',live:1,k:'dc',val:'9,21',u:'V⎓'},
+    {t:'Đo rail 12 V trên bo điều khiển đang có điện.',m:'vdc',h:'par',live:1,k:'dc',val:'12,08',u:'V⎓'},
+    {t:'Đo điện áp bo cấp ra giắc quạt dàn nóng khi máy đang chạy.',m:'vac',h:'par',live:1,k:'ac',val:'218',u:'V~'},
+    {t:'Đo dòng qua một quạt 12 V nhỏ đang chạy trên bàn thử (không có ampe kìm).',m:'a',h:'ser',live:1,k:'cur',val:'0,182',u:'A'},
+    {t:'Đo điện trở cuộn dây quạt đã tháo khỏi máy.',m:'ohm',h:'off',live:0,k:'res',val:'245',u:'Ω'},
+    {t:'Kiểm tra một sợi dây nguồn có bị đứt ngầm bên trong không.',m:'beep',h:'off',live:0,k:'cont',val:'0,3',u:'Ω  bíp'},
+    {t:'Đo điện trở cảm biến NTC sau khi rút giắc khỏi bo.',m:'ohm',h:'off',live:0,k:'res',val:'10,2',u:'kΩ'}
+  ];
+  var i=-1,m=null,h=null,ok=0,n=0,lcd=$('#vom-lcd'),fb=$('#vom-fb');
+  var gm=pickGroup('#vom-mode',function(v){m=v}),gh=pickGroup('#vom-how',function(v){h=v});
+  function setLcd(txt,unit,bad){lcd.innerHTML='';lcd.appendChild(document.createTextNode(txt));if(unit){var s=document.createElement('small');s.textContent=unit;lcd.appendChild(s)}lcd.style.color=bad?'#FF8A80':''}
+  function next(){var k;do{k=Math.floor(Math.random()*T.length)}while(k===i&&T.length>1);i=k;m=h=null;gm.clear();gh.clear();
+    $('#vom-task').textContent=T[i].t;setLcd('— — —');fb.hidden=true}
+  function judge(){
+    var t=T[i],res;
+    if(!m||!h){fb.hidden=false;fb.textContent='Chọn thang đo và cách nối trước khi đo.';return}
+    var right='Cách đúng: thang '+MN[t.m]+', '+HN[t.h]+'.';
+    if(m===t.m&&h===t.h)res={ok:1,l:[t.val,t.u],msg:'Đúng. '+right};
+    else if(t.k==='cont'&&m==='ohm'&&h==='off')res={ok:1,l:['0,3','Ω'],msg:'Được. Dây tốt đo khoảng 0 Ω. Thang thông mạch nhanh hơn vì có tiếng bíp, không cần nhìn số.'};
+    else if(m==='a'&&h==='par'&&t.live)res={l:['FUSE',''],bad:1,msg:'NGUY HIỂM. Thang A có điện trở rất nhỏ, đặt song song vào chỗ có điện là chập nguồn qua đồng hồ: cháy cầu chì đồng hồ, có thể nổ. Đo dòng phải nối tiếp, hoặc dùng ampe kìm kẹp một dây.'};
+    else if((m==='ohm'||m==='beep')&&h!=='off'&&t.live)res={l:['Err',''],bad:1,msg:'Đo Ω hoặc thông mạch khi mạch còn điện: số đo sai và có thể hỏng đồng hồ. Cắt nguồn, xả tụ trước.'};
+    else if((m==='vdc'||m==='vac'||m==='a')&&h==='off')res={l:['0,00',m==='a'?'A':MN[m]],msg:'Đã cắt nguồn thì không còn điện áp hay dòng để đo: đồng hồ hiện 0, dễ kết luận nhầm là mất điện.'};
+    else if((m==='vdc'||m==='vac')&&h==='ser')res={l:['?',''],msg:'Mắc vôn kế nối tiếp: đồng hồ có điện trở rất lớn nên chặn dòng, tải không chạy, số hiện không phải điện áp cần đo. Đo điện áp thì mắc song song.'};
+    else if(t.k==='ac'&&m==='vdc')res={l:['0,3','V⎓'],msg:'Điện xoay chiều mà để V⎓: số hiện gần 0 hoặc nhảy lung tung, dễ kết luận sai là mất điện.'};
+    else if(t.k==='dc'&&m==='vac')res={l:['0,0','V~'],msg:'Điện một chiều mà để V~: số hiện sai (thường gần 0 hoặc lệch).'};
+    else if(t.k==='res'&&m==='beep')res={l:['OL',''],msg:'Thang thông mạch chỉ cho biết thông hay đứt. Muốn đọc giá trị điện trở thì dùng thang Ω.'};
+    else if(t.k==='cur'&&(m==='vdc'||m==='vac'))res={l:['12,0','V⎓'],msg:'Bạn đang đo điện áp, không phải dòng điện.'};
+    else if(m==='a'&&h==='ser'&&t.k!=='cur')res={l:['0,00','A'],msg:'Thang A nối tiếp chỉ dùng để đo dòng. Việc này không phải đo dòng.'};
+    else if(!t.live&&m==='a')res={l:['0,00','A'],msg:'Không có nguồn nên không có dòng để đo.'};
+    else res={l:['?',''],msg:'Chưa đúng.'};
+    n++;if(res.ok)ok++;
+    setLcd(res.l[0],res.l[1],res.bad);
+    fb.hidden=false;fb.innerHTML='';var b=document.createElement('b');b.className=res.ok?'good':'badc';b.textContent=res.ok?'✓ ':'✗ ';fb.appendChild(b);
+    fb.appendChild(document.createTextNode(res.msg+(res.ok?'':' '+right)));
+    $('#vom-sc').textContent='Đúng '+ok+'/'+n+' lần đo';
+    try{fb.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){}
+  }
+  $('#vom-go').addEventListener('click',judge);$('#vom-new').addEventListener('click',next);
+  next();
+  return {resize:function(){}};
+})();
+
+/* ================= 12. BA CHÂN MÁY NÉN (bài 8) ================= */
+labs.nen=(function(){
+  var svg=$('#nen-svg'),lcd=$('#nen-lcd'),fb=$('#nen-fb'),P={1:[120,78],2:[220,78],3:[170,150]},G=[300,110];
+  var role,rcr,rcs,fault,openW,gnd,meas,sel,ans;
+  var gc=pickGroup('#nen-c',function(v){ans.c=v}),gr=pickGroup('#nen-r',function(v){ans.r=v}),gs=pickGroup('#nen-st',function(v){ans.s=v});
+  function r1(x){return Math.round(x*10)/10}
+  function fmt(v){return v===Infinity?'OL':nf(v,1)+' Ω'}
+  function pairVal(a,b){
+    var s=[role[a],role[b]].sort().join('');
+    if(fault==='open'&&s.indexOf(openW)>=0)return Infinity;
+    return s==='CR'?rcr:s==='CS'?rcs:r1(rcr+rcs);
+  }
+  function draw(){
+    var s='<circle cx="170" cy="105" r="80" fill="'+PAL.surface+'" stroke="'+PAL.muted+'" stroke-width="2"/>'+
+      '<text class="tm-t" x="170" y="20" text-anchor="middle">Cụm chân máy nén</text>'+
+      '<rect x="'+(G[0]-10)+'" y="'+(G[1]-26)+'" width="44" height="52" rx="6" fill="'+PAL.soft+'" stroke="'+PAL.muted+'"/>'+
+      '<text class="tm-s" x="'+(G[0]+12)+'" y="'+(G[1]+4)+'" text-anchor="middle">Vỏ</text>';
+    if(sel){
+      var a=sel==='g'?P[1]:P[sel[0]],b=sel==='g'?[G[0]-10,G[1]]:P[sel[1]];
+      s+='<line x1="20" y1="190" x2="'+a[0]+'" y2="'+a[1]+'" stroke="'+PAL.bad+'" stroke-width="3"/>'+
+         '<line x1="330" y1="190" x2="'+b[0]+'" y2="'+b[1]+'" stroke="'+PAL.ink+'" stroke-width="3"/>';
+    }
+    [1,2,3].forEach(function(k){s+='<circle class="tm-b" cx="'+P[k][0]+'" cy="'+P[k][1]+'" r="17"/><text class="tm-s" x="'+P[k][0]+'" y="'+(P[k][1]+4)+'" text-anchor="middle" style="font-size:14px">'+k+'</text>'});
+    svg.innerHTML=s;
+    var rd=[['1–2','12'],['1–3','13'],['2–3','23'],['Xuống vỏ','g']].map(function(x){return '<div><small>'+x[0]+'</small><b>'+(meas[x[1]]||'chưa đo')+'</b></div>'}).join('');
+    $('#nen-read').innerHTML=rd;
+  }
+  function measure(p){
+    sel=p;var txt,unit='';
+    if(p==='g'){txt=fault==='case'?nf(gnd,1):'>100';unit=fault==='case'?'kΩ':'MΩ';meas.g=txt+' '+unit}
+    else{var v=pairVal(+p[0],+p[1]);txt=v===Infinity?'OL':nf(v,1);unit=v===Infinity?'':'Ω';meas[p]=fmt(v)}
+    lcd.innerHTML='';lcd.appendChild(document.createTextNode(txt));if(unit){var sm=document.createElement('small');sm.textContent=unit;lcd.appendChild(sm)}
+    draw();
+    try{lcd.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){}
+  }
+  function pinOf(r){for(var k=1;k<=3;k++)if(role[k]===r)return String(k)}
+  function check(){
+    fb.hidden=false;
+    if(!ans.s){fb.textContent='Chọn tình trạng máy nén (và chân C, R nếu xác định được).';return}
+    var okS=ans.s===fault,msg=[],okC=true;
+    if(fault!=='open'){
+      if(!ans.c||!ans.r){fb.textContent='Chọn cả chân C và chân R.';return}
+      okC=ans.c===pinOf('C')&&ans.r===pinOf('R');
+      msg.push((okC?'✓ ':'✗ ')+'Chân C là '+pinOf('C')+', chân R là '+pinOf('R')+', chân S là '+pinOf('S')+'. C–R = '+fmt(rcr)+', C–S = '+fmt(rcs)+', R–S = '+fmt(r1(rcr+rcs))+' (bằng tổng hai cặp kia).');
+    }else msg.push('Đứt cuộn '+(openW==='S'?'đề':'chạy')+': hai cặp hiện OL. Khi đứt một cuộn thì không đủ số đo để chắc chắn chân C và R, điều quan trọng là phát hiện được cuộn đứt.');
+    msg.push((okS?'✓ ':'✗ ')+(fault==='ok'?'Cuộn dây tốt, cách điện xuống vỏ rất lớn.':fault==='case'?'Chạm vỏ: đo xuống vỏ chỉ '+nf(gnd,1)+' kΩ, phải rất lớn (cỡ MΩ). Không được cho chạy, nguy hiểm điện giật.':'Đứt cuộn: có cặp đo không lên (OL).'));
+    if(!meas.g&&fault!=='open')msg.push('Lưu ý: bạn chưa đo xuống vỏ. Luôn đo cách điện trước khi cho máy nén chạy.');
+    fb.innerHTML='';msg.forEach(function(t){var p=document.createElement('p');p.style.margin='0 0 6px';p.textContent=t;fb.appendChild(p)});
+    var head=document.createElement('b');head.className=okS&&okC?'good':'badc';head.textContent=okS&&okC?'Kết luận đúng.':'Chưa đúng hết.';fb.insertBefore(head,fb.firstChild);
+    try{fb.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){}
+  }
+  function reset(){
+    var perm=[['C','R','S'],['C','S','R'],['R','C','S'],['R','S','C'],['S','C','R'],['S','R','C']][Math.floor(Math.random()*6)];
+    role={1:perm[0],2:perm[1],3:perm[2]};rcr=r1(1.5+Math.random()*3);rcs=r1(rcr*(1.4+Math.random()*0.8));
+    var x=Math.random();fault=x<0.6?'ok':x<0.8?'open':'case';openW=Math.random()<0.5?'S':'R';gnd=0.5+Math.random()*4;
+    meas={};sel=null;ans={};gc.clear();gr.clear();gs.clear();fb.hidden=true;lcd.textContent='— — —';draw();
+  }
+  $('#nen-pairs').addEventListener('click',function(e){var b=e.target.closest('button');if(b)measure(b.dataset.p)});
+  $('#nen-chk').addEventListener('click',check);$('#nen-new').addEventListener('click',reset);
+  reset();
+  return {resize:function(){draw()}};
+})();
+
+/* ================= 13. NTC + CHIA ÁP (bài 9) ================= */
+labs.ntc=(function(){
+  var c=$('#ntc-c'),g,w,h,B=3950,R25=10000,fault='ok',tS=$('#ntc-t'),T=25;
+  function rAt(t){return R25*Math.exp(B*(1/(t+273.15)-1/298.15))}
+  function rNow(){var r=rAt(T);return fault==='open'?Infinity:fault==='short'?0:fault==='drift'?r*1.6:r}
+  function uOf(r){return r===Infinity?0:5*R25/(R25+r)}
+  function tOf(u){var r=R25*(5/u-1);return 1/(1/298.15+Math.log(r/R25)/B)-273.15}
+  function upd(){
+    T=+tS.value;var r=rNow(),u=uOf(r),w2=$('#ntc-warn');
+    $('#ntc-tv').textContent=T+' °C';$('#ntc-r').textContent=r===Infinity?'∞ (hở)':si(r,'Ω',3);$('#ntc-u').textContent=nf(u,2)+' V';
+    var bo;
+    if(u<0.1)bo='Lỗi cảm biến (hở)';else if(u>4.9)bo='Lỗi cảm biến (chập)';else bo=nf(tOf(u),0)+' °C';
+    $('#ntc-b').textContent=bo;
+    $('#ntc-fm').textContent='R_NTC ở '+T+' °C = '+(r===Infinity?'∞':si(r,'Ω',3))+'\nU = 5 × Rf ÷ (Rf + R_NTC) = 5 × '+si(R25,'Ω',2)+' ÷ ('+si(R25,'Ω',2)+' + '+(r===Infinity?'∞':si(r,'Ω',3))+') = '+nf(u,2)+' V';
+    if(fault==='open'){w2.hidden=false;w2.textContent='Đứt NTC hoặc tuột giắc: điểm giữa bị kéo xuống mass, gần 0 V. Bo thấy giá trị vô lý nên thường báo lỗi cảm biến.'}
+    else if(fault==='short'){w2.hidden=false;w2.textContent='Chập NTC: điểm giữa lên sát 5 V. Bo thấy giá trị vô lý nên thường báo lỗi cảm biến.'}
+    else if(fault==='drift'){w2.hidden=false;w2.textContent='NTC lệch giá trị (ở đây lớn hơn bảng 60%): bo không báo lỗi nhưng hiểu là '+bo+' trong khi thật là '+T+' °C. Máy sẽ đóng ngắt sai. Chỉ phát hiện được bằng cách đo điện trở và so bảng.'}
+    else w2.hidden=true;
+    if(g)draw();
+  }
+  function draw(){
+    g.clearRect(0,0,w,h);var L=40,Rr=24,Tp=14,Bt=28,pw=w-L-Rr,ph=h-Tp-Bt,i;
+    function X(t){return L+pw*(t+20)/100}function Y(u){return Tp+ph*(1-u/5)}
+    g.fillStyle=PAL.bad;g.globalAlpha=0.1;g.fillRect(L,Y(5),pw,Y(4.9)-Y(5));g.fillRect(L,Y(0.1),pw,Y(0)-Y(0.1));g.globalAlpha=1;
+    g.font='11px '+FONT;g.lineWidth=1;
+    for(i=-20;i<=80;i+=20){g.strokeStyle=PAL.line;g.beginPath();g.moveTo(X(i),Tp);g.lineTo(X(i),Tp+ph);g.stroke();g.fillStyle=PAL.muted;g.textAlign='center';g.fillText(i+' °C',X(i),h-10)}
+    for(i=0;i<=5;i++){g.strokeStyle=PAL.line;g.beginPath();g.moveTo(L,Y(i));g.lineTo(L+pw,Y(i));g.stroke();g.fillStyle=PAL.muted;g.textAlign='right';g.fillText(i+' V',L-4,Y(i)+4)}
+    function curve(f,col,dash){g.strokeStyle=col;g.lineWidth=2.5;g.setLineDash(dash||[]);g.beginPath();for(var t=-20;t<=80;t+=1){var u=uOf(f(t));g[t===-20?'moveTo':'lineTo'](X(t),Y(u))}g.stroke();g.setLineDash([])}
+    curve(rAt,PAL.volt);
+    if(fault==='drift')curve(function(t){return rAt(t)*1.6},PAL.bad,[5,4]);
+    var u=uOf(rNow());g.fillStyle=fault==='ok'?PAL.ok:PAL.bad;g.beginPath();g.arc(X(T),Y(u),6,0,6.2832);g.fill();
+    g.fillStyle=PAL.muted;g.textAlign='left';g.fillText('U điểm giữa (bình thường)',L+6,Tp+12);
+    if(fault==='drift'){g.fillStyle=PAL.bad;g.fillText('NTC lệch giá trị',L+6,Tp+26)}
+  }
+  function resize(){var f=fit(c,0.6);g=f.g;w=f.w;h=f.h;upd()}
+  tS.addEventListener('input',upd);
+  pickGroup('#ntc-type',function(v){R25=+v;upd()});
+  pickGroup('#ntc-f',function(v){fault=v;upd()});
+  upd();
+  return {resize:resize};
+})();
+
+/* ================= 14. INVERTER / PWM (bài 10) ================= */
+labs.pwm=(function(){
+  var c1=$('#pwm-c'),c3=$('#pwm-3'),g1,w1,h1,g3,w3,h3,dS=$('#pwm-d'),fS=$('#pwm-f'),ph=0,rot=0,VB=310;
+  function upd(){
+    var d=+dS.value,f=+fS.value;
+    $('#pwm-dv').textContent=d+' %';$('#pwm-avg').textContent=Math.round(VB*d/100)+' V';
+    $('#pwm-fv').textContent=f+' Hz';$('#pwm-rpm').textContent=f?Math.round(60*f/2)+' vòng/phút':'Dừng';
+    $('#pwm-lv').textContent=f===0?'Dừng':f<25?'Chậm, êm':f<70?'Trung bình':'Nhanh (phòng còn nóng)';
+    if(g1)draw1();
+  }
+  function draw1(){
+    var g=g1,w=w1,h=h1,L=40,Rr=10,T=14,B=22,pw=w-L-Rr,ph2=h-T-B,d=+dS.value/100,n=6,i;
+    g.clearRect(0,0,w,h);function Y(v){return T+ph2*(1-v/VB)}
+    g.font='11px '+FONT;g.fillStyle=PAL.muted;g.textAlign='right';g.fillText('310 V',L-4,Y(VB)+4);g.fillText('0',L-4,Y(0)+4);
+    g.strokeStyle=PAL.line;g.lineWidth=1;g.beginPath();g.moveTo(L,Y(0));g.lineTo(L+pw,Y(0));g.stroke();
+    g.strokeStyle=PAL.volt;g.lineWidth=2.5;g.beginPath();g.moveTo(L,Y(0));
+    for(i=0;i<n;i++){var x0=L+pw*i/n,x1=x0+pw/n*d,x2=L+pw*(i+1)/n;if(d>0){g.lineTo(x0,Y(0));g.lineTo(x0,Y(VB));g.lineTo(x1,Y(VB));g.lineTo(x1,Y(0))}g.lineTo(x2,Y(0))}
+    g.stroke();
+    g.strokeStyle=PAL.amp;g.setLineDash([6,4]);g.lineWidth=2;g.beginPath();g.moveTo(L,Y(VB*d));g.lineTo(L+pw,Y(VB*d));g.stroke();g.setLineDash([]);
+    var lb='trung bình '+Math.round(VB*d)+' V',ly=clamp(Y(VB*d)-6,T+12,Y(0)-6),lw=g.measureText(lb).width;
+    g.fillStyle=PAL.surface;g.fillRect(L+pw-lw-10,ly-11,lw+8,15);g.fillStyle=PAL.amp;g.textAlign='right';g.fillText(lb,L+pw-6,ly);
+    g.fillStyle=PAL.muted;g.textAlign='center';g.fillText('đóng '+Math.round(d*100)+'% mỗi chu kỳ',L+pw/2,h-6);
+  }
+  function draw3(){
+    var g=g3,w=w3,h=h3,f=+fS.value,sw=w*0.64,cy=h/2,amp=(h*0.38)*Math.max(0.15,f/120),cols=[PAL.bad,PAL.ok,PAL.volt],names=['U','V','W'],k,x;
+    g.clearRect(0,0,w,h);
+    g.strokeStyle=PAL.line;g.lineWidth=1;g.beginPath();g.moveTo(8,cy);g.lineTo(sw,cy);g.stroke();
+    var cyc=1+f/40;
+    for(k=0;k<3;k++){g.strokeStyle=cols[k];g.lineWidth=2;g.beginPath();
+      for(x=0;x<=sw-8;x+=2){var a=2*Math.PI*cyc*x/(sw-8)-ph-k*2*Math.PI/3;g[x?'lineTo':'moveTo'](8+x,cy-(f?amp*Math.sin(a):0))}g.stroke();
+      g.fillStyle=cols[k];g.font='600 12px '+FONT;g.textAlign='left';g.fillText(names[k],8+k*22,14)}
+    var rx=sw+(w-sw)/2,R=Math.min((w-sw)/2-8,h*0.4);
+    g.strokeStyle=PAL.muted;g.lineWidth=2;g.beginPath();g.arc(rx,cy,R,0,6.2832);g.stroke();
+    g.fillStyle=PAL.soft;g.beginPath();g.arc(rx,cy,R*0.62,0,6.2832);g.fill();
+    g.strokeStyle=PAL.ink;g.lineWidth=3;g.beginPath();g.moveTo(rx-Math.cos(rot)*R*0.55,cy-Math.sin(rot)*R*0.55);g.lineTo(rx+Math.cos(rot)*R*0.55,cy+Math.sin(rot)*R*0.55);g.stroke();
+    g.fillStyle=PAL.bad;g.beginPath();g.arc(rx+Math.cos(rot)*R*0.55,cy+Math.sin(rot)*R*0.55,5,0,6.2832);g.fill();
+    g.fillStyle=PAL.muted;g.font='11px '+FONT;g.textAlign='center';g.fillText('rô-to',rx,h-4);
+  }
+  function resize(){var a=fit(c1,0.42);g1=a.g;w1=a.w;h1=a.h;var b=fit(c3,0.45);g3=b.g;w3=b.w;h3=b.h;upd();draw3()}
+  [dS,fS].forEach(function(e){e.addEventListener('input',upd)});
+  upd();
+  return {resize:resize,frame:function(dt){if(!g3)return;var f=+fS.value;ph+=dt*f*0.08;rot+=dt*f*0.08;draw3()}};
+})();
+
 window.Labs={enter:function(id){show(labs[id]?id:curId)},leave:function(){cur=null}};
 requestAnimationFrame(function(t){last=t;loop(t)});
 })();
