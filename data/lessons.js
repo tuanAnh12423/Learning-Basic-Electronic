@@ -174,16 +174,32 @@ window.LESSONS = [
         p: ["Relay gồm cuộn dây và tiếp điểm. Cuộn có dòng thì hút, tiếp điểm đóng và tải (quạt, máy nén) chạy.",
             "Relay cách ly mạch điều khiển điện áp thấp với mạch tải điện áp cao.",
             "Ví dụ: cuộn relay 12 V có điện trở 400 Ω thì dòng qua cuộn là 12 ÷ 400 = 30 mA."] },
+      { h: "Nguồn 12 V và hai đường trên board", kw: "nguon 12v rail hai duong lenh dien khoi nguon cau chinh luu tu loc board quat",
+        p: ["Board chỉ làm một việc: bật quạt. Nó có hai đường riêng. Đường LỆNH (điện nhỏ): chip → transistor → cuộn relay. Đường ĐIỆN (220 V): điện nhà → tiếp điểm relay → giắc → quạt.",
+            "Điện 12 V cho cuộn relay (gọi là rail 12 V) đến từ khối nguồn trên board: điện nhà → hạ áp → cầu chỉnh lưu → tụ lọc (Bài 4). Con số 12 V chỉ là ví dụ: máy thật đọc điện áp ghi trên thân relay.",
+            "Relay là một công tắc lớn do nam châm (cuộn) bấm giúp. Chip yếu không bật nổi điện nhà nên phải nhờ relay."],
+        img: { src: "img/b6-hai-duong.png", alt: "Hai đường trên board: đường lệnh gồm chip, transistor, cuộn relay; đường điện gồm điện nhà, tiếp điểm relay, giắc, quạt", cap: "Hai đường trên board và cách tìm chỗ đứt" } },
+      { h: "Sơ đồ đầy đủ bo điều khiển quạt", kw: "so do day du bo dieu khien quat diem do so do binh thuong khoi nguon khoi lenh khoi dien quat",
+        p: ["Ba khối: nguồn (đổi điện nhà thành 12 V), lệnh (chip bật transistor, cuộn hút), điện quạt (qua tiếp điểm tới giắc). Các số 1 đến 8 là điểm đo, trùng với mô phỏng Tìm lỗi quạt.",
+            "Số đo bình thường: 1 nguồn vào 220 V, 2 rail 12 V, 3 B–E ≈ 0,7 V, 4 hai đầu cuộn ≈ 12 V khi đã hút, 5 COM 220 V, 6 NO 220 V khi đã hút, 7 giắc 220 V, 8 dây N khoảng 0 Ω khi tắt điện."],
+        img: { src: "img/b6-so-do-day-du.png", alt: "Sơ đồ đầy đủ bo điều khiển quạt gồm khối nguồn, khối lệnh, khối điện quạt và 8 điểm đo", cap: "Sơ đồ đầy đủ với 8 điểm đo" } },
       { h: "Diode dập xung", kw: "diode dap xung flyback xung dien ap ngat cuon bao ve transistor",
         p: ["Diode mắc song song với cuộn relay, ngược chiều với nguồn. Khi tắt dòng, cuộn sinh ra xung điện áp cao, diode hấp thụ xung này để bảo vệ transistor.",
-            "Mất diode thì xung ở chân C lúc ngắt rất cao và có thể làm hỏng transistor."] },
+            "Mất diode thì xung ở chân C lúc ngắt rất cao và có thể làm hỏng transistor.",
+            "Khi transistor vừa tắt, dòng của cuộn chạy vòng qua diode nên chân C chỉ lên khoảng 12 V + 0,7 V = 12,7 V, rồi về 12 V khi hết dòng."],
+        img: { src: "img/b6-dong-dien.png", alt: "Dòng điện khi transistor đang bật chạy từ rail qua cuộn xuống mass, và khi vừa tắt chạy vòng qua diode", cap: "Dòng điện khi transistor bật và khi vừa tắt" } },
       { h: "Tìm lỗi: giắc quạt không có điện", kw: "tim loi mat dien giac quat dan nong do chia doi mach no com tiep diem mat n dong ho",
         p: ["Quạt dàn nóng không có điện ra giắc dù cuộn dây và tụ còn tốt: đi theo dòng điện từ nguồn vào đến giắc ra, đo từng điểm để biết điện mất ở khâu nào.",
             "Thứ tự đo: nguồn vào board (L–N), rail 12 V, B–E transistor (≈ 0,7 V), điện áp hai đầu cuộn relay (≈ 12 V), rồi COM–N, NO–N và giắc. Điểm 8 là dây N, đo thông mạch khi đã tắt điện.",
-            "COM có 220 V mà NO không có: tiếp điểm relay hỏng. NO có mà giắc không có: đứt vết mạch, nứt mối hàn hoặc mất dây N."] }
+            "COM có 220 V mà NO không có: tiếp điểm relay hỏng. NO có mà giắc không có: đứt vết mạch, nứt mối hàn hoặc mất dây N."] },
+      { h: "Relay cấp thiếu điện áp", kw: "relay cap thieu dien ap 5v hut yeu chap cho tiep diem chay ro tia lua rung",
+        p: ["Cuộn 12 V chỉ cấp 5 V: dòng chỉ còn khoảng 42% (5 ÷ 400 = 12,5 mA), lực hút nhỏ hơn nhiều nên relay hút yếu hoặc không hút, có thể hút nhả liên tục.",
+            "Tiếp điểm đóng lỏng thì điện trở tiếp xúc lớn, dòng của tải đi qua gây tia lửa, nóng, cháy rỗ, có thể dính. Tải chạy chập chờn, nóng, relay hỏng sớm.",
+            "Đo hai đầu cuộn thấy thấp hơn điện áp ghi trên relay: tìm vì sao điện áp cấp cho cuộn bị sụt (nguồn 12 V yếu, tụ lọc khô, transistor sụt áp) trước khi thay relay."] }
     ],
     quiz: [
       { q: "Đo thấy NO có 220 V nhưng giắc quạt 0 V, dây N thông. Nghi ngờ nhất là gì?", o: ["Tiếp điểm relay hỏng", "Đứt vết mạch hoặc nứt mối hàn từ NO ra giắc", "Mất nguồn vào board", "Chip không ra lệnh"], a: 1, why: "Điện đã tới NO nên relay và mạch lái tốt. Điện mất sau NO, trên đường ra giắc." },
+      { q: "Cuộn relay 12 V chỉ được cấp 5 V. Điều gì có thể xảy ra?", o: ["Relay hút mạnh hơn bình thường", "Relay hút yếu hoặc chập chờn, tiếp điểm tiếp xúc kém, tia lửa và cháy rỗ", "Relay không bao giờ hỏng", "Cuộn đổi thành xoay chiều"], a: 1, why: "Dòng chỉ còn khoảng 42% nên lực hút yếu. Tiếp điểm đóng lỏng sinh tia lửa, nóng, cháy rỗ." },
       { q: "Cuộn relay 12 V, điện trở cuộn 400 Ω. Dòng qua cuộn là?", o: ["3 mA", "30 mA", "300 mA", "4,8 A"], a: 1, why: "I = 12 ÷ 400 = 0,03 A = 30 mA." },
       { q: "Vì sao không nối chip trực tiếp vào cuộn relay?", o: ["Chip chỉ cấp được dòng rất nhỏ, không đủ hút relay", "Relay không dùng điện", "Chip chỉ làm việc với điện xoay chiều", "Để cho đẹp mạch"], a: 0, why: "Cần transistor khuếch đại dòng để hút cuộn relay." },
       { q: "Diode mắc song song cuộn relay dùng để làm gì?", o: ["Tăng lực hút", "Hấp thụ xung điện áp lúc ngắt, bảo vệ transistor", "Giảm dòng nền", "Đổi xoay chiều thành một chiều"], a: 1, why: "Cuộn sinh xung cao khi tắt dòng; diode dập xung đó." },
@@ -221,5 +237,7 @@ window.GLOSSARY = [
   { t: "Áp cao / áp thấp", k: "ap cao ap thap", d: "Hai phía áp suất của hệ thống lạnh: áp cao từ máy nén tới van tiết lưu, áp thấp từ van tiết lưu về máy nén.", l: "b5" },
   { t: "Transistor", k: "transistor npn", d: "Linh kiện dùng như công tắc hoặc bộ khuếch đại: dòng nhỏ ở chân B điều khiển dòng lớn giữa C và E.", l: "b6" },
   { t: "Relay (rơ-le)", k: "relay role", d: "Công tắc điều khiển bằng cuộn dây: cuộn có dòng thì tiếp điểm đóng. Cách ly mạch điều khiển với mạch tải.", l: "b6" },
-  { t: "Diode dập xung", k: "diode dap xung flyback", d: "Diode mắc song song cuộn relay để hấp thụ xung điện áp lúc ngắt, bảo vệ transistor.", l: "b6" }
+  { t: "Diode dập xung", k: "diode dap xung flyback", d: "Diode mắc song song cuộn relay để hấp thụ xung điện áp lúc ngắt, bảo vệ transistor.", l: "b6" },
+  { t: "Rail 12 V", k: "rail 12v nguon 12v", d: "Đường điện một chiều 12 V trên board, cấp cho cuộn relay. Được tạo từ điện nhà qua hạ áp, cầu chỉnh lưu và tụ lọc.", l: "b6" },
+  { t: "COM, NO (tiếp điểm relay)", k: "com no tiep diem relay", d: "COM là chân chung. NO (Normally Open) là chân bình thường hở, chỉ đóng với COM khi cuộn relay hút.", l: "b6" }
 ];

@@ -69,7 +69,13 @@
     box.appendChild(el("h2", { text: L.title }));
     box.appendChild(el("p", { class: "lead2", text: L.summary }));
     L.blocks.forEach(function (b) {
-      box.appendChild(el("div", { class: "sec" }, [el("h3", { text: b.h })].concat(b.p.map(function (t) { return el("p", { text: t }); }))));
+      var kids = [el("h3", { text: b.h })].concat(b.p.map(function (t) { return el("p", { text: t }); }));
+      if (b.img) {
+        kids.push(el("figure", { class: "fig" }, [
+          el("a", { href: b.img.src, target: "_blank", rel: "noopener" }, [el("img", { src: b.img.src, alt: b.img.alt, loading: "lazy" })]),
+          el("figcaption", { text: b.img.cap + " (chạm vào hình để mở lớn)" })]));
+      }
+      box.appendChild(el("div", { class: "sec" }, kids));
     });
     if (L.labs && L.labs.length) {
       var row = el("div", { class: "btn-row" });
