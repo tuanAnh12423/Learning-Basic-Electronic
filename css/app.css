@@ -174,3 +174,10 @@ h2{font-size:18px}
 
 .fig a{display:block}
 .read small{font-size:13px}
+
+/* 15/10/2026: khung "Hình thực tế" ở đầu mô phỏng */
+.card.real{border-color:#F3C2C6;box-shadow:0 1px 0 rgba(230,0,18,.06)}
+.real-svg{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line);background:#fff;margin:0 0 6px;touch-action:manipulation}
+.legend{display:grid;gap:4px;margin:2px 0 8px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.real .read b{font-family:var(--font);font-size:15px;font-weight:600}

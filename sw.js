@@ -1,8 +1,8 @@
 /* Cho phép dùng offline sau lần mở đầu. Đổi số VERSION mỗi khi sửa file để điện thoại tải bản mới. */
-var VERSION = "hdt-v9";
+var VERSION = "hdt-v10";
 var FILES = [
   "./", "index.html", "css/labs.css", "css/app.css",
-  "data/lessons.js", "js/labs.js", "js/chat.js", "js/app.js",
+  "data/lessons.js", "js/labs.js", "js/real.js", "js/chat.js", "js/app.js",
   "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png",
   "img/b6-hai-duong.png", "img/b6-so-do-day-du.png", "img/b6-dong-dien.png"
 ];
