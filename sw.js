@@ -1,5 +1,5 @@
 /* Cho phép dùng offline sau lần mở đầu. Đổi số VERSION mỗi khi sửa file để điện thoại tải bản mới. */
-var VERSION = "hdt-v8";
+var VERSION = "hdt-v9";
 var FILES = [
   "./", "index.html", "css/labs.css", "css/app.css",
   "data/lessons.js", "js/labs.js", "js/chat.js", "js/app.js",

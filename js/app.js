@@ -23,7 +23,7 @@
   var KEY = "hdt_progress_v1";
   function loadProg() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
   function saveProg(p) { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) { /* bỏ qua */ } }
-  function doneCount(p) { return LESSONS.filter(function (L) { return p[L.id] && p[L.id].score === p[L.id].total; }).length; }
+  function doneCount(p) { return LESSONS.filter(function (L) { return p[L.id] && p[L.id].total && p[L.id].score === p[L.id].total; }).length; } // 15/10/2026: phải có điểm bài tập, chỉ mở xem thì chưa tính
   function lessonById(id) { return LESSONS.filter(function (L) { return L.id === id; })[0]; }
 
   // ---- màn hình ----
@@ -42,95 +42,200 @@
     $("#prog").textContent = n + "/" + LESSONS.length + " bài";
   }
 
+  // 15/10/2026: trạng thái từng bài — đã mở phần lý thuyết (seen) và điểm bài tập (score/total)
+  function status(p, L) {
+    var pr = p[L.id] || {};
+    if (pr.total && pr.score === pr.total) return { k: "done", t: "Hoàn thành" };
+    if (pr.total) return { k: "quiz", t: "Bài tập " + pr.score + "/" + pr.total };
+    if (pr.seen) return { k: "seen", t: "Đang học" };
+    return { k: "new", t: "Chưa học" };
+  }
+  function nextLesson(p) {
+    // bài đầu tiên chưa hoàn thành
+    for (var i = 0; i < LESSONS.length; i++) if (status(p, LESSONS[i]).k !== "done") return LESSONS[i];
+    return null;
+  }
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+
   function renderHoc() {
     var p = loadProg(), box = $("#v-hoc");
     box.textContent = "";
-    var n = doneCount(p);
-    box.appendChild(el("p", { class: "lead2", text: "Điện tử và điện lạnh cơ bản, học từng bước ngay trên điện thoại. Mỗi bài có phần giải thích, mô phỏng và bài tập." }));
-    var bar = el("div", { class: "progress", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(LESSONS.length), "aria-valuenow": String(n), "aria-label": "Số bài đã làm đúng hết" }, [el("i")]);
+    var n = doneCount(p), nx = nextLesson(p);
+    // Khối "Học tiếp" kiểu màn hình LED trên máy — điểm nhấn duy nhất của trang
+    var hero = el("a", { class: "resume", href: nx ? "#/bai/" + nx.id : "#/bai/" + LESSONS[0].id });
+    var st = nx ? status(p, nx) : null;
+    hero.appendChild(el("span", { class: "resume-led", "aria-hidden": "true", text: nx ? "BÀI " + pad2(nx.n) : "XONG" }));
+    hero.appendChild(el("span", { class: "resume-body" }, [
+      el("small", { text: !nx ? "Bạn đã hoàn thành cả " + LESSONS.length + " bài" : (st.k === "new" && n === 0 && !p[nx.id] ? "Bắt đầu học" : "Học tiếp") }),
+      el("b", { text: nx ? nx.title : "Ôn lại từ Bài 1" })
+    ]));
+    hero.appendChild(el("span", { class: "resume-go", "aria-hidden": "true", text: "›" }));
+    box.appendChild(hero);
+
+    var bar = el("div", { class: "progress", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(LESSONS.length), "aria-valuenow": String(n), "aria-label": "Số bài đã hoàn thành" }, [el("i")]);
     bar.firstChild.style.width = (100 * n / LESSONS.length) + "%";
-    box.appendChild(bar);
+    box.appendChild(el("div", { class: "prog-row" }, [el("span", { text: "Đã hoàn thành " + n + " trên " + LESSONS.length + " bài" }), bar]));
+
     LESSONS.forEach(function (L) {
-      var pr = p[L.id], done = pr && pr.score === pr.total;
-      var a = el("a", { class: "lesson-card" + (done ? " done" : ""), href: "#/bai/" + L.id }, [
-        el("span", { class: "num", text: done ? "✓" : String(L.n) }),
-        el("span", {}, [el("h3", { text: L.title }), el("p", { text: L.summary })])
+      var s2 = status(p, L);
+      var a = el("a", { class: "lesson-card is-" + s2.k, href: "#/bai/" + L.id }, [
+        el("span", { class: "num", text: s2.k === "done" ? "✓" : String(L.n) }),
+        el("span", { class: "lc-body" }, [el("h3", { text: L.title }), el("p", { text: L.summary }), el("small", { class: "st st-" + s2.k, text: s2.t })])
       ]);
-      if (pr) a.lastChild.appendChild(el("small", { text: "Bài tập gần nhất: " + pr.score + "/" + pr.total }));
       box.appendChild(a);
     });
     box.appendChild(el("p", { class: "note", text: "Nội dung mang tính nguyên lý cơ bản. Khi sửa chữa thực tế, luôn xem tài liệu của hãng, cắt nguồn, xả tụ và đo xác nhận trước khi chạm vào." }));
   }
 
-  function renderBai(id) {
+  // 15/10/2026: bài học chia 3 phần (Lý thuyết · Mô phỏng · Bài tập) bằng thanh chọn dính trên cùng,
+  // để không phải cuộn cả bài dài mới tới bài tập. Đường dẫn: #/bai/b1/lt | /mp | /bt
+  var PARTS = [["lt", "Lý thuyết"], ["mp", "Mô phỏng"], ["bt", "Bài tập"]];
+  function labLead(id) { var e = $("#lab-" + id + " .lead"); return e ? e.textContent : ""; }
+
+  function renderBai(id, part) {
     var L = lessonById(id), box = $("#v-bai");
     box.textContent = "";
     if (!L) { box.appendChild(el("p", { class: "empty", text: "Không tìm thấy bài này." })); return; }
-    box.appendChild(el("h2", { text: L.title }));
-    box.appendChild(el("p", { class: "lead2", text: L.summary }));
-    L.blocks.forEach(function (b) {
-      var kids = [el("h3", { text: b.h })].concat(b.p.map(function (t) { return el("p", { text: t }); }));
-      if (b.img) {
-        kids.push(el("figure", { class: "fig" }, [
-          el("a", { href: b.img.src, target: "_blank", rel: "noopener" }, [el("img", { src: b.img.src, alt: b.img.alt, loading: "lazy" })]),
-          el("figcaption", { text: b.img.cap + " (chạm vào hình để mở lớn)" })]));
-      }
-      box.appendChild(el("div", { class: "sec" }, kids));
+    part = PARTS.some(function (x) { return x[0] === part; }) ? part : "lt";
+    var p = loadProg(), pr = p[L.id] || {};
+
+    var seg = el("nav", { class: "segbar", "aria-label": "Phần của bài" });
+    PARTS.forEach(function (x) {
+      var label = x[1];
+      if (x[0] === "mp") label += " (" + (L.labs || []).length + ")";
+      if (x[0] === "bt") label += pr.total ? " " + pr.score + "/" + pr.total : " (" + L.quiz.length + ")";
+      var a = el("a", { href: "#/bai/" + L.id + "/" + x[0], text: label });
+      if (x[0] === part) a.setAttribute("aria-current", "page");
+      seg.appendChild(a);
     });
-    if (L.labs && L.labs.length) {
-      var row = el("div", { class: "btn-row" });
-      L.labs.forEach(function (lab) { row.appendChild(el("a", { class: "btn2 primary", href: "#/lab/" + lab, text: "Mô phỏng: " + LAB_NAME[lab] })); });
-      box.appendChild(row);
+    box.appendChild(seg);
+    box.appendChild(el("h2", { class: "lesson-h", text: L.title }));
+
+    if (part === "lt") {
+      if (!pr.seen) { pr.seen = true; p[L.id] = pr; saveProg(p); }
+      box.appendChild(el("p", { class: "lead2", text: L.summary }));
+      // mục lục nhanh: bấm để nhảy tới mục
+      if (L.blocks.length > 3) {
+        var toc = el("ol", { class: "toc", "aria-label": "Trong bài này" });
+        L.blocks.forEach(function (b, i) {
+          var a = el("a", { href: "#", text: b.h });
+          a.addEventListener("click", function (e) { e.preventDefault(); var t = $("#sec-" + i); if (t) $("#main").scrollTop = t.offsetTop - 64; });
+          toc.appendChild(el("li", {}, [a]));
+        });
+        box.appendChild(toc);
+      }
+      L.blocks.forEach(function (b, i) {
+        var kids = [el("h3", { text: b.h })].concat(b.p.map(function (t) { return el("p", { text: t }); }));
+        if (b.img) {
+          kids.push(el("figure", { class: "fig" }, [
+            el("a", { href: b.img.src, target: "_blank", rel: "noopener" }, [el("img", { src: b.img.src, alt: b.img.alt, loading: "lazy" })]),
+            el("figcaption", { text: b.img.cap + " (chạm vào hình để mở lớn)" })]));
+        }
+        box.appendChild(el("section", { class: "sec", id: "sec-" + i }, kids));
+      });
+      var next = el("div", { class: "nav-row" });
+      next.appendChild((L.labs && L.labs.length) ? el("a", { class: "btn2", href: "#/bai/" + L.id + "/mp", text: "Xem mô phỏng" }) : el("span"));
+      next.appendChild(el("a", { class: "btn2 primary", href: "#/bai/" + L.id + "/bt", text: "Làm bài tập" }));
+      box.appendChild(next);
+    } else if (part === "mp") {
+      if (!(L.labs || []).length) box.appendChild(el("p", { class: "empty", text: "Bài này chưa có mô phỏng." }));
+      (L.labs || []).forEach(function (lab) {
+        box.appendChild(el("a", { class: "lab-card", href: "#/lab/" + lab }, [
+          el("b", { text: LAB_NAME[lab] }), el("p", { text: labLead(lab) }), el("span", { class: "btn2 primary", text: "Mở mô phỏng" })]));
+      });
+      box.appendChild(el("div", { class: "nav-row" }, [el("a", { class: "btn2", href: "#/bai/" + L.id + "/lt", text: "Đọc lý thuyết" }), el("a", { class: "btn2 primary", href: "#/bai/" + L.id + "/bt", text: "Làm bài tập" })]));
+    } else {
+      renderQuiz(L, box);
     }
-    // bài tập
-    box.appendChild(el("h2", { text: "Bài tập" }));
-    var info = el("p", { class: "score", text: "" });
-    var answered = 0, correct = 0;
-    function finish() {
-      var pr = loadProg(); pr[L.id] = { score: correct, total: L.quiz.length }; saveProg(pr); updateChip();
-      info.textContent = "Kết quả: " + correct + "/" + L.quiz.length + (correct === L.quiz.length ? ". Làm đúng hết." : ". Đọc lại phần giải thích rồi làm lại để đạt đủ.");
-      info.appendChild(document.createTextNode(" "));
-      var again = el("button", { class: "btn2", type: "button", text: "Làm lại" });
-      again.addEventListener("click", function () { renderBai(id); box.parentNode.scrollTop = 0; });
-      box.appendChild(again);
+  }
+
+  // 15/10/2026: bài tập từng câu một — nút to, có thanh tiến độ, giải thích ngay sau khi chọn
+  function renderQuiz(L, box) {
+    var qi = 0, correct = 0, wrap = el("div", { class: "quiz" });
+    box.appendChild(wrap);
+    function dots() {
+      var d = el("div", { class: "qdots", "aria-hidden": "true" });
+      L.quiz.forEach(function (_, i) { d.appendChild(el("i", { class: i < qi ? "past" : i === qi ? "now" : "" })); });
+      return d;
     }
-    L.quiz.forEach(function (q, qi) {
-      var card = el("div", { class: "q" }), done = false;
-      card.appendChild(el("p", { class: "qt", text: (qi + 1) + ". " + q.q }));
+    function showQ() {
+      wrap.textContent = "";
+      var q = L.quiz[qi], answered = false;
+      wrap.appendChild(el("p", { class: "qcount", text: "Câu " + (qi + 1) + " / " + L.quiz.length }));
+      wrap.appendChild(dots());
+      var card = el("div", { class: "q" });
+      card.appendChild(el("p", { class: "qt", text: q.q }));
       var why = el("p", { class: "why", hidden: "" });
+      var go = el("button", { class: "btn2 primary qnext", type: "button", hidden: "", text: qi < L.quiz.length - 1 ? "Câu tiếp theo" : "Xem kết quả" });
+      go.addEventListener("click", function () { qi++; if (qi < L.quiz.length) { showQ(); $("#main").scrollTop = 0; } else showResult(); });
       q.o.forEach(function (txt, oi) {
         var b = el("button", { class: "opt", type: "button", text: txt });
         b.addEventListener("click", function () {
-          if (done) return; done = true; answered++;
+          if (answered) return; answered = true;
           var ok = oi === q.a; if (ok) correct++;
           $$(".opt", card).forEach(function (x, xi) { x.disabled = true; if (xi === q.a) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
-          why.textContent = (ok ? "Đúng. " : "Chưa đúng. ") + q.why; why.hidden = false;
-          if (answered === L.quiz.length) finish();
+          why.className = "why " + (ok ? "is-ok" : "is-bad");
+          why.textContent = (ok ? "Đúng. " : "Chưa đúng. ") + q.why; why.hidden = false; go.hidden = false;
+          go.scrollIntoView({ block: "nearest" });
         });
         card.appendChild(b);
       });
       card.appendChild(why);
-      box.appendChild(card);
-    });
-    box.appendChild(info);
-    // bài trước / sau
-    var i = LESSONS.indexOf(L), nav = el("div", { class: "nav-row" });
-    nav.appendChild(i > 0 ? el("a", { class: "btn2", href: "#/bai/" + LESSONS[i - 1].id, text: "← Bài " + LESSONS[i - 1].n }) : el("span"));
-    nav.appendChild(i < LESSONS.length - 1 ? el("a", { class: "btn2 primary", href: "#/bai/" + LESSONS[i + 1].id, text: "Bài " + LESSONS[i + 1].n + " →" }) : el("a", { class: "btn2", href: "#/hoc", text: "Về danh sách" }));
-    box.appendChild(nav);
+      wrap.appendChild(card);
+      wrap.appendChild(go);
+    }
+    function showResult() {
+      var p = loadProg(), pr = p[L.id] || {}; pr.score = correct; pr.total = L.quiz.length; pr.seen = true; p[L.id] = pr; saveProg(p); updateChip();
+      var all = correct === L.quiz.length, i = LESSONS.indexOf(L), nx = LESSONS[i + 1];
+      wrap.textContent = "";
+      wrap.appendChild(el("div", { class: "result" }, [
+        el("span", { class: "result-led", text: correct + "/" + L.quiz.length }),
+        el("p", { text: all ? "Làm đúng hết. Bài này đã hoàn thành." : "Chưa đúng hết. Đọc lại phần lý thuyết rồi làm lại để hoàn thành bài." })]));
+      var row = el("div", { class: "nav-row" });
+      var again = el("button", { class: "btn2", type: "button", text: "Làm lại" });
+      again.addEventListener("click", function () { qi = 0; correct = 0; showQ(); });
+      row.appendChild(again);
+      row.appendChild(all ? (nx ? el("a", { class: "btn2 primary", href: "#/bai/" + nx.id, text: "Sang Bài " + nx.n }) : el("a", { class: "btn2 primary", href: "#/hoc", text: "Về danh sách bài" }))
+                          : el("a", { class: "btn2 primary", href: "#/bai/" + L.id + "/lt", text: "Đọc lại lý thuyết" }));
+      wrap.appendChild(row);
+      // cập nhật nhãn điểm trên thanh chọn
+      var t = $$(".segbar a")[2]; if (t) t.textContent = "Bài tập " + correct + "/" + L.quiz.length;
+    }
+    showQ();
   }
 
+  // 15/10/2026: thuật ngữ — lọc theo bài + ô tìm, link "Xem trong bài" thành nút đủ to để bấm
+  var tnLesson = "";
   function renderTn(q) {
     var list = $("#tn-list"), f = window.Chat.fold(q || ""), n = 0;
+    var chips = $("#tn-chips");
+    if (!chips.childNodes.length) {
+      [["", "Tất cả"]].concat(LESSONS.map(function (L) { return [L.id, "Bài " + L.n]; })).forEach(function (x) {
+        var b = el("button", { type: "button", "data-l": x[0], text: x[1], "aria-pressed": x[0] === tnLesson ? "true" : "false" });
+        b.addEventListener("click", function () { tnLesson = x[0]; $$("#tn-chips button").forEach(function (y) { y.setAttribute("aria-pressed", y === b ? "true" : "false"); }); renderTn($("#tn-q").value); });
+        chips.appendChild(b);
+      });
+    }
     list.textContent = "";
     GLOSSARY.slice().sort(function (a, b) { return a.t.localeCompare(b.t, "vi"); }).forEach(function (g) {
+      if (tnLesson && g.l !== tnLesson) return;
       if (f && window.Chat.fold(g.t + " " + g.k + " " + g.d).indexOf(f) < 0) return;
       n++;
       var L = lessonById(g.l);
       list.appendChild(el("div", { class: "term" }, [el("b", { text: g.t }), el("p", { text: g.d }),
-        el("a", { href: "#/bai/" + g.l, text: "Xem trong bài " + (L ? L.n : "") })]));
+        el("a", { class: "term-link", href: "#/bai/" + g.l, text: "Xem trong Bài " + (L ? L.n : "") })]));
     });
-    if (!n) list.appendChild(el("p", { class: "empty", text: "Không có thuật ngữ này trong giáo trình." }));
+    if (!n) list.appendChild(el("p", { class: "empty", text: "Không có thuật ngữ này trong giáo trình. Thử từ ngắn hơn, ví dụ: tụ, relay, gas." }));
+  }
+
+  // 15/10/2026: dưới thanh mô phỏng ghi mô phỏng này thuộc bài nào + lối quay về bài
+  function labContext(id) {
+    var L = LESSONS.filter(function (x) { return (x.labs || []).indexOf(id) >= 0; })[0], box = $("#lab-ctx");
+    box.textContent = "";
+    if (!L) { box.hidden = true; return; }
+    box.hidden = false;
+    box.appendChild(el("span", { text: "Thuộc Bài " + L.n + ": " + L.title }));
+    box.appendChild(el("a", { href: "#/bai/" + L.id, text: "Mở bài" }));
   }
 
   // ---- chat ----
@@ -236,19 +341,20 @@
   $("#tn-q").addEventListener("input", function (e) { renderTn(e.target.value); });
   $("#back").addEventListener("click", function () { location.hash = "#/hoc"; });
   $$(".tab").forEach(function (t) {
-    t.addEventListener("click", function () { try { history.replaceState(null, "", "#/lab/" + t.dataset.lab); } catch (e) { /* bỏ qua */ } });
+    t.addEventListener("click", function () { try { history.replaceState(null, "", "#/lab/" + t.dataset.lab); } catch (e) { /* bỏ qua */ } labContext(t.dataset.lab); });
   });
 
   // ---- điều hướng ----
   function route() {
     var parts = (location.hash || "#/hoc").replace(/^#\/?/, "").split("/");
-    var page = parts[0] || "hoc", arg = parts[1];
+    var page = parts[0] || "hoc", arg = parts[1], sub = parts[2];
     var main = $("#main");
     window.Labs.leave();
     if (page === "bai" && lessonById(arg)) {
-      showView("bai"); renderBai(arg); setTitle("Bài " + lessonById(arg).n);
+      showView("bai"); renderBai(arg, sub); setTitle("Bài " + lessonById(arg).n);
     } else if (page === "lab") {
       showView("lab"); setTitle("Thực hành"); window.Labs.enter(arg);
+      var cur = $(".tab[aria-selected=\"true\"]"); labContext(cur ? cur.dataset.lab : arg);
     } else if (page === "tn") {
       showView("tn"); setTitle("Thuật ngữ"); renderTn($("#tn-q").value);
     } else if (page === "hoi") {

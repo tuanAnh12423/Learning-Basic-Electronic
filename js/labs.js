@@ -728,8 +728,8 @@ labs.tim=(function(){
     h+='<text class="tm-t" x="286" y="212">C</text><text class="tm-t" x="236" y="236">B</text><text class="tm-t" x="286" y="246">E</text>';
     h+='<path d="M252 100H146V150H92" fill="none" style="stroke:var(--volt);stroke-width:1.5;stroke-dasharray:3 4"/><text class="tm-t" x="190" y="94" text-anchor="middle" style="fill:var(--volt)">từ trường hút tiếp điểm</text>';
     for(var i=0;i<8;i++){
-      h+='<g class="pt" data-i="'+i+'" role="button" aria-label="Điểm đo '+(i+1)+': '+NAMES[i]+'"><circle cx="'+POS[i][0]+'" cy="'+POS[i][1]+'" r="14"/><text x="'+POS[i][0]+'" y="'+POS[i][1]+'">'+(i+1)+'</text></g>';
-      h+='<text class="pv" id="tm-v'+i+'" x="'+POS[i][0]+'" y="'+(POS[i][1]+28)+'"></text>';
+      h+='<g class="pt" data-i="'+i+'" role="button" aria-label="Điểm đo '+(i+1)+': '+NAMES[i]+'"><circle class="hit" cx="'+POS[i][0]+'" cy="'+POS[i][1]+'" r="23"/><circle cx="'+POS[i][0]+'" cy="'+POS[i][1]+'" r="17"/><text x="'+POS[i][0]+'" y="'+POS[i][1]+'">'+(i+1)+'</text></g>';
+      h+='<text class="pv" id="tm-v'+i+'" x="'+POS[i][0]+'" y="'+(POS[i][1]+31)+'"></text>';
     }
     svg.innerHTML=h;
     ptsEl.innerHTML=SHORT.map(function(n,i){return '<button type="button" data-i="'+i+'" aria-pressed="false">'+(i+1)+' '+n+'</button>'}).join('');

@@ -75,3 +75,6 @@ svg.res{width:100%;height:auto;display:block;background:var(--soft);border-radiu
 .ans button{font:inherit;font-size:14px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}
 .ans button.right{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
 .ans button.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+
+/* 15/10/2026: vùng bấm điểm đo to hơn (≈44px) cho ngón tay */
+.pt circle.hit{fill:transparent!important;stroke:none!important}

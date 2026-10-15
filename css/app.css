@@ -82,7 +82,7 @@ h2{font-size:18px}
 .chat-form button{flex:none;min-height:48px;padding:0 18px;border:0;border-radius:24px;background:var(--accent);color:#fff;font:inherit;font-weight:600;cursor:pointer}
 
 /* chỉnh lại phần mô phỏng cho khung mới */
-#v-lab .bar{top:-14px;margin:-14px -14px 14px;padding:8px 14px}
+#v-lab .bar{top:0;margin:-14px -14px 14px;padding:8px 14px}
 #v-lab h2{font-size:17px}
 .tab{min-height:40px}
 .pause{min-height:40px}
@@ -108,3 +108,69 @@ h2{font-size:18px}
 .fig{margin:10px 0 0}
 .fig img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#fff}
 .fig figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* ===== 15/10/2026: đợt chỉnh cho dễ dùng trên điện thoại (giữ nguyên màu nền) ===== */
+/* Trang chủ: khối "Học tiếp" như màn hình LED trên máy — điểm nhấn duy nhất */
+.resume{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;min-height:92px;padding:16px;border-radius:16px;background:var(--led-bg);color:#fff;text-decoration:none;margin:2px 0 14px}
+.resume:active{filter:brightness(1.15)}
+.resume-led{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:2px;color:var(--led);text-shadow:0 0 10px rgba(255,90,78,.45);background:#0D0F12;border:1px solid #2B303A;border-radius:8px;padding:10px 12px;white-space:nowrap}
+.resume-body{min-width:0}
+.resume-body small{display:block;font-size:13px;color:#AEB4BF}
+.resume-body b{display:block;font-size:17px;line-height:1.3;font-weight:600}
+.resume-go{font-size:30px;line-height:1;color:var(--led)}
+.prog-row{margin:0 0 14px}
+.prog-row span{display:block;font-size:13.5px;color:var(--muted);margin-bottom:6px}
+.prog-row .progress{margin:0}
+.lesson-card .lc-body{min-width:0}
+.lesson-card .st{display:inline-block;margin-top:8px;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.lesson-card .st-seen{background:#FFF4E5;color:#8A5300}
+.lesson-card .st-quiz{background:var(--tb-red-soft,#FDECED);color:#C4000F}
+.lesson-card .st-done{background:#E7F5EE;color:var(--ok)}
+.lesson-card.is-done .num{background:var(--ok)}
+
+/* Bài học: thanh chọn phần dính trên cùng */
+.segbar{position:sticky;top:0;z-index:4;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:-14px -14px 10px;padding:8px 14px;background:var(--bg);border-bottom:1px solid var(--line)}
+.segbar a{display:flex;align-items:center;justify-content:center;text-align:center;min-height:44px;padding:4px 6px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:14px;font-weight:600;line-height:1.2;text-decoration:none}
+.segbar a[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.lesson-h{font-size:20px;line-height:1.3;margin:6px 0 4px}
+.toc{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin:0 0 12px;padding:4px 14px 4px 34px}
+.toc li{border-bottom:1px solid var(--line)}
+.toc li:last-child{border-bottom:0}
+.toc a{display:block;padding:10px 0;color:var(--ink);text-decoration:none;font-size:15px}
+.toc li::marker{color:var(--accent);font-weight:600}
+.sec{scroll-margin-top:72px}
+.lab-card{display:block;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;color:inherit;text-decoration:none}
+.lab-card b{display:block;font-size:16.5px;margin-bottom:4px}
+.lab-card p{margin:0 0 10px;color:var(--muted);font-size:14.5px}
+.nav-row .btn2{text-align:center}
+
+/* Bài tập từng câu */
+.qcount{margin:6px 0 6px;font-size:14px;color:var(--muted);font-weight:600}
+.qdots{display:flex;gap:5px;margin:0 0 12px}
+.qdots i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.qdots i.past{background:var(--ink)}
+.qdots i.now{background:var(--accent)}
+.q .qt{font-size:17px;line-height:1.45}
+.q .why{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:var(--soft);font-size:15px;color:var(--ink)}
+.q .why.is-ok{border-left:4px solid var(--ok)}
+.q .why.is-bad{border-left:4px solid var(--bad)}
+.qnext{width:100%;min-height:52px}
+.result{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 16px;text-align:center;margin:8px 0 12px}
+.result-led{display:inline-block;font-family:var(--mono);font-size:40px;font-weight:600;letter-spacing:3px;color:var(--led);background:var(--led-bg);padding:10px 22px;border-radius:12px;text-shadow:0 0 12px rgba(255,90,78,.45);margin-bottom:12px}
+.result p{margin:0;color:var(--muted)}
+
+/* Thuật ngữ */
+.chips{display:flex;gap:6px;overflow-x:auto;margin:0 -14px 12px;padding:0 14px 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;min-height:40px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.term .term-link{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:999px;background:var(--soft);color:#C4000F;font-size:14px;font-weight:600;text-decoration:none}
+
+/* Thực hành: thanh tab có viền mờ báo còn tab bên phải + dòng "Thuộc bài" */
+#v-lab .tabs{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:28px}
+.lab-ctx{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-6px 0 12px;font-size:13.5px;color:var(--muted)}
+.lab-ctx span{min-width:0}
+.lab-ctx a{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:#C4000F;font-weight:600;text-decoration:none}
+
+.fig a{display:block}
+.read small{font-size:13px}
