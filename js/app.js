@@ -331,7 +331,7 @@
   }
   function initChat() {
     if (chatReady) return; chatReady = true;
-    addMsg("bot", { title: "Trợ lý giáo trình", paras: ["Mình chỉ tra trong 6 bài của giáo trình này, không dùng AI và không đoán ngoài nội dung. Chọn một gợi ý hoặc gõ từ khóa:"],
+    addMsg("bot", { title: "Trợ lý giáo trình", paras: ["Mình chỉ tra trong 8 bài của giáo trình này, không dùng AI và không đoán ngoài nội dung. Chọn một gợi ý hoặc gõ từ khóa:"],
       chips: window.Chat.starters.map(function (s) { return { text: s, ask: s }; }) }, true);
   }
   $("#chat-form").addEventListener("submit", function (e) {

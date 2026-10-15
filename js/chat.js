@@ -105,7 +105,7 @@
     var res = search(text);
     if (!res.length) {
       return { none: true, title: "Chưa có trong giáo trình",
-        paras: ["Mình chỉ trả lời trong phạm vi điện tử và điện lạnh cơ bản của 6 bài này, và không đoán ngoài giáo trình.",
+        paras: ["Mình chỉ trả lời trong phạm vi điện tử và điện lạnh cơ bản của 8 bài này, và không đoán ngoài giáo trình.",
                 "Thử gõ từ khóa ngắn như: tụ điện, diode, relay, máy nén, nối tiếp."],
         chips: lessonList() };
     }

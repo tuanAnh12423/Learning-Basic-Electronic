@@ -15,6 +15,7 @@ Mỗi lần sửa file, đổi số `VERSION` trong `sw.js` để điện thoạ
 ## Thêm bài học
 Sửa `data/lessons.js`: thêm 1 object vào `LESSONS` (id, n, title, summary, labs, keywords, blocks, quiz) và thuật ngữ vào `GLOSSARY`.
 Chatbot, danh sách bài, bài tập và thuật ngữ tự cập nhật theo file này, không cần sửa chỗ khác.
+Hình minh họa của bài học nằm trong thư mục `img/`, khai báo bằng `img: { src, alt, cap }` trong từng mục của bài và thêm vào danh sách `FILES` trong `sw.js`.
 Mô phỏng nằm ở `js/labs.js` + phần `<section id="lab-...">` trong `index.html`.
 
 ## Chatbot
@@ -22,4 +23,4 @@ Mô phỏng nằm ở `js/labs.js` + phần `<section id="lab-...">` trong `inde
 Câu nào không khớp đủ thì trả lời "Chưa có trong giáo trình" thay vì đoán.
 
 ## Nguồn nội dung
-6 bài đã học trong project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" và các mô phỏng "Thực hành điện tử". Số liệu trong mô phỏng chỉ minh họa nguyên lý.
+8 bài đã học trong project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" và các mô phỏng "Thực hành điện tử". Số liệu trong mô phỏng chỉ minh họa nguyên lý.

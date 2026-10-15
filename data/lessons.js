@@ -1,5 +1,5 @@
 /* Giáo trình: Điện tử và điện lạnh cơ bản.
-   Nguồn nội dung: 6 bài đã học trong project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" + mô phỏng "Thực hành điện tử".
+   Nguồn nội dung: 8 bài đã học trong project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" + mô phỏng "Thực hành điện tử".
    Thêm bài mới: thêm 1 object vào LESSONS (id, n, title, summary, labs, keywords, blocks, quiz) rồi thêm tên file vào sw.js nếu tạo file mới.
    Chatbot chỉ trả lời từ dữ liệu trong file này. */
 window.LESSONS = [
@@ -206,7 +206,109 @@ window.LESSONS = [
       { q: "Chip đã ra mức cao nhưng relay không hút. Nguyên nhân có thể là?", o: ["Điện trở nền quá lớn nên Ib quá nhỏ", "Điện trở nền quá nhỏ", "Quạt quá nhẹ", "Không thể có nguyên nhân nào"], a: 0, why: "Ib quá nhỏ thì transistor không dẫn đủ cho cuộn relay." },
       { q: "Tiếp điểm relay có tác dụng gì?", o: ["Đóng ngắt tải, đồng thời cách ly mạch điều khiển với mạch tải", "Chỉ để phát tiếng tách", "Lọc nhiễu nguồn", "Đo dòng điện"], a: 0, why: "Cuộn hút thì tiếp điểm đóng tải, hai mạch tách biệt nhau." }
     ]
+  },
+  {
+    id: "b7", n: 7, title: "Biến áp, sơ cấp và thứ cấp",
+    summary: "Biến áp, tỉ số vòng dây, nguồn xung trên board, opto, TL431 và an toàn khi làm việc ở phía sơ cấp.",
+    labs: [],
+    keywords: "bien ap so cap thu cap cuon day ti so vong nguon xung smps opto optocoupler tl431 tu loc lon 310v cach ly an toan",
+    blocks: [
+      { h: "Sơ cấp và thứ cấp là gì", kw: "so cap thu cap bien ap cuon day tu truong cach ly",
+        p: ["Biến áp có hai cuộn dây quấn chung một lõi, không nối điện với nhau. Cuộn nhận điện vào là sơ cấp (phía điện nhà 220 V). Cuộn cho điện ra là thứ cấp (phía điện thấp như 12 V, 5 V, 3,3 V).",
+            "Điện truyền từ cuộn này sang cuộn kia bằng từ trường trong lõi, không bằng dây dẫn. Vì vậy hai phía được cách ly điện với nhau."],
+        img: { src: "img/b7-bien-ap.png", alt: "Biến áp có cuộn sơ cấp và cuộn thứ cấp quấn chung một lõi", cap: "Biến áp: sơ cấp, thứ cấp và lõi" } },
+      { h: "Tỉ số vòng dây và dòng điện", kw: "ti so vong day np ns vp vs ip is bao toan cong suat cong thuc bien ap",
+        p: ["Điện áp tỉ lệ với số vòng dây: Vp ÷ Vs = Np ÷ Ns. Vp, Vs là điện áp sơ cấp và thứ cấp, Np, Ns là số vòng dây. Ví dụ 480 V xuống 120 V thì tỉ lệ vòng là 4 : 1.",
+            "Dòng điện thì ngược lại: Ip ÷ Is = Ns ÷ Np. Điện áp hạ bao nhiêu lần thì dòng tăng bấy nhiêu lần. Lý do là bảo toàn công suất: công suất vào xấp xỉ công suất ra (P = V × I).",
+            "Ví dụ: 220 V xuống 12 V, tải lấy 2 A. Tỉ lệ vòng khoảng 18 : 1. Công suất thứ cấp 12 × 2 = 24 W nên dòng sơ cấp khoảng 24 ÷ 220 ≈ 0,11 A. Thực tế có hao hụt nên dòng sơ cấp hơi lớn hơn.",
+            "Các công thức trên là của biến áp lý tưởng. Cách nhớ: áp xuống thì dòng lên, áp lên thì dòng xuống."] },
+      { h: "Vì sao board dùng nguồn xung", kw: "nguon xung smps 310v 220 1,414 chop tan so cao bien ap nho gon tu loc lon",
+        p: ["Biến áp chỉ làm việc với dòng điện biến thiên. Điện nhà 50 Hz cũng biến thiên, nhưng biến áp loại đó rất to và nặng.",
+            "Nguồn xung làm khác: chỉnh lưu điện nhà thành khoảng 310 V DC (220 × 1,414) trên tụ lọc lớn, rồi dùng MOSFET hoặc IC đóng ngắt dòng này hàng chục nghìn lần mỗi giây qua cuộn sơ cấp. Tần số cao nên biến áp nhỏ gọn.",
+            "Hai ý trên là nguyên lý chung của nguồn xung, không phụ thuộc hãng máy."],
+        img: { src: "img/b7-nguon-xung.png", alt: "Sơ đồ khối nguồn xung chia phía sơ cấp và phía thứ cấp", cap: "Sơ đồ khối nguồn xung trên board" } },
+      { h: "Dòng chảy của nguồn xung", kw: "dong chay nguon xung cau chinh luu tu loc mosfet bien ap diode chinh luu 12v 5v",
+        p: ["Phía sơ cấp (nóng): điện nhà 220 V → cầu chì → cầu chỉnh lưu → tụ lọc lớn (khoảng 310 V DC) → công tắc xung (MOSFET hoặc IC) → cuộn sơ cấp biến áp.",
+            "Phía thứ cấp (lạnh): cuộn thứ cấp → diode chỉnh lưu → tụ lọc (ví dụ 16 V, 25 V) → các đường 12 V, 5 V, 3,3 V. Đường 12 V chính là rail 12 V ở Bài 6."] },
+      { h: "Opto và TL431: vòng hồi tiếp", kw: "opto optocoupler tl431 hoi tiep phototransistor led cach ly lay mau 2,5v pc817",
+        p: ["Opto là linh kiện có hai phần trong một vỏ: đèn LED và phototransistor, truyền tín hiệu bằng ánh sáng, không nối điện. LED nằm phía thứ cấp, phototransistor phía sơ cấp.",
+            "TL431 ở phía thứ cấp lấy mẫu điện áp ra (qua cầu phân áp), so với mốc chuẩn khoảng 2,5 V. Lệch nhiều thì cho nhiều dòng qua LED opto.",
+            "Chuỗi tác dụng: 12 V tăng → TL431 dẫn mạnh → LED sáng mạnh → phototransistor dẫn mạnh → IC phía sơ cấp thu hẹp xung → 12 V giảm xuống. Điện áp thấp thì chuỗi đảo ngược.",
+            "Không thể thay opto bằng dây nối trực tiếp: dây sẽ làm mất cách ly và đưa điện nguy hiểm từ sơ cấp sang thứ cấp."],
+        img: { src: "img/b7-opto.png", alt: "Opto và TL431 trong vòng hồi tiếp của nguồn xung", cap: "Opto truyền tín hiệu bằng ánh sáng qua rào cách ly" } },
+      { h: "An toàn khi làm việc", kw: "an toan phia so cap xa tu 300v bien ap cach ly do nguoi nong lanh",
+        p: ["Phía sơ cấp có thể gây chết người, tuyệt đối không chạm khi đang cắm điện.",
+            "Tụ lọc lớn vẫn giữ khoảng 300 V sau khi rút phích. Phải xả tụ rồi đo lại bằng đồng hồ trước khi chạm vào board.",
+            "Khi bắt buộc đo lúc có điện, nên dùng biến áp cách ly. Phía thứ cấp an toàn hơn nhưng dòng lớn, chập là cháy."] },
+      { h: "Lỗi thường gặp theo từng phía", kw: "loi thuong gap cau chi dut mat 12v so cap thu cap opto tl431 khong co dien ap ra",
+        p: ["Phần này là suy luận từ sơ đồ khối. Đứt cầu chì: thường do chập phía sơ cấp (cầu chỉnh lưu, MOSFET) hoặc tụ lọc hỏng.",
+            "Có khoảng 310 V ở tụ lớn nhưng thứ cấp 0 V: nghi khối xung hoặc biến áp. Sơ cấp bình thường mà 12 V thấp hoặc dao động: nghi tụ lọc thứ cấp, diode chỉnh lưu hoặc vòng hồi tiếp (TL431, opto).",
+            "Nguyên tắc: đo từ vào đến ra, chia hai phía, tìm xem điện mất ở khối nào."] }
+    ],
+    quiz: [
+      { q: "Biến áp hạ từ 480 V xuống 120 V. Tỉ lệ vòng dây sơ cấp : thứ cấp là?", o: ["1 : 4", "4 : 1", "2 : 1", "480 : 12"], a: 1, why: "Điện áp tỉ lệ với số vòng: 480 ÷ 120 = 4, nên cuộn sơ cấp nhiều vòng gấp 4 lần." },
+      { q: "Hạ 220 V xuống 12 V, tải lấy 2 A. Dòng sơ cấp khoảng bao nhiêu?", o: ["Khoảng 0,11 A", "Khoảng 2 A", "Khoảng 36 A", "Khoảng 24 A"], a: 0, why: "Công suất thứ cấp 12 × 2 = 24 W nên dòng sơ cấp ≈ 24 ÷ 220 ≈ 0,11 A." },
+      { q: "Tụ lọc lớn sau cầu chỉnh lưu khi cắm điện 220 V giữ khoảng bao nhiêu volt DC?", o: ["Khoảng 12 V", "Khoảng 220 V", "Khoảng 310 V", "Khoảng 1000 V"], a: 2, why: "220 × 1,414 ≈ 310 V." },
+      { q: "Vì sao rút phích rồi vẫn nguy hiểm khi chạm vào phía sơ cấp?", o: ["Biến áp vẫn còn phát điện", "Tụ lọc lớn vẫn giữ điện áp cao", "Cầu chì giữ điện", "Không nguy hiểm nữa"], a: 1, why: "Tụ lớn giữ khoảng 300 V một lúc sau khi rút phích. Phải xả và đo lại bằng đồng hồ." },
+      { q: "Opto trong nguồn xung dùng để làm gì?", o: ["Tăng điện áp", "Truyền tín hiệu hồi tiếp bằng ánh sáng mà vẫn cách ly hai phía", "Chỉnh lưu điện áp", "Lọc nhiễu"], a: 1, why: "LED ở thứ cấp, phototransistor ở sơ cấp, tín hiệu đi bằng ánh sáng nên không nối điện." },
+      { q: "TL431 làm việc gì trong vòng hồi tiếp?", o: ["Đóng ngắt dòng 300 V", "So điện áp ra với mốc chuẩn khoảng 2,5 V và điều khiển dòng qua LED opto", "Đổi điện xoay chiều thành một chiều", "Làm ra tia lửa"], a: 1, why: "Nó lấy mẫu điện áp ra rồi cho nhiều hay ít dòng qua LED opto." }
+    ]
+  },
+  {
+    id: "b8", n: 8, title: "Nguồn xung trên bo inverter (nâng cao)",
+    summary: "Đọc một bo inverter điều hòa thật: 5 giai đoạn nguồn xung, nhánh 300 V, 5 V, +15 V, vòng hồi tiếp TL431 và opto, đo nguội và chẩn đoán hư hỏng.",
+    labs: [],
+    keywords: "bo inverter nguon xung smps igbt 7815 15v driver tl431 opto diode kep schottky emi varistor hoi tiep fb pwm hiccup ctr do nguoi 300v mat 15v",
+    blocks: [
+      { h: "Bo inverter chia hai khu vực", kw: "bo inverter khu vuc so cap thu cap khe cach ly igbt mcu hai khu vuc",
+        p: ["Bài này đi tiếp từ Bài 7, áp dụng vào một bo inverter điều hòa thật. Nội dung dựa trên tài liệu phân tích một bo thực tế do bạn cung cấp, chưa kiểm chứng độc lập. Tên và vị trí linh kiện có thể khác ở bo khác. Phần chân opto và độ sụt áp của 7815 đã đối chiếu với tài liệu trên web.",
+            "Bo chia hai khu vực cách ly nhau bằng khe rãnh xẻ trên mạch in. Sơ cấp (nóng) có điện 220 V AC và khoảng 300 V DC: mạch lọc nhiễu, cầu diode, tụ lọc lớn, IC nguồn xung, cuộn sơ cấp biến áp và khối công suất biến tần (6 IGBT lái động cơ U-V-W cùng 3 IC driver).",
+            "Thứ cấp (lạnh) có điện áp thấp 12 V, 5 V, 3,3 V: cuộn thứ cấp, diode chỉnh lưu xung, tụ lọc, vi điều khiển (MCU) và các cổng giao tiếp."],
+        img: { src: "img/b8-bo-inverter.png", alt: "Sơ đồ 5 giai đoạn của nguồn xung trên bo inverter, chia sơ cấp và thứ cấp", cap: "Năm giai đoạn nguồn xung trên bo inverter" } },
+      { h: "Năm giai đoạn của nguồn xung", kw: "nam giai doan nguon xung loc nhieu emi chinh luu 300v dong cat xung chinh luu ha ap hoi tiep",
+        p: ["Giai đoạn 1, lọc nhiễu EMI: điện 220 V AC đi qua cầu chì, varistor (bảo vệ quá áp), cuộn lọc nhiễu và tụ lọc X để triệt xung nhiễu cao tần.",
+            "Giai đoạn 2, chỉnh lưu và lọc: cầu diode đổi AC thành DC, nạp tụ lớn tạo khoảng 300 đến 310 V DC. Nguồn này chia hai nhánh: cấp cho 6 IGBT (ra giắc ba pha U-V-W) và cấp cho mạch băm xung.",
+            "Giai đoạn 3, đóng cắt xung: 300 V DC đi qua cuộn sơ cấp biến áp vào IC nguồn xung. IC đóng ngắt ở tần số vài chục kHz, tạo từ trường biến thiên cảm ứng sang cuộn thứ cấp và cuộn phụ.",
+            "Giai đoạn 4, chỉnh lưu hạ áp: ở thứ cấp, diode kép nắn xung thành DC, tụ nhôm (ví dụ 1000 µF 25 V) lọc, rồi mạch hạ áp tạo 5 V và 3,3 V nuôi MCU. Ở nhánh phụ, cuộn phụ và tụ nhỏ cấp cho IC 7815 giữ +15 V cho 3 IC driver.",
+            "Giai đoạn 5, hồi tiếp: TL431 và opto báo trạng thái điện áp ra về chân FB của IC nguồn xung để chỉnh độ rộng xung (PWM), giữ điện áp ra ổn định."] },
+      { h: "Ba mức điện áp, ba việc", kw: "300v 5v 3,3v 15v igbt driver gate mcu nuoi mat 15v khong kich duoc igbt",
+        p: ["300 V DC: nuôi khối công suất 6 IGBT để tạo điện ba pha chạy động cơ máy nén.",
+            "5 V và 3,3 V: nuôi vi điều khiển, đèn báo và giao tiếp.",
+            "+15 V: nuôi 3 IC driver để kích mở cực Gate của 6 IGBT. Theo tài liệu, áp thấp hơn 12 V làm IGBT mở không đủ nên nóng, có thể nổ. Áp quá 20 V có thể thủng cực Gate.",
+            "Có 5 V không có nghĩa là có +15 V: hai nhánh này độc lập nhau, hỏng một nhánh thì nhánh kia vẫn sống."] },
+      { h: "Bốn linh kiện trọng tâm", kw: "opto 4 chan pc817 tl431 diode kep schottky to220 7815 chan ref anode cathode in gnd out",
+        p: ["Opto 4 chân (loại thường gặp như PC817): chân 1 Anode và chân 2 Cathode là đèn LED hồng ngoại. Chân 3 Emitter và chân 4 Collector là phototransistor. Trên bo thật, LED nằm phía thứ cấp, phototransistor phía sơ cấp, con opto nằm vắt ngang khe cách ly.",
+            "TL431: ba chân Ref, Anode, Cathode. Ref nhận áp mẫu từ cầu phân áp. Cathode nối qua điện trở xuống LED của opto. Nó so điện áp ra với mốc chuẩn khoảng 2,5 V.",
+            "Diode kép chỉnh lưu xung (loại Schottky, dạng TO-220 bắt lên tản nhiệt): hai diode chung cathode ở chân giữa, hai chân bìa là anode. Hai diode chạy song song nên chịu dòng lớn hơn và sụt áp thấp.",
+            "IC ổn áp 7815: ba chân IN, GND, OUT (thứ tự thường gặp, nhìn mặt có chữ, chân hướng xuống; cần tra datasheet khi nghi ngờ). Ra 15 V. Áp vào phải cao hơn ngõ ra ít nhất khoảng 2 V."],
+        img: { src: "img/b8-linh-kien.png", alt: "Chân của opto 4 chân, TL431, diode kép TO-220 và IC 7815", cap: "Chân của bốn linh kiện trọng tâm" } },
+      { h: "Hai trạng thái hồi tiếp", kw: "hoi tiep tl431 opto fb duty cycle pwm ap ra tang giam tai nang tu can bang",
+        p: ["Áp ra tăng cao hơn chuẩn: chân Ref của TL431 tăng, TL431 dẫn mạnh hơn, dòng qua LED opto tăng nên LED sáng mạnh. Phototransistor dẫn mạnh, kéo chân FB của IC nguồn xuống, IC giảm độ rộng xung (duty cycle) và áp ra hạ về mức chuẩn.",
+            "Áp ra bị sụt (do tải nặng): chân Ref giảm, TL431 dẫn yếu, LED sáng yếu, phototransistor dẫn yếu. IC nguồn mở rộng xung để bơm thêm năng lượng sang thứ cấp, áp ra tăng lại.",
+            "Vòng này tự cân bằng: lệch lên thì kéo xuống, lệch xuống thì kéo lên. Gãy một mắt xích thì áp ra mất kiểm soát."] },
+      { h: "Đo nguội bằng đồng hồ (thang diode)", kw: "do nguoi dong ho thang diode opto led 1,0 1,2v ol diode kep 0,15 0,45v schottky xa tu",
+        p: ["Trước khi đo nguội: rút điện, xả tụ lớn 300 V rồi đo lại cho chắc (xem Bài 3 và Bài 7). Đồng hồ số: que đỏ là cực dương, que đen là cực âm. Đồng hồ kim thì ngược lại (que đen mới là cực dương).",
+            "Opto, khối LED (chân 1 và 2): que đỏ chân 1, que đen chân 2 thì sụt áp khoảng 1,0 đến 1,2 V (theo tài liệu bo thực tế; tài liệu PC817 ghi điện áp thuận điển hình khoảng 1,25 V ở dòng định mức nên số đo có thể hơi khác). Đảo que thì báo OL (không dẫn).",
+            "Opto, khối transistor (chân 3 và 4): đo cả hai chiều đều phải OL. Nếu thông mạch là chập chân 3 và 4.",
+            "Diode kép: que đỏ vào một chân bìa, que đen vào chân giữa thì sụt áp khoảng 0,15 đến 0,45 V (đặc trưng Schottky). Đảo que thì không thông. Hai chiều đều thông gần 0 là chập."] },
+      { h: "Hư hỏng thực tế và cách nghĩ", kw: "hu hong mat hoi tiep opto gia ctr hiccup chap diode kep mat 15v 7815 chip song khong kich igbt",
+        p: ["Theo tài liệu bo thực tế (chưa kiểm chứng độc lập). Mất hồi tiếp (opto đứt hoặc mạch dò TL431 hỏng): điện áp thứ cấp vọt cao, có thể phù tụ lọc ra. Hoặc IC nguồn ngắt bảo vệ làm nguồn chớp tắt liên tục (gọi là hiccup), nặng có thể nổ IC nguồn.",
+            "Opto bị già (hệ số truyền dòng CTR giảm): chạy không tải thì bình thường, nhưng khi đóng relay hoặc tải nặng thì sụt áp sâu, biến áp phát tiếng kêu rít.",
+            "Chập diode kép: thứ cấp bị ngắn mạch, nguồn xung khóa bảo vệ, mất 12 V và 5 V, biến áp kêu tạch tạch nhỏ.",
+            "Mất +15 V sau 7815: MCU vẫn sống (có 5 V và 3,3 V), đèn báo và giao tiếp vẫn chạy nhưng không kích được dàn IGBT. Động cơ máy nén không quay, báo lỗi công suất hoặc mất pha.",
+            "Cách nghĩ: có 5 V mà không có 15 V thì tìm nhánh phụ (cuộn phụ, tụ nhỏ, 7815). Mất cả 12 V và 5 V thì nghi diode kép chập hoặc IC nguồn bảo vệ. Áp ra sai hoặc dao động thì kiểm tra cầu phân áp, TL431, opto."] }
+    ],
+    quiz: [
+      { q: "Máy còn sáng đèn và giao tiếp bình thường (có 5 V, 3,3 V) nhưng máy nén không quay, báo lỗi công suất. Nghi nhánh nào trước?", o: ["Tụ lọc nhiễu X", "Nhánh +15 V cấp cho các IC driver (7815)", "Cầu chì đầu vào", "Mạch hạ áp 3,3 V"], a: 1, why: "MCU sống nghĩa là thứ cấp 5 V và 3,3 V ổn. Mất +15 V thì driver không kích được IGBT." },
+      { q: "Điện áp khoảng 300 V DC trên bo inverter được dùng để làm gì?", o: ["Chỉ nuôi vi điều khiển", "Nuôi khối IGBT và cấp cho mạch băm xung của nguồn xung", "Chỉ cấp cho đèn báo", "Cấp cho opto"], a: 1, why: "300 V chia hai nhánh: ra dàn 6 IGBT (U-V-W) và vào IC nguồn xung qua cuộn sơ cấp." },
+      { q: "Opto 4 chân loại PC817: chân nào là phototransistor?", o: ["Chân 1 và 2", "Chân 3 và 4", "Chân 1 và 4", "Chân 2 và 3"], a: 1, why: "Chân 1 (Anode) và 2 (Cathode) là LED. Chân 3 (Emitter) và 4 (Collector) là phototransistor." },
+      { q: "Đo nguội diode kép Schottky chiều thuận, sụt áp khoảng bao nhiêu?", o: ["Khoảng 0,15 đến 0,45 V", "Khoảng 5 V", "Khoảng 15 V", "OL (không dẫn)"], a: 0, why: "Schottky sụt áp thấp. Đảo que thì không thông." },
+      { q: "Opto bị già (CTR giảm): chạy không tải thì bình thường, tải nặng thì sụt áp và biến áp rít. Vì sao?", o: ["Cầu chì quá lớn", "Tín hiệu hồi tiếp yếu nên IC nguồn không điều chỉnh xung kịp theo tải", "Tụ lọc EMI hỏng", "Động cơ quá nhẹ"], a: 1, why: "Opto truyền tín hiệu kém đi nên vòng hồi tiếp phản ứng chậm, nguồn không giữ nổi điện áp khi tải nặng." },
+      { q: "Nguy cơ chính khi opto đứt hoặc mạch dò TL431 hỏng (mất hồi tiếp) là gì?", o: ["Điện áp thứ cấp có thể vọt cao hoặc IC nguồn ngắt bảo vệ", "Không có hậu quả gì", "Chỉ làm đèn mờ", "Điện áp tự giảm về 0 và đứng yên an toàn"], a: 0, why: "IC nguồn không biết áp ra thế nào để chỉnh xung nên áp có thể vọt cao hoặc nguồn ngắt bảo vệ chớp tắt (hiccup)." },
+      { q: "Trước khi đo nguội trên phía sơ cấp phải làm gì?", o: ["Đo ngay vì đã rút phích", "Rút điện, xả tụ lọc lớn 300 V và đo lại bằng đồng hồ", "Chạm tay kiểm tra tụ", "Bật máy cho tụ tự xả"], a: 1, why: "Tụ lớn giữ khoảng 300 V sau khi rút phích, phải xả và xác nhận bằng đồng hồ." }
+    ]
   }
+
 ];
 
 /* Thuật ngữ: mỗi mục gắn với một bài (lesson). Chỉ viết định nghĩa cơ bản, trung tính. */
@@ -239,5 +341,19 @@ window.GLOSSARY = [
   { t: "Relay (rơ-le)", k: "relay role", d: "Công tắc điều khiển bằng cuộn dây: cuộn có dòng thì tiếp điểm đóng. Cách ly mạch điều khiển với mạch tải.", l: "b6" },
   { t: "Diode dập xung", k: "diode dap xung flyback", d: "Diode mắc song song cuộn relay để hấp thụ xung điện áp lúc ngắt, bảo vệ transistor.", l: "b6" },
   { t: "Rail 12 V", k: "rail 12v nguon 12v", d: "Đường điện một chiều 12 V trên board, cấp cho cuộn relay. Được tạo từ điện nhà qua hạ áp, cầu chỉnh lưu và tụ lọc.", l: "b6" },
-  { t: "COM, NO (tiếp điểm relay)", k: "com no tiep diem relay", d: "COM là chân chung. NO (Normally Open) là chân bình thường hở, chỉ đóng với COM khi cuộn relay hút.", l: "b6" }
+  { t: "COM, NO (tiếp điểm relay)", k: "com no tiep diem relay", d: "COM là chân chung. NO (Normally Open) là chân bình thường hở, chỉ đóng với COM khi cuộn relay hút.", l: "b6" },
+  { t: "Biến áp", k: "bien ap transformer", d: "Hai cuộn dây quấn chung một lõi, truyền điện bằng từ trường, không nối điện với nhau.", l: "b7" },
+  { t: "Sơ cấp / thứ cấp", k: "so cap thu cap", d: "Sơ cấp là cuộn nhận điện vào (phía điện nhà). Thứ cấp là cuộn cho điện ra (phía điện thấp).", l: "b7" },
+  { t: "Tỉ số vòng dây", k: "ti so vong day np ns", d: "Vp ÷ Vs = Np ÷ Ns. Điện áp tỉ lệ với số vòng, dòng điện tỉ lệ nghịch.", l: "b7" },
+  { t: "Nguồn xung (SMPS)", k: "nguon xung smps", d: "Nguồn chỉnh lưu điện nhà thành DC cao rồi đóng ngắt hàng chục nghìn lần mỗi giây qua biến áp nhỏ gọn để tạo điện áp thấp.", l: "b7" },
+  { t: "Tụ lọc lớn (khoảng 310 V)", k: "tu loc lon 310v 300v bulk", d: "Tụ sau cầu chỉnh lưu phía sơ cấp, giữ khoảng 310 V DC và vẫn còn điện sau khi rút phích.", l: "b7" },
+  { t: "Opto (bộ ghép quang)", k: "opto optocoupler pc817", d: "Linh kiện có LED và phototransistor trong một vỏ, truyền tín hiệu bằng ánh sáng mà vẫn cách ly điện.", l: "b7" },
+  { t: "TL431", k: "tl431 shunt regulator", d: "IC 3 chân so điện áp mẫu với mốc chuẩn khoảng 2,5 V, điều khiển dòng qua LED opto trong vòng hồi tiếp.", l: "b7" },
+  { t: "IGBT", k: "igbt", d: "Linh kiện công suất đóng ngắt dòng lớn. Bo inverter dùng 6 IGBT để tạo điện ba pha U-V-W chạy động cơ máy nén.", l: "b8" },
+  { t: "Varistor (bảo vệ quá áp)", k: "varistor zr1 qua ap", d: "Linh kiện hấp thụ xung điện áp cao ở đầu vào, bảo vệ board.", l: "b8" },
+  { t: "Diode kép Schottky", k: "diode kep schottky d4 chung cathode", d: "Hai diode Schottky chung cathode trong một vỏ TO-220, chỉnh lưu xung thứ cấp, sụt áp thấp, chịu dòng lớn.", l: "b8" },
+  { t: "IC 7815", k: "7815 on ap 15v", d: "IC ổn áp 3 chân (IN, GND, OUT) cho ra +15 V, nuôi các IC driver kích IGBT. Áp vào phải cao hơn ngõ ra ít nhất khoảng 2 V.", l: "b8" },
+  { t: "Hiccup (nguồn chớp tắt)", k: "hiccup chop tat bao ve", d: "Nguồn xung khởi động rồi bảo vệ ngắt liên tục, tạo hiện tượng chớp tắt.", l: "b8" },
+  { t: "CTR của opto", k: "ctr he so truyen dong opto gia", d: "Hệ số truyền dòng của opto. Opto già thì CTR giảm, hồi tiếp yếu đi.", l: "b8" },
+  { t: "PWM / độ rộng xung (duty cycle)", k: "pwm duty cycle do rong xung", d: "Tỉ lệ thời gian IC nguồn bật trong mỗi chu kỳ đóng cắt. Xung rộng bơm nhiều năng lượng, xung hẹp bơm ít.", l: "b8" }
 ];
