@@ -22,5 +22,8 @@ Mô phỏng nằm ở `js/labs.js` + phần `<section id="lab-...">` trong `inde
 `js/chat.js`. Chạy trên máy, không AI, không gọi mạng. Chấm điểm từ khóa không dấu trên bài học và thuật ngữ.
 Câu nào không khớp đủ thì trả lời "Chưa có trong giáo trình" thay vì đoán.
 
+## Ôn tập cách quãng
+Mỗi câu bài tập tự vào hộp Leitner (lưu trong localStorage của máy, không cần mạng). Đúng thì hẹn lại sau 1, 3, 7, 14, 30 ngày, sai thì về 1 ngày. Mục "Ôn tập cách quãng" hiện ở đầu trang Học khi có câu đến hạn (đường dẫn `#/on`).
+
 ## Nguồn nội dung
 8 bài đã học trong project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" và các mô phỏng "Thực hành điện tử". Số liệu trong mô phỏng chỉ minh họa nguyên lý.

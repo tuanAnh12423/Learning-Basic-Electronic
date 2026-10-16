@@ -32,6 +32,8 @@
     <section id="v-hoc" class="view" hidden></section>
     <!-- BÀI HỌC -->
     <section id="v-bai" class="view" hidden></section>
+    <!-- ÔN TẬP CÁCH QUÃNG -->
+    <section id="v-on" class="view" hidden></section>
     <!-- THỰC HÀNH: các mô phỏng -->
     <section id="v-lab" class="view" hidden>
       <div class="bar">
@@ -46,6 +48,8 @@
           <button class="tab" role="tab" data-lab="lanh" aria-selected="false">Chu trình lạnh</button>
           <button class="tab" role="tab" data-lab="rl" aria-selected="false">Relay + transistor</button>
           <button class="tab" role="tab" data-lab="tim" aria-selected="false">Tìm lỗi quạt</button>
+          <button class="tab" role="tab" data-lab="ntc" aria-selected="false">NTC phân áp</button>
+          <button class="tab" role="tab" data-lab="bi" aria-selected="false">Bắt bệnh bo</button>
         </div>
         <button class="pause" id="pause" type="button">Tạm dừng</button>
       </div>
@@ -359,6 +363,57 @@
         <li>Giảm điện trở tải (tải nặng hơn): gợn sóng tăng. Tụ phải lớn hơn để giữ điện áp.</li>
       </ul>
     </div>
+  </div>
+</section>
+<!-- ============ BẮT BỆNH BO INVERTER ============ -->
+<section id="lab-bi" class="lab" hidden>
+  <div class="card">
+    <h2>Bài 8: Bắt bệnh bo inverter</h2>
+    <p class="lead">Bo inverter không chạy máy nén. Bấm số trên sơ đồ để đo từng điểm, rồi chọn kết luận lỗi nằm ở đâu. Mỗi lần ra đề, lỗi sẽ khác. Số đo chỉ minh họa nguyên lý của một bo nguồn xung như trong Bài 8.</p>
+    <svg id="bi-svg" class="res" viewBox="0 0 340 428" role="img" aria-label="Sơ đồ khối bo inverter: nguồn 220 V, cầu chì, cầu diode và tụ lọc 300 V, IC nguồn xung, biến áp, diode kép, hạ áp 5 V, IC 7815 cho 15 V, opto và TL431. Có 8 điểm đo đánh số"></svg>
+    <div class="lcd" id="bi-lcd" aria-live="polite">— — —</div>
+    <div class="note" id="bi-mode" style="margin-top:6px">Chọn một điểm đo.</div>
+    <div class="seg" id="bi-pts" role="group" aria-label="Chọn điểm đo" style="margin-top:8px"></div>
+    <p class="band-t">Kết luận của bạn: lỗi nằm ở đâu?</p>
+    <div class="ans" id="bi-ans"></div>
+    <div class="formula" id="bi-fb" hidden></div>
+    <div class="seg"><button class="btn" id="bi-new" type="button">Ra đề mới</button><button class="btn" id="bi-rev" type="button">Xem đáp án</button></div>
+    <div class="warn"><b>An toàn:</b> các điểm 2, 3, 4, 5, 6 là điện áp đang có thật (220 V xoay chiều và 300 V một chiều ở phía sơ cấp). Chỉ chạm que vào chân, không chạm tay vào kim loại. Điểm 1, 7, 8 là đo nguội: phải rút điện và xả tụ lớn 300 V qua điện trở trước, không chập bằng tua vít. Mỗi vùng có mass riêng: nhánh +15 V cấp driver IGBT thường dùng chung mass với phía sơ cấp, nên xem tài liệu của bo trước khi đặt que đen. Số đo ngay trên bo có thể lệch vì linh kiện song song: nghi ngờ thì nhấc một chân.</div>
+    <div class="try"><b>Cách đo gọn:</b>
+      <ul>
+        <li>Bắt đầu từ đầu nguồn: sau cầu chì có 220 V không, trên tụ lọc có khoảng 300 V không.</li>
+        <li>Có 300 V mà thứ cấp mất hết: đo nguội diode kép và opto để phân biệt chập thứ cấp với IC nguồn không chạy.</li>
+        <li>Có 12 V và 5 V mà thiếu 15 V: tìm nhánh phụ và IC 7815.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NTC + PHÂN ÁP ============ -->
+<section id="lab-ntc" class="lab" hidden>
+  <div class="card">
+    <h2>Bài 10: Cảm biến NTC và mạch phân áp</h2>
+    <p class="lead">NTC nóng lên thì điện trở giảm, nên điện áp ở điểm giữa mạch phân áp thay đổi. Vi điều khiển đọc điện áp này để biết nhiệt độ.</p>
+    <div class="seg" role="group" aria-label="Vị trí NTC">
+      <button type="button" id="ntc-low" aria-pressed="true">NTC nối đất (phía dưới)</button>
+      <button type="button" id="ntc-up" aria-pressed="false">NTC nối nguồn (phía trên)</button>
+    </div>
+    <canvas id="ntc-c" role="img" aria-label="Mạch phân áp gồm điện trở cố định 10 kΩ và NTC, nguồn 5 V, điểm giữa nối vào vi điều khiển"></canvas>
+    <div class="ctrl"><label for="ntc-t">Nhiệt độ NTC</label><output id="ntc-tv"></output><input id="ntc-t" type="range" min="-10" max="60" step="1" value="25"></div>
+    <div class="read">
+      <div><small>Điện trở NTC</small><b id="ntc-r"></b></div>
+      <div><small>Điện áp điểm giữa</small><b id="ntc-v"></b></div>
+    </div>
+    <div class="formula" id="ntc-f"></div>
+    <canvas id="ntc-g" role="img" aria-label="Đồ thị điện áp điểm giữa theo nhiệt độ từ -10 đến 60 độ C"></canvas>
+    <div class="try"><b>Thử:</b>
+      <ul>
+        <li>Đặt 25 °C: hai điện trở cùng 10 kΩ nên điểm giữa đúng 2,5 V.</li>
+        <li>Kéo nhiệt độ lên cao với NTC phía dưới: điện áp giảm. Chuyển NTC lên phía trên: điện áp tăng khi nóng lên.</li>
+        <li>Kéo về 0 °C: điện trở NTC tăng lên hơn gấp ba lần giá trị lúc 25 °C.</li>
+      </ul>
+    </div>
+    <p class="note">Mô hình NTC 10 kΩ ở 25 °C, hệ số B = 3950 K. Chỉ minh họa nguyên lý: bảng điện trở thật của từng loại cảm biến theo tài liệu của hãng.</p>
   </div>
 </section>
       <p class="foot">Mô phỏng minh họa nguyên lý theo mô hình đơn giản, không phải số đo của một mạch hay thiết bị cụ thể. Khi sửa chữa, luôn cắt nguồn, xả tụ và đo xác nhận.</p>

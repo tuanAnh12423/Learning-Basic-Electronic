@@ -257,7 +257,7 @@ window.LESSONS = [
   {
     id: "b8", n: 8, title: "Nguồn xung trên bo inverter (nâng cao)",
     summary: "Đọc một bo inverter điều hòa thật: 5 giai đoạn nguồn xung, nhánh 300 V, 5 V, +15 V, vòng hồi tiếp TL431 và opto, đo nguội và chẩn đoán hư hỏng.",
-    labs: [],
+    labs: ["bi"],
     keywords: "bo inverter nguon xung smps igbt 7815 15v driver tl431 opto diode kep schottky emi varistor hoi tiep fb pwm hiccup ctr do nguoi 300v mat 15v",
     blocks: [
       { h: "Bo inverter chia hai khu vực", kw: "bo inverter khu vuc so cap thu cap khe cach ly igbt mcu hai khu vuc",
@@ -307,6 +307,82 @@ window.LESSONS = [
       { q: "Nguy cơ chính khi opto đứt hoặc mạch dò TL431 hỏng (mất hồi tiếp) là gì?", o: ["Điện áp thứ cấp có thể vọt cao hoặc IC nguồn ngắt bảo vệ", "Không có hậu quả gì", "Chỉ làm đèn mờ", "Điện áp tự giảm về 0 và đứng yên an toàn"], a: 0, why: "IC nguồn không biết áp ra thế nào để chỉnh xung nên áp có thể vọt cao hoặc nguồn ngắt bảo vệ chớp tắt (hiccup)." },
       { q: "Trước khi đo nguội trên phía sơ cấp phải làm gì?", o: ["Đo ngay vì đã rút phích", "Rút điện, xả tụ lọc lớn 300 V và đo lại bằng đồng hồ", "Chạm tay kiểm tra tụ", "Bật máy cho tụ tự xả"], a: 1, why: "Tụ lớn giữ khoảng 300 V sau khi rút phích, phải xả và xác nhận bằng đồng hồ." }
     ]
+  },
+  {
+    id: "b9", n: 9, title: "Đồng hồ vạn năng và an toàn điện",
+    summary: "Đo điện áp, dòng điện, điện trở đúng cách, thang đo diode và thông mạch, vùng nóng và vùng lạnh trên bo, thói quen an toàn.",
+    labs: [],
+    keywords: "dong ho van nang vom multimeter do dien ap do dong do dien tro thong mach thang diode an toan dien vung nong vung lanh cau chi xa tu mot tay",
+    blocks: [
+      { h: "Ba cách mắc đồng hồ", kw: "do dien ap song song do dong noi tiep do dien tro cat nguon",
+        p: ["Đo điện áp (V): đặt đồng hồ song song với phần cần đo, mạch đang có điện. Chọn đúng loại: DC (có vạch thẳng) cho nguồn một chiều, AC (có vạch lượn sóng) cho điện nhà.",
+            "Đo dòng điện (A): phải ngắt mạch và đặt đồng hồ nối tiếp để dòng chạy qua đồng hồ. Cắm que vào nhầm lỗ đo dòng rồi đặt song song qua nguồn sẽ gây chập, làm đứt cầu chì trong đồng hồ hoặc nguy hiểm hơn.",
+            "Đo điện trở (Ω), thông mạch và diode: chỉ đo khi mạch đã cắt nguồn và tụ đã xả. Đồng hồ tự phát điện áp nhỏ để đo, nên điện áp có sẵn trong mạch làm sai số đo và có thể làm hỏng đồng hồ."] },
+      { h: "Thói quen trước khi đặt que", kw: "chon thang dung que do lo cam com chon loai ac dc kiem tra que",
+        p: ["Que đen luôn cắm lỗ COM. Que đỏ cắm lỗ V/Ω khi đo áp và điện trở, lỗ đo dòng chỉ cắm khi thật sự đo dòng.",
+            "Xoay núm đúng loại (AC hay DC) trước khi chạm que vào mạch. Đồng hồ chỉnh tay: chưa biết giá trị thì chọn thang lớn nhất rồi giảm dần. Đồng hồ tự chọn thang (auto-range) thì không cần bước này.",
+            "Thử đồng hồ trước: chập hai que ở thang thông mạch phải kêu bíp. Kiểm tra dây que không nứt vỏ."] },
+      { h: "Thang diode và thông mạch", kw: "thang diode thong mach bip ol sut ap 0,6 silic chieu thuan",
+        p: ["Thang diode cho biết sụt áp thuận. Diode silic thường hiện khoảng 0,5 đến 0,7 V theo chiều thuận. Đảo que thì hiện OL (không dẫn). Hai chiều đều hiện gần 0 là chập, hai chiều đều OL là đứt.",
+            "Thang thông mạch kêu bíp khi điện trở rất nhỏ, dùng để thử dây, cầu chì, tiếp điểm. Cầu chì còn tốt thì bíp, cầu chì đứt thì không bíp.",
+            "Đo ngay trên bo (chưa nhấc chân) thì các linh kiện mắc song song, như cuộn biến áp hoặc điện trở, có thể làm số đo lệch, chiều ngược có khi không hiện OL. Nghi ngờ thì nhấc một chân linh kiện ra khỏi mạch rồi đo lại."] },
+      { h: "Vùng nóng và vùng lạnh trên bo", kw: "vung nong vung lanh so cap thu cap khe cach ly 220v mot tay",
+        p: ["Trên bo nguồn xung (xem Bài 7 và 8), phía sơ cấp (vùng nóng) nối trực tiếp với điện nhà và 300 V DC. Chạm vào có thể điện giật. Phía thứ cấp (vùng lạnh) điện áp thấp hơn và cách ly qua biến áp, opto.",
+            "Khi bắt buộc đo phía sơ cấp lúc có điện, chỉ làm khi có người có kinh nghiệm hướng dẫn. Đứng chỗ khô, không chạm vào kim loại nối đất. Nên rút điện, kẹp cố định que đen vào điểm mass bằng đầu kẹp rồi mới cấp điện, và chỉ dùng một tay cầm que đỏ, tay kia để xa bo. Không dùng hai tay cầm hai que. Biến áp cách ly giúp an toàn hơn.",
+            "Lưu ý khi chọn điểm mass để đặt que đen: mỗi vùng có mass riêng. Nhánh +15 V cấp cho IC driver IGBT thường dùng chung mass với phía sơ cấp (mass nóng), không phải mass của 5 V. Xem tài liệu của bo trước khi đặt que đen, vì đặt nhầm mass thì số đo sai và nguy hiểm.",
+            "Mặc định: rút điện trước khi đụng tay vào bo."] },
+      { h: "Quy trình an toàn", kw: "an toan dien rut phich xa tu cau chi doi cau chi dung loai kiem tra lai",
+        p: ["Rút phích, chờ vài phút rồi xả tụ lớn qua điện trở xả công suất phù hợp hoặc que xả có điện trở (xem Bài 3), tuyệt đối không chập hai chân bằng tua vít. Sau đó đo lại điện áp trên tụ bằng đồng hồ để chắc đã hết điện.",
+            "Cầu chì đứt thường có nguyên nhân phía sau (chập cầu diode, IC công suất...). Đổi cầu chì đúng loại, đúng dòng định mức, và tìm nguyên nhân trước khi cấp điện lại. Không dùng dây thay cầu chì.",
+            "Có nghi ngờ thì dừng lại và hỏi người có chuyên môn."] }
+    ],
+    quiz: [
+      { q: "Muốn đo điện áp trên một tải đang chạy. Đồng hồ mắc thế nào?", o: ["Nối tiếp với tải", "Song song với tải", "Không cần nối que", "Chỉ đo được khi mất điện"], a: 1, why: "Đo điện áp thì đồng hồ mắc song song với phần cần đo." },
+      { q: "Muốn đo dòng điện qua một tải. Đồng hồ mắc thế nào?", o: ["Song song qua nguồn", "Nối tiếp trong mạch", "Song song với tải", "Không cần ngắt mạch"], a: 1, why: "Dòng phải chạy qua đồng hồ nên phải ngắt mạch và mắc nối tiếp." },
+      { q: "Vì sao không đo điện trở khi mạch còn điện?", o: ["Vì que đo nóng lên", "Vì điện áp có sẵn làm sai số đo và có thể hỏng đồng hồ", "Vì điện trở đổi giá trị theo màu", "Không có lý do, đo lúc nào cũng được"], a: 1, why: "Đồng hồ tự phát một điện áp nhỏ để đo điện trở. Điện áp của mạch chen vào làm số đo sai và có thể làm hỏng đồng hồ." },
+      { q: "Đo diode bằng thang diode, que đỏ vào anode, que đen vào cathode. Diode silic tốt hiện khoảng?", o: ["OL", "0,5 đến 0,7 V", "12 V", "Hiện 0 ở cả hai chiều"], a: 1, why: "Chiều thuận sụt áp khoảng 0,5 đến 0,7 V với diode silic. Đảo que thì OL." },
+      { q: "Đo một diode thấy cả hai chiều đều hiện gần 0 và kêu bíp. Kết luận?", o: ["Diode tốt", "Diode bị chập", "Diode bị đứt", "Đồng hồ hết pin"], a: 1, why: "Diode tốt chỉ dẫn một chiều. Hai chiều đều thông là chập." },
+      { q: "Vùng nóng (sơ cấp) trên bo nguồn xung là vùng nào?", o: ["Phía nối trực tiếp với điện nhà và 300 V DC", "Phía có 5 V nuôi vi điều khiển", "Phía thứ cấp có 3,3 V", "Phần cổng giao tiếp"], a: 0, why: "Sơ cấp nối trực tiếp điện nhà, chạm vào có thể bị điện giật." },
+      { q: "Cách xả tụ lọc lớn khoảng 300 V sau khi rút phích là gì?", o: ["Chập hai chân bằng tua vít cho nhanh", "Xả qua điện trở xả công suất phù hợp rồi đo lại điện áp để chắc về gần 0 V", "Chờ vài giây là hết điện", "Chạm tay vào hai chân để thử"], a: 1, why: "Xả qua điện trở để dòng xả vừa phải, rồi đo lại bằng đồng hồ. Chập trực tiếp gây tia lửa và nguy hiểm (Bài 3)." },
+      { q: "Cầu chì đứt, thay cầu chì mới đúng loại. Việc cần làm trước khi cấp điện lại?", o: ["Cấp điện ngay xem sao", "Tìm và xử lý nguyên nhân gây đứt cầu chì", "Thay bằng cầu chì dòng lớn hơn cho chắc", "Dùng dây đồng thay cầu chì"], a: 1, why: "Cầu chì đứt thường do chập phía sau. Phải tìm nguyên nhân, và luôn dùng cầu chì đúng loại, đúng dòng định mức." }
+    ]
+  },
+  {
+    id: "b10", n: 10, title: "Cuộn cảm, cảm biến NTC và cuộn dây máy nén",
+    summary: "Cuộn cảm cản dòng thay đổi, nhiệt điện trở NTC trong mạch phân áp, đo kiểm cuộn dây máy nén một pha và ba pha.",
+    labs: ["ntc"],
+    keywords: "cuon cam inductor henry tu truong ntc nhiet dien tro cam bien nhiet do phan ap cuon day may nen c r s u v w do cuon day",
+    blocks: [
+      { h: "Cuộn cảm", kw: "cuon cam inductor henry tu truong v = l di/dt cam khang xl",
+        p: ["Cuộn cảm là cuộn dây tích năng lượng trong từ trường khi có dòng chạy qua. Độ tự cảm L có đơn vị henry (H), thường dùng mH hoặc µH.",
+            "Cuộn cảm chống lại sự thay đổi của dòng điện: dòng đổi càng nhanh thì điện áp sinh ra trên cuộn dây càng lớn (V = L × độ biến thiên dòng ÷ thời gian).",
+            "Với dòng một chiều ổn định, cuộn cảm gần như chỉ còn điện trở của dây. Với dòng xoay chiều, cảm kháng XL = 2π × f × L, tần số càng cao thì cuộn càng cản mạnh.",
+            "Ví dụ: L = 10 mH, ở 50 Hz XL khoảng 3,14 Ω, ở 50 kHz XL khoảng 3,14 kΩ."] },
+      { h: "Vì sao có diode dập xung", kw: "ngat dong dot ngot xung dien ap cuon relay diode dap xung loc nhieu emi",
+        p: ["Ngắt dòng qua cuộn dây đột ngột thì dòng đổi rất nhanh nên cuộn sinh xung điện áp rất cao. Đó là lý do cuộn relay cần diode dập xung (Bài 6).",
+            "Cuộn cảm cũng dùng trong mạch lọc nhiễu EMI ở đầu vào bo nguồn (Bài 8): cho dòng 50 Hz đi qua dễ dàng nhưng cản nhiễu cao tần."] },
+      { h: "Cảm biến nhiệt NTC", kw: "ntc nhiet dien tro ptc cam bien nhiet do phong dan lanh ong dong phan ap adc 10k 25 do",
+        p: ["NTC (hệ số nhiệt âm) là điện trở đổi theo nhiệt độ: nhiệt độ tăng thì điện trở giảm. PTC thì ngược lại. Máy lạnh thường dùng NTC làm cảm biến nhiệt độ phòng và nhiệt độ ống dàn.",
+            "Vi điều khiển không đo trực tiếp điện trở mà đo điện áp. NTC mắc nối tiếp với một điện trở cố định tạo mạch phân áp, và điểm giữa nối vào chân đo của vi điều khiển.",
+            "Ví dụ: nguồn 5 V, điện trở cố định 10 kΩ, NTC loại 10 kΩ ở 25 °C và mắc ở phía dưới (nối đất). Ở 25 °C hai điện trở bằng nhau nên điểm giữa là 2,5 V. Trời nóng hơn thì NTC giảm điện trở nên điểm giữa giảm xuống dưới 2,5 V (với cách mắc này).",
+            "Đo kiểm: rút cảm biến khỏi bo, đo điện trở ở thang Ω rồi đối chiếu với bảng của hãng. Hở mạch (rất lớn) hoặc chập (gần 0) là hỏng."] },
+      { h: "Đo cuộn dây máy nén", kw: "may nen mot pha c r s chay de ba pha u v w do cuon day cach dien chap vo",
+        p: ["Máy nén một pha có ba đầu: C (chung), R (cuộn chạy) và S (cuộn đề). Rút hết dây khỏi các đầu rồi đo từng cặp ở thang Ω (xem lại Bài 9 về an toàn).",
+            "Kết quả đúng: điện trở lớn nhất nằm giữa R và S, và R-S gần bằng C-R cộng C-S. Cuộn đề thường có điện trở lớn hơn cuộn chạy.",
+            "Máy nén inverter ba pha có ba đầu U, V, W. Đo từng cặp U-V, V-W, W-U thì ba số phải gần bằng nhau, và rất nhỏ (thường dưới vài ôm).",
+            "Dấu hiệu hỏng: một cặp không thông (đứt cuộn), hoặc số đo lệch nhau rõ rệt (chập vòng). Ngoài ra đo từng đầu với vỏ máy nén phải là hở mạch (không thông): thông là chạm vỏ.",
+            "Đồng hồ vạn năng thường chỉ phát hiện được chạm vỏ rõ ràng. Rò điện nhẹ, chỉ lộ ra dưới điện áp cao, cần đồng hồ đo cách điện (megohm, thường thử ở 500 V) theo quy trình của hãng."] }
+    ],
+    quiz: [
+      { q: "Cuộn cảm 10 mH ở 50 Hz, cảm kháng khoảng bao nhiêu?", o: ["0,3 Ω", "3,14 Ω", "31,4 Ω", "314 Ω"], a: 1, why: "XL = 2π × 50 × 0,01 ≈ 3,14 Ω." },
+      { q: "Tần số tăng lên, cuộn cảm cản dòng xoay chiều thế nào?", o: ["Cản yếu đi", "Cản mạnh lên", "Không đổi", "Hết cản"], a: 1, why: "XL = 2π f L, tỉ lệ thuận với tần số." },
+      { q: "Vì sao ngắt dòng qua cuộn relay cần diode dập xung?", o: ["Để relay đóng nhanh hơn", "Cuộn dây sinh xung điện áp cao khi dòng bị ngắt đột ngột", "Để tăng dòng qua cuộn", "Để cuộn bớt nóng"], a: 1, why: "Dòng đổi đột ngột thì cuộn cảm sinh điện áp rất cao, có thể làm hỏng transistor." },
+      { q: "NTC: nhiệt độ tăng thì điện trở?", o: ["Tăng", "Giảm", "Không đổi", "Bằng 0"], a: 1, why: "NTC có hệ số nhiệt âm, nóng lên thì điện trở giảm." },
+      { q: "NTC 10 kΩ ở 25 °C nối đất, nối tiếp điện trở 10 kΩ lên nguồn 5 V. Điểm giữa là?", o: ["0 V", "2,5 V", "5 V", "10 V"], a: 1, why: "Hai điện trở bằng nhau nên điện áp chia đôi: 2,5 V." },
+      { q: "Máy nén một pha đo được C-R = 3 Ω, C-S = 5 Ω. Dự đoán R-S?", o: ["Khoảng 2 Ω", "Khoảng 8 Ω", "Khoảng 15 Ω", "Hở mạch"], a: 1, why: "R-S gần bằng C-R + C-S = 8 Ω, và là số lớn nhất trong ba cặp." },
+      { q: "Máy nén inverter ba pha, ba cặp U-V, V-W, W-U cho kết quả thế nào là bình thường?", o: ["Một cặp OL, hai cặp thông", "Ba số gần bằng nhau", "Ba số khác nhau nhiều", "Cả ba đều OL"], a: 1, why: "Ba cuộn giống nhau nên ba cặp phải gần bằng nhau." },
+      { q: "Đo từ một đầu máy nén ra vỏ kim loại thấy thông mạch. Nghĩa là?", o: ["Bình thường", "Cuộn dây chạm vỏ (hỏng cách điện)", "Máy nén đầy gas", "Đồng hồ hết pin"], a: 1, why: "Đầu cuộn và vỏ máy phải cách điện với nhau. Thông mạch là chạm vỏ." }
+    ]
   }
 
 ];
@@ -355,5 +431,13 @@ window.GLOSSARY = [
   { t: "IC 7815", k: "7815 on ap 15v", d: "IC ổn áp 3 chân (IN, GND, OUT) cho ra +15 V, nuôi các IC driver kích IGBT. Áp vào phải cao hơn ngõ ra ít nhất khoảng 2 V.", l: "b8" },
   { t: "Hiccup (nguồn chớp tắt)", k: "hiccup chop tat bao ve", d: "Nguồn xung khởi động rồi bảo vệ ngắt liên tục, tạo hiện tượng chớp tắt.", l: "b8" },
   { t: "CTR của opto", k: "ctr he so truyen dong opto gia", d: "Hệ số truyền dòng của opto. Opto già thì CTR giảm, hồi tiếp yếu đi.", l: "b8" },
-  { t: "PWM / độ rộng xung (duty cycle)", k: "pwm duty cycle do rong xung", d: "Tỉ lệ thời gian IC nguồn bật trong mỗi chu kỳ đóng cắt. Xung rộng bơm nhiều năng lượng, xung hẹp bơm ít.", l: "b8" }
+  { t: "PWM / độ rộng xung (duty cycle)", k: "pwm duty cycle do rong xung", d: "Tỉ lệ thời gian IC nguồn bật trong mỗi chu kỳ đóng cắt. Xung rộng bơm nhiều năng lượng, xung hẹp bơm ít.", l: "b8" },
+  { t: "Thang thông mạch", k: "thang thong mach bip", d: "Thang đo trên đồng hồ vạn năng kêu bíp khi điện trở rất nhỏ. Dùng thử dây, cầu chì, tiếp điểm.", l: "b9" },
+  { t: "Vùng nóng / vùng lạnh", k: "vung nong vung lanh so cap thu cap", d: "Vùng nóng là phía sơ cấp nối trực tiếp điện nhà. Vùng lạnh là phía thứ cấp điện áp thấp, cách ly qua biến áp và opto.", l: "b9" },
+  { t: "OL (quá thang)", k: "ol over load qua thang", d: "Số hiện trên đồng hồ khi giá trị vượt thang đo, trong thang Ω và diode nghĩa là hở mạch hoặc không dẫn.", l: "b9" },
+  { t: "Cuộn cảm", k: "cuon cam inductor henry", d: "Cuộn dây tích năng lượng bằng từ trường, chống lại sự thay đổi của dòng điện. Đơn vị henry (H).", l: "b10" },
+  { t: "Cảm kháng XL", k: "cam khang xl 2 pi f l", d: "Sức cản của cuộn cảm với dòng xoay chiều: XL = 2π × f × L. Tần số càng cao càng cản mạnh.", l: "b10" },
+  { t: "NTC (nhiệt điện trở)", k: "ntc nhiet dien tro cam bien nhiet do", d: "Điện trở giảm khi nhiệt độ tăng. Dùng làm cảm biến nhiệt độ phòng và nhiệt độ ống trong máy lạnh.", l: "b10" },
+  { t: "Mạch phân áp", k: "mach phan ap", d: "Hai điện trở nối tiếp, lấy điện áp ở điểm giữa. Vi điều khiển đọc điểm giữa này để biết điện trở cảm biến.", l: "b10" },
+  { t: "C, R, S (máy nén một pha)", k: "c r s chung chay de may nen mot pha", d: "Ba đầu của máy nén một pha: C chung, R cuộn chạy, S cuộn đề. Điện trở R-S lớn nhất và bằng khoảng C-R cộng C-S.", l: "b10" }
 ];
