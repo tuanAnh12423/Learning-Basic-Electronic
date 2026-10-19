@@ -1,11 +1,11 @@
 /* Cho phép dùng offline sau lần mở đầu. Đổi số VERSION mỗi khi sửa file để điện thoại tải bản mới. */
-var VERSION = "hdt-v16";
+var VERSION = "hdt-v12";
 var FILES = [
   "./", "index.html", "css/labs.css", "css/app.css",
   "data/lessons.js", "js/labs.js", "js/real.js", "js/chat.js", "js/app.js",
   "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png",
   "img/b6-hai-duong.png", "img/b6-so-do-day-du.png", "img/b6-dong-dien.png",
-  "img/b7-bien-ap.png", "img/b7-nguon-xung.png", "img/b7-opto.png", "img/b8-bo-inverter.png", "img/b8-linh-kien.png"
+  "img/b7-bien-ap.png", "img/b7-nguon-xung.png", "img/b7-opto.png", "img/b8-bo-inverter.png", "img/b8-linh-kien.png", "img/b9-mat-linh-kien.jpg", "img/b9-mat-han.jpg"
 ];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));
