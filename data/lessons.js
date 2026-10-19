@@ -210,7 +210,7 @@ window.LESSONS = [
   {
     id: "b7", n: 7, title: "Biến áp, sơ cấp và thứ cấp",
     summary: "Biến áp, tỉ số vòng dây, nguồn xung trên board, opto, TL431 và an toàn khi làm việc ở phía sơ cấp.",
-    labs: [],
+    labs: ["bienap","flyback","tl431"],
     keywords: "bien ap so cap thu cap cuon day ti so vong nguon xung smps opto optocoupler tl431 tu loc lon 310v cach ly an toan",
     blocks: [
       { h: "Sơ cấp và thứ cấp là gì", kw: "so cap thu cap bien ap cuon day tu truong cach ly",
@@ -257,7 +257,7 @@ window.LESSONS = [
   {
     id: "b8", n: 8, title: "Nguồn xung trên bo inverter (nâng cao)",
     summary: "Đọc một bo inverter điều hòa thật: 5 giai đoạn nguồn xung, nhánh 300 V, 5 V, +15 V, vòng hồi tiếp TL431 và opto, đo nguội và chẩn đoán hư hỏng.",
-    labs: [],
+    labs: ["vonghoi","sec","buck","boot","spwm","deadtime","shunt","chiaap","snub"],
     keywords: "bo inverter nguon xung smps igbt 7815 15v driver tl431 opto diode kep schottky emi varistor hoi tiep fb pwm hiccup ctr do nguoi 300v mat 15v",
     blocks: [
       { h: "Bo inverter chia hai khu vực", kw: "bo inverter khu vuc so cap thu cap khe cach ly igbt mcu hai khu vuc",
@@ -311,7 +311,7 @@ window.LESSONS = [
   {
     id: "b9", n: 9, title: "Đọc bo nguồn xung inverter thực tế",
     summary: "Bản đồ đọc một bo inverter thật: 5 bước theo đường điện, ảnh bo đánh số linh kiện hai mặt, cách đọc mã in, chẩn đoán theo triệu chứng.",
-    labs: [],
+    labs: ["ntc","varistor","emi","xatux","relay"],
     keywords: "doc bo mach inverter thuc te ban do linh kien tu x tu y ntc varistor cau chi cuon chong nhieu bien ap xung ic nguon opto tl431 shunt snubber igbt driver ma in 334k 104k 2703 relay",
     blocks: [
       { h: "Đọc bo trong 5 bước", kw: "doc bo 5 buoc so cap thu cap duong dien khe cach ly bus 300v",

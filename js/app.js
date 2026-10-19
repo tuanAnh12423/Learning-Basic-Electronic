@@ -7,6 +7,7 @@
   var TITLE = "Học Điện Tử, Điện Lạnh";
   var LAB_NAME = { ohm: "Ohm", mau: "Mã màu điện trở", mach: "Nối tiếp, song song", tu: "Tụ nạp, xả", doi: "Xả tụ đôi",
     diode: "Diode", cau: "Cầu chỉnh lưu", lanh: "Chu trình lạnh", rl: "Relay + transistor", tim: "Tìm lỗi quạt" };
+  if (window.LAB_NAME_EXTRA) Object.keys(window.LAB_NAME_EXTRA).forEach(function (k) { LAB_NAME[k] = window.LAB_NAME_EXTRA[k]; });
 
   function el(tag, attrs, kids) {
     var e = document.createElement(tag);

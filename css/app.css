@@ -185,3 +185,18 @@ h2{font-size:18px}
 .part{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line)}
 .part h4{margin:0 0 8px;font-size:15px}
 .part figcaption{font-size:14px;color:var(--text,inherit);line-height:1.5}
+
+/* 19/10/2026: sơ đồ nguyên lý nhỏ trong các mô phỏng linh kiện */
+svg.sk{margin:0 0 10px}
+.sk-w{stroke:var(--ink);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.sk-v{stroke:var(--volt);stroke-width:2.2;fill:none}
+.sk-a{stroke:var(--amp);stroke-width:2.2;fill:none}
+.sk-o{stroke:var(--ok);stroke-width:2.2;fill:none}
+.sk-b{stroke:var(--bad);stroke-width:2.2;fill:none}
+.sk-f{fill:var(--surface);stroke:var(--ink);stroke-width:1.6}
+.sk-on{fill:var(--amp);stroke:var(--ink);stroke-width:1.6}
+.sk-t{fill:var(--ink);font:600 11px var(--font)}
+.sk-m{fill:var(--muted);font:10.5px var(--font)}
+.sk-d{fill:var(--ink)}
+.lab-note{font-size:13.5px;color:var(--muted);margin:6px 0 0}
+.lk-wrap canvas+canvas{margin-top:8px}
