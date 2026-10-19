@@ -131,6 +131,14 @@
             el("a", { href: b.img.src, target: "_blank", rel: "noopener" }, [el("img", { src: b.img.src, alt: b.img.alt, loading: "lazy" })]),
             el("figcaption", { text: b.img.cap + " (chạm vào hình để mở lớn)" })]));
         }
+        if (b.parts) {
+          b.parts.forEach(function (pt) {
+            kids.push(el("figure", { class: "fig part" }, [
+              el("h4", { text: pt.n }),
+              el("a", { href: pt.src, target: "_blank", rel: "noopener" }, [el("img", { src: pt.src, alt: pt.n, loading: "lazy" })]),
+              el("figcaption", { text: pt.t })]));
+          });
+        }
         box.appendChild(el("section", { class: "sec", id: "sec-" + i }, kids));
       });
       var next = el("div", { class: "nav-row" });

@@ -181,3 +181,7 @@ h2{font-size:18px}
 .legend{display:grid;gap:4px;margin:2px 0 8px;font-size:13px;color:var(--muted)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .real .read b{font-family:var(--font);font-size:15px;font-weight:600}
+
+.part{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.part h4{margin:0 0 8px;font-size:15px}
+.part figcaption{font-size:14px;color:var(--text,inherit);line-height:1.5}
