@@ -200,3 +200,45 @@ svg.sk{margin:0 0 10px}
 .sk-d{fill:var(--ink)}
 .lab-note{font-size:13.5px;color:var(--muted);margin:6px 0 0}
 .lk-wrap canvas+canvas{margin-top:8px}
+
+/* 21/10/2026: trình bày lại chữ trong bài (Bài 9): danh sách đánh số, bước, mã in, triệu chứng */
+.sec p{line-height:1.6}
+.sec > p,.sec > .lines,.sec > .grp,.sec > .step,.sec > .callout,.sec > .codes,.sec > .sym,.sec > .flowbox{margin:0 0 12px}
+.lines p{margin:0 0 8px}
+.lines p:last-child{margin-bottom:0}
+.note{font-size:14px;color:var(--muted);background:var(--soft);border-radius:10px;padding:9px 12px}
+.callout{border-radius:10px;padding:10px 12px;font-size:15px;line-height:1.55}
+.callout b{display:block;margin-bottom:2px}
+.callout.tip{background:#EAF6EF;border-left:4px solid var(--ok)}
+.callout.warn2{background:#FDEDEC;border-left:4px solid var(--bad)}
+.step{display:flex;gap:10px;align-items:flex-start}
+.step .no,.items .no{flex:none;min-width:28px;height:28px;padding:0 7px;border-radius:14px;background:var(--accent);color:#fff;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.step .tx{flex:1;min-width:0;padding-top:2px}
+.grp .gh{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;margin:2px 0 6px}
+.grp .gh i{width:12px;height:12px;border-radius:50%;flex:none}
+.items{list-style:none;margin:0;padding:0}
+.items li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.items li:first-child{border-top:0;padding-top:4px}
+.items .tx{flex:1;min-width:0;font-size:15.5px;line-height:1.55}
+.items .tx b{font-weight:600}
+.flowbox b{display:block;margin-bottom:6px}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.flow .fc{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14.5px}
+.flow .ar{color:var(--accent);font-weight:600}
+.codes{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.codes .cl{background:var(--soft);padding:8px 12px;font-weight:600;font-size:14.5px}
+.codes .cr{display:flex;gap:12px;align-items:baseline;padding:9px 12px;border-top:1px solid var(--line);font-size:15px}
+.codes .cl + .cr{border-top:0}
+.codes code{flex:none;min-width:64px;font-family:var(--mono);font-weight:600;color:var(--accent)}
+.sym{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.sym .sr{padding:10px 12px;border-top:1px solid var(--line)}
+.sym .sr:first-child{border-top:0}
+.sym .sr b{display:block;font-weight:600;font-size:15px;margin-bottom:2px}
+.sym .sr span{display:block;color:var(--muted);font-size:14.5px;line-height:1.5}
+/* thẻ linh kiện: mỗi linh kiện là một thẻ riêng */
+.part{margin:12px 0 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.part h4{margin:0 0 8px;font-size:15.5px}
+.part figcaption{font-size:15px;line-height:1.55;color:var(--ink);margin-top:8px}
+.flow .fc{border-radius:12px}
+.sec .fig{margin:2px 0 14px}
+.part h4{padding-bottom:0;border:0}
