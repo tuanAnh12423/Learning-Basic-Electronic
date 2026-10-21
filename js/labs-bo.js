@@ -210,4 +210,43 @@
     tryit: ['Bỏ diode dập ngược: điện áp ngược nhảy lên cao.', 'Giảm điện áp cấp xuống 7 V: rơ-le không hút được, rơi vào tình huống "rơ-le kêu nhưng không đóng".', 'Tăng điện cảm: rơ-le hút chậm hơn.', 'Tăng dòng tải lên 15 A: tia lửa lớn hơn, tiếp điểm mòn nhanh và dính (bị hàn dính) về sau.'],
     notes: 'Điện trở cuộn 240 Ω (dòng 50 mA ở 12 V), ngưỡng hút 70% và nhả 30% dòng danh định là giá trị giả định. Điện áp ngược khi không diode chỉ là xấp xỉ tương đối, thực tế phụ thuộc điện dung ký sinh. Rơ-le trên bo thật chưa đọc được thông số cuộn.'
   });
+
+  /* ===== Bài 10: NTC cảm biến nhiệt + cầu chia áp ===== */
+  K.build({
+    id: 'ntcdiv', tab: 'NTC đo nhiệt: chia áp', dur: 12,
+    title: 'Cảm biến nhiệt NTC và cầu chia áp: nhiệt độ thành điện áp',
+    lead: 'NTC nối tiếp một điện trở cố định, điện áp tại điểm giữa (Vo) đưa vào MCU. Nóng lên thì điện trở NTC giảm nên Vo giảm. Con trỏ chạy từ −30 đến 60 °C: xem R và Vo đổi theo nhiệt độ, rồi thử các sự cố hở, chập.',
+    svg: S.open(360, 120, 'Nguồn Vcc, điện trở cố định Rf, điểm giữa Vo đi tới MCU, NTC xuống mass') +
+      S.T(60, 14, 'Vcc', 'sk-t', 'middle') + S.L(60, 18, 60, 26) + S.R(60, 26, 28, true, 'sk-a') + S.T(76, 44, 'Rf cố định', 'sk-m') + S.dot(60, 70) + S.L(60, 70, 60, 78) + S.R(60, 78, 28, true, 'sk-o') + S.T(76, 96, 'NTC', 'sk-t') + S.L(60, 106, 60, 112) + S.gnd(60, 112) + S.L(60, 70, 180, 70) + S.T(186, 74, 'Vo → ADC của MCU', 'sk-t') + S.T(186, 92, 'Vo = Vcc × R_NTC ÷ (Rf + R_NTC)', 'sk-m') + S.close,
+    ctrls: [
+      { id: 'R25', label: 'Điện trở NTC ở 25 °C', min: 1, max: 50, val: 2, log: true, fmt: function (v) { return nf(v, 2) + ' kΩ'; } },
+      { id: 'B', label: 'Hệ số B của NTC (độ dốc)', min: 2500, max: 5000, step: 50, val: 3800, fmt: function (v) { return nf(v, 0) + ' K'; } },
+      { id: 'Rf', label: 'Điện trở cố định Rf', min: 0.5, max: 100, val: 10, log: true, fmt: function (v) { return nf(v, 2) + ' kΩ'; } },
+      { id: 'Vcc', seg: true, label: 'Điện áp nguồn của mạch', val: '5', opts: [{ v: '5', t: '5 V' }, { v: '3.3', t: '3,3 V' }] },
+      { id: 'fault', seg: true, label: 'Sự cố', val: 'none', opts: [{ v: 'none', t: 'Bình thường' }, { v: 'open', t: 'NTC hở (đứt)' }, { v: 'short', t: 'NTC chập' }] }
+    ],
+    compute: function (p) {
+      var col = K.col, N = 361, Vcc = +p.Vcc, xs = K.arr(N, function (i) { return -30 + 90 * i / (N - 1); });
+      function Rn(T) { if (p.fault === 'open') return 1e9; if (p.fault === 'short') return 0.01; return p.R25 * Math.exp(p.B * (1 / (T + 273.15) - 1 / 298.15)); }
+      function Vo(T) { var r = Rn(T); return Vcc * r / (r + p.Rf); }
+      var rr = K.arr(N, function (i) { return Math.min(Rn(xs[i]), 200); }), vo = K.arr(N, function (i) { return Vo(xs[i]); }), adc = K.arr(N, function (i) { return Math.round(1023 * vo[i] / Vcc); });
+      var ts = 0.04 * Vcc, th = 0.96 * Vcc, sens = Math.abs(Vo(5) - Vo(3)) / 2 * 1000;
+      var d = {
+        xs: xs, xunit: '°C (nhiệt độ cảm biến)',
+        panels: [
+          { title: 'Điện trở NTC (đo khi tháo khỏi bo)', unit: 'kΩ', min: 0, series: [{ n: 'R NTC', c: col.amp, y: rr, f: function (v) { return v >= 199.9 ? 'hở (rất lớn)' : nf(v, 2) + ' kΩ'; } }] },
+          { title: 'Điện áp Vo mà MCU đọc', unit: 'V', min: 0, max: Vcc * 1.05, hlines: [{ y: th, t: 'trên ngưỡng này: báo hở (ví dụ)', c: col.bad }, { y: ts, t: 'dưới ngưỡng này: báo chập (ví dụ)', c: col.bad }], series: [{ n: 'Vo', c: col.volt, y: vo, f: function (v) { return nf(v, 2) + ' V'; } }] },
+          { title: 'Số MCU đọc (ADC 10 bit, 0 đến 1023)', unit: '', min: 0, max: 1100, series: [{ n: 'ADC', c: col.ok, y: adc, f: function (v) { return nf(v, 0); } }] }
+        ]
+      };
+      d.reads = [['Vo ở −20 °C', nf(Vo(-20), 2) + ' V'], ['Vo ở 4 °C', nf(Vo(4), 2) + ' V'], ['Vo ở 25 °C', nf(Vo(25), 2) + ' V'], ['Độ nhạy quanh 4 °C', nf(sens, 0) + ' mV mỗi °C']];
+      var v4 = Vo(4);
+      d.msg = 'Vo = Vcc × R_NTC ÷ (Rf + R_NTC). Ở 25 °C: ' + nf(Vcc, 1) + ' × ' + nf(Rn(25), 2) + ' ÷ (' + nf(p.Rf, 2) + ' + ' + nf(Rn(25), 2) + ') = ' + nf(Vo(25), 2) + ' V.\nĐiện áp trên Rf = Vcc − Vo, hai phần cộng lại luôn bằng Vcc: đo +Vcc với dây cảm biến và đo dây cảm biến với mass sẽ được hai số cộng lại bằng nguồn.' +
+        (p.fault === 'open' ? '\nNTC HỞ: R rất lớn, Vo gần bằng Vcc. MCU thấy "lạnh vô cực" nên báo lỗi cảm biến.' : p.fault === 'short' ? '\nNTC CHẬP: R gần 0, Vo gần 0 V. MCU thấy "nóng vô cực" nên báo lỗi cảm biến.' : (v4 > th || v4 < ts ? '\nCẢNH BÁO: với bộ thông số này, Vo ở vùng làm việc đã chạm ngưỡng báo lỗi.' : '\nVo ở vùng làm việc (−20 đến 40 °C) nằm gọn giữa hai ngưỡng, MCU đọc được bình thường.')) +
+        '\nĐổi Rf: Rf càng lớn thì Vo càng thấp, MCU hiểu nhiệt độ cao hơn thực tế dù cảm biến vẫn tốt.';
+      return d;
+    },
+    tryit: ['Chọn "NTC hở" rồi "NTC chập": nhớ hai giá trị Vo (gần Vcc và gần 0 V).', 'Đổi Rf từ 10 kΩ lên 22 kΩ: Vo ở 25 °C giảm. Bo đọc lệch nhiệt độ dù cảm biến tốt.', 'Tăng hệ số B: đường Vo dốc hơn, đọc nhạy hơn nhưng dễ chạm ngưỡng ở hai đầu.', 'Đổi Vcc từ 5 V sang 3,3 V: Vo nhỏ lại theo tỉ lệ, số ADC không đổi.'],
+    notes: 'Dùng công thức Beta cho NTC (gần đúng). R25 = 2 kΩ và B = 3800 K lấy gần với một bảng cảm biến thật bạn cung cấp (R = 6,495 kΩ ở 0 °C và 2,005 kΩ ở 25 °C), nhưng đây không phải số của một sản phẩm cụ thể. Rf, Vcc và ngưỡng báo hở, chập (4% và 96% Vcc) là giả định minh họa, hãy đo trên bo thật.'
+  });
 })();

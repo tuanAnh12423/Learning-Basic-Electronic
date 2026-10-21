@@ -23,4 +23,4 @@ Mô phỏng nằm ở `js/labs.js` + phần `<section id="lab-...">` trong `inde
 Câu nào không khớp đủ thì trả lời "Chưa có trong giáo trình" thay vì đoán.
 
 ## Nguồn nội dung
-9 bài đã học trong project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" và các mô phỏng "Thực hành điện tử". Số liệu trong mô phỏng chỉ minh họa nguyên lý.
+10 bài đã học trong project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" và các mô phỏng "Thực hành điện tử". Số liệu trong mô phỏng chỉ minh họa nguyên lý.

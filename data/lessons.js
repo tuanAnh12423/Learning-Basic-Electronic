@@ -378,6 +378,148 @@ window.LESSONS = [
       { q: "MCU còn sáng đèn nhưng máy nén không chạy. Đo gì trước?", o: ["Điện áp +15 V cấp cho driver IGBT", "Cầu chì quạt", "Tụ lọc 1000 µF thứ cấp", "Tụ X"], a: 0, why: "MCU dùng 5 V hoặc 3,3 V. Driver IGBT cần 15 V để kích mở." },
       { q: "Điện trở shunt 0,1 Ω (R100) dùng để làm gì?", o: ["Hạ 300 V xuống 15 V", "Đo dòng máy nén qua độ sụt áp, bảo vệ quá dòng", "Xả tụ X", "Nuôi MCU"], a: 1, why: "Dòng chạy qua trở nhỏ tạo sụt áp tỉ lệ để MCU đọc và bảo vệ." }
     ]
+  },
+  {
+    "id": "b10",
+    "n": 10,
+    "title": "Cảm biến nhiệt NTC và mạch chia áp",
+    "summary": "MCU chỉ đọc điện áp, nhưng cảm biến nhiệt NTC đổi điện trở. Cầu chia áp biến điện trở thành điện áp. Cách đo bằng VOM, lỗi hở và chập.",
+    "labs": [
+      "ntcdiv"
+    ],
+    "keywords": "ntc cam bien nhiet nhiet tro chia ap cau chia ap vo adc mcu dien tro co dinh ho chap vom do cam bien bang gia tri dien tro nhiet do ma loi cam bien nhiet do ngan lanh",
+    "blocks": [
+      {
+        "h": "Vì sao cần chia áp",
+        "kw": "vi sao chia ap ntc mcu chi doc dien ap nhiet do",
+        "p": [
+          "MCU chỉ đọc được điện áp (0 đến 5 V hoặc 0 đến 3,3 V), không đọc được điện trở. Cảm biến nhiệt NTC lại thay đổi điện trở theo nhiệt độ: nóng thì điện trở giảm, lạnh thì điện trở tăng.",
+          "Muốn MCU biết nhiệt độ, người ta nối NTC nối tiếp với một điện trở cố định Rf rồi lấy điện áp tại điểm giữa. Công thức: Vo = Vcc × R_NTC ÷ (Rf + R_NTC).",
+          "Lạnh hơn thì R_NTC lớn hơn nên chiếm nhiều điện áp hơn, Vo cao hơn. Nóng hơn thì ngược lại. MCU đọc Vo rồi tra ra nhiệt độ."
+        ],
+        "img": {
+          "src": "img/b10-ntc-chia-ap.png",
+          "alt": "Mạch chia áp gồm điện trở cố định 10 kΩ nối tiếp NTC, và đồ thị điện áp Vo theo nhiệt độ",
+          "cap": "Mạch chia áp (trái) và đường Vo theo nhiệt độ (phải), ví dụ NTC 10 kΩ ở 25 °C"
+        }
+      },
+      {
+        "h": "Ví dụ tính cụ thể",
+        "kw": "vi du tinh chia ap ntc 10k 25 do vo 2,5v",
+        "p": [
+          "Ví dụ minh họa: NTC 10 kΩ ở 25 °C, hệ số B = 3950, Rf = 10 kΩ, nguồn 5 V. Giá trị tính theo công thức Beta: R = R25 × e^(B × (1/T − 1/298,15)), T là nhiệt độ kelvin.",
+          "Ở 25 °C: Vo = 5 × 10 ÷ 20 = 2,5 V. Ở 0 °C, R_NTC khoảng 33,6 kΩ nên Vo ≈ 3,85 V. Ở 40 °C, R_NTC khoảng 5,3 kΩ nên Vo ≈ 1,73 V.",
+          "Hai điện trở nối tiếp chia điện áp theo tỉ lệ điện trở. Điện áp trên Rf cộng điện áp trên NTC luôn bằng Vcc."
+        ]
+      },
+      {
+        "h": "Bảng điện trở theo nhiệt độ của cảm biến thật",
+        "kw": "bang dien tro nhiet do cam bien ntc 2k 6,5k 0 do nuoc da kiem tra",
+        "p": [
+          "Theo tài liệu bạn cung cấp (chưa kiểm chứng độc lập), một cảm biến nhiệt tủ lạnh có điện trở đo khi tháo rời khỏi bo như sau: khoảng 33,8 kΩ ở −30 °C, 18,9 kΩ ở −20 °C, 6,495 kΩ ở 0 °C, 5,315 kΩ ở 4 °C và 2,005 kΩ ở 25 °C.",
+          "Cứ lên 1 °C thì điện trở giảm khoảng 4 đến 6%. Cảm biến khác loại sẽ có bảng khác, nên phải so với đúng bảng của loại đó.",
+          "Kiểm tra nhanh tại chỗ: nhúng cảm biến vào nước đá đang tan thì đo được khoảng 6,5 kΩ. Để ngoài phòng 25 °C thì đo được khoảng 2 kΩ."
+        ]
+      },
+      {
+        "h": "Hai cách đo bằng VOM",
+        "kw": "do vom dien tro dien ap rut cam bien tat nguon doi chieu bang",
+        "p": [
+          "Cách 1: đo điện trở. Tắt nguồn, rút cảm biến khỏi bo, đo hai đầu NTC rồi so với bảng điện trở theo nhiệt độ. Việc này kiểm tra bản thân cảm biến. Rf nằm trên bo nên không xuất hiện trong số đo.",
+          "Cách 2: đo điện áp. Cảm biến vẫn cắm trên bo, bật nguồn, đo dây tín hiệu với mass để biết Vo thật mà MCU đọc. Đo +Vcc với dây tín hiệu thì được điện áp trên Rf. Hai số đo cộng lại bằng Vcc.",
+          "Nếu cảm biến đo rời tốt mà Vo trên bo vẫn lệch, nghi Rf bị đổi giá trị, nguồn cấp sai, hoặc giắc và dây tiếp xúc kém."
+        ]
+      },
+      {
+        "h": "Hở, chập và đọc lệch",
+        "kw": "ho chap ntc dut vo gan vcc gan 0 bao loi cam bien rf sai",
+        "p": [
+          "NTC hở (đứt): R rất lớn, Vo gần bằng Vcc. MCU hiểu là lạnh vô cực và báo lỗi cảm biến.",
+          "NTC chập: R gần 0, Vo gần 0 V. MCU hiểu là nóng vô cực và cũng báo lỗi.",
+          "Rf tăng giá trị: Vo giảm, MCU hiểu nhiệt độ cao hơn thực tế. Rf giảm thì ngược lại. Cảm biến vẫn tốt nhưng tủ đọc lệch nhiệt độ.",
+          "Các ngưỡng báo hở và chập là do nhà sản xuất đặt trong phần mềm. Nội dung ở đây chỉ nêu nguyên lý."
+        ]
+      }
+    ],
+    "quiz": [
+    {
+      "q": "Vì sao phải dùng mạch chia áp với NTC?",
+      "o": [
+        "Để NTC nóng lên",
+        "Để tăng dòng điện",
+        "MCU chỉ đọc được điện áp, không đọc được điện trở",
+        "Để đổi điện xoay chiều thành một chiều"
+      ],
+      "a": 2,
+      "why": "Chia áp đổi sự thay đổi điện trở của NTC thành điện áp để MCU đọc."
+    },
+    {
+      "q": "NTC 10 kΩ nối tiếp Rf = 10 kΩ, nguồn 5 V, NTC đang 10 kΩ. Vo là bao nhiêu?",
+      "o": [
+        "2,5 V",
+        "5 V",
+        "0 V",
+        "10 V"
+      ],
+      "a": 0,
+      "why": "Vo = 5 × 10 ÷ (10 + 10) = 2,5 V."
+    },
+    {
+      "q": "Nhiệt độ giảm (lạnh hơn) thì Vo lấy ở NTC (NTC xuống mass) thay đổi thế nào?",
+      "o": [
+        "Giảm",
+        "Tăng",
+        "Không đổi",
+        "Về 0 V"
+      ],
+      "a": 1,
+      "why": "Lạnh thì R_NTC tăng, chiếm nhiều điện áp hơn nên Vo tăng."
+    },
+    {
+      "q": "Dây NTC bị đứt. MCU đọc gần bao nhiêu và hiểu thế nào?",
+      "o": [
+        "Gần 0 V, hiểu là nóng vô cực",
+        "Đúng 2,5 V",
+        "Không đọc được gì và vẫn chạy bình thường",
+        "Gần Vcc, hiểu là lạnh vô cực và báo lỗi"
+      ],
+      "a": 3,
+      "why": "NTC hở thì R rất lớn, Vo gần bằng Vcc."
+    },
+    {
+      "q": "Thay Rf 10 kΩ bằng 22 kΩ, NTC vẫn 10 kΩ, nguồn 5 V. Vo ở 25 °C đổi thế nào?",
+      "o": [
+        "Tăng lên khoảng 3,4 V",
+        "Giảm còn khoảng 1,56 V",
+        "Vẫn 2,5 V",
+        "Bằng 5 V"
+      ],
+      "a": 1,
+      "why": "Vo = 5 × 10 ÷ 32 ≈ 1,56 V. Rf lớn chiếm nhiều điện áp hơn, phần còn lại cho NTC ít đi, MCU hiểu nhiệt độ cao hơn thực tế."
+    },
+    {
+      "q": "Đo điện áp trên Rf là 3,4 V, nguồn 5 V. Điện áp tại dây cảm biến so với mass (Vo) khoảng bao nhiêu?",
+      "o": [
+        "3,4 V",
+        "5 V",
+        "1,6 V",
+        "8,4 V"
+      ],
+      "a": 2,
+      "why": "Hai điện áp cộng lại bằng nguồn: 5 − 3,4 = 1,6 V."
+    },
+    {
+      "q": "Muốn kiểm tra riêng cảm biến NTC, nên làm thế nào?",
+      "o": [
+        "Đo điện áp khi cắm trên bo mà không biết nguồn",
+        "Đo điện trở khi cảm biến còn cắm trên bo đang bật nguồn",
+        "Thay thử bằng một điện trở bất kỳ",
+        "Tắt nguồn, rút cảm biến khỏi bo rồi đo điện trở, so với bảng theo nhiệt độ"
+      ],
+      "a": 3,
+      "why": "Rút khỏi bo để loại mạch song song, tắt nguồn khi đo điện trở."
+    }
+  ]
   }
 
 
@@ -433,5 +575,8 @@ window.GLOSSARY = [
   { t: "NTC (nhiệt trở hạn dòng nạp)", k: "ntc nhiet tro han dong nap", d: "Điện trở nhiệt: lạnh thì trở lớn cản dòng nạp tụ lúc cắm điện, nóng lên thì trở nhỏ gần 0 Ω.", l: "b9" },
   { t: "Trở shunt (đo dòng)", k: "tro shunt do dong r100", d: "Điện trở rất nhỏ (ví dụ 0,1 Ω) nối trên đường dòng, độ sụt áp tỉ lệ với dòng chạy qua.", l: "b9" },
   { t: "Snubber (tụ dập xung)", k: "snubber tu dap xung", d: "Tụ hấp thụ gai điện áp sinh ra khi đóng ngắt dòng lớn ở IGBT.", l: "b9" },
-  { t: "Mã in tụ và trở (cách đọc)", k: "ma in 334k 104k 2703 chu so cuoi so 0", d: "Chữ số cuối cho biết thêm bao nhiêu số 0 vào sau. Chữ R thay dấu phẩy. Tụ tính theo pF.", l: "b9" }
+  { t: "Mã in tụ và trở (cách đọc)", k: "ma in 334k 104k 2703 chu so cuoi so 0", d: "Chữ số cuối cho biết thêm bao nhiêu số 0 vào sau. Chữ R thay dấu phẩy. Tụ tính theo pF.", l: "b9" },
+  { t: "Cảm biến nhiệt NTC", k: "cam bien nhiet ntc nhiet tro", d: "NTC dùng làm cảm biến: nóng thì điện trở giảm, lạnh thì tăng, mỗi °C đổi khoảng vài phần trăm.", l: "b10" },
+  { t: "Cầu chia áp", k: "cau chia ap", d: "Hai điện trở nối tiếp, lấy điện áp ở điểm giữa. Vo = Vcc × R2 ÷ (R1 + R2).", l: "b10" },
+  { t: "ADC (bộ đổi tương tự sang số)", k: "adc analog digital", d: "Phần của MCU đổi điện áp thành con số. ADC 10 bit cho số từ 0 đến 1023.", l: "b10" }
 ];
