@@ -520,6 +520,388 @@ window.LESSONS = [
       "why": "Rút khỏi bo để loại mạch song song, tắt nguồn khi đo điện trở."
     }
   ]
+  },
+  {
+    "id": "b11",
+    "n": 11,
+    "title": "Tiền tố đơn vị: k, M, m, µ",
+    "summary": "Đọc và đổi nhanh kΩ, MΩ, mA, µF, nF. Nền cần có cho mọi bài sau.",
+    "labs": [
+      "tiento"
+    ],
+    "keywords": "tien to don vi k m mega kilo mili micro nano pico dien tro ohm ampe ma uf nf pf doi don vi v chia kohm bang ma",
+    "blocks": [
+      {
+        "h": "Vì sao cần tiền tố",
+        "kw": "vi sao tien to don vi viet gon so lon nho",
+        "p": [
+          "Trong điện tử, giá trị rất lớn hoặc rất nhỏ. Điện trở có thể là 2 200 000 Ω, tụ có thể là 0,000 000 1 F. Viết như vậy khó đọc, dễ sai. Người ta dùng tiền tố đứng trước đơn vị để viết gọn: 2,2 MΩ, 0,1 µF.",
+          "Bốn tiền tố gặp nhiều nhất: M (mêga, triệu), k (ki-lô, nghìn), m (mi-li, một phần nghìn), µ (mi-crô, một phần triệu). Thêm n (na-nô) và p (pi-cô) dùng nhiều cho tụ."
+        ]
+      },
+      {
+        "h": "Bảng quy đổi",
+        "kw": "bang quy doi tien to m k m micro nano pico",
+        "p": [
+          "Nhìn bảng, đi xuống một bậc thì giá trị số nhân thêm 1000 và đơn vị đổi sang tiền tố nhỏ hơn.",
+          "Ví dụ: 4,7 kΩ = 4700 Ω. 250 mA = 0,25 A. 470 nF = 0,47 µF. 100 nF = 0,1 µF. 330 pF = 0,33 nF."
+        ],
+        "img": {
+          "src": "img/b11-tien-to.png",
+          "alt": "Bảng tiền tố đơn vị: M, k, không có, m, µ, n, p với giá trị nhân và ví dụ",
+          "cap": "Bảng tiền tố đơn vị"
+        }
+      },
+      {
+        "h": "Mẹo đổi nhanh",
+        "kw": "meo doi nhanh v chia kohm ra ma v chia mohm ra ua doi dau phay ba chu so",
+        "p": [
+          "Đổi sang tiền tố nhỏ hơn một bậc thì dời dấu phẩy sang phải ba chữ số. Đổi sang tiền tố lớn hơn một bậc thì dời sang trái ba chữ số.",
+          "Mẹo tính dòng: điện áp (V) chia điện trở (kΩ) cho ra dòng điện (mA). Ví dụ 12 V ÷ 2,2 kΩ = 5,45 mA. Còn V ÷ MΩ cho ra µA.",
+          "Khi tính, giữ 2 đến 3 chữ số có nghĩa, đừng làm tròn sớm. 5,45 mA khác nhiều so với 5 mA."
+        ]
+      },
+      {
+        "h": "Hay nhầm",
+        "kw": "hay nham M hoa m thuong mf uf mã in 104 334k",
+        "p": [
+          "Chữ M hoa là mêga (triệu), chữ m thường là mi-li (một phần nghìn). Hai chữ khác nhau 10⁹ lần: 1 MΩ khác hoàn toàn 1 mΩ.",
+          "Trên tụ: µF lớn hơn nF 1000 lần, nF lớn hơn pF 1000 lần. Mã in 104 là 100 000 pF = 100 nF = 0,1 µF (xem Bài 9).",
+          "Khi đọc thông số trên linh kiện hay bảng tài liệu, đổi hết về cùng một đơn vị trước khi tính."
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "Đổi 4,7 kΩ ra ôm.",
+        "o": [
+          "470 Ω",
+          "4700 Ω",
+          "47 000 Ω",
+          "4,7 Ω"
+        ],
+        "a": 1,
+        "why": "k là nghìn, 4,7 × 1000 = 4700 Ω."
+      },
+      {
+        "q": "Đổi 250 mA ra ampe.",
+        "o": [
+          "250 A",
+          "2,5 A",
+          "0,25 A",
+          "0,025 A"
+        ],
+        "a": 2,
+        "why": "m là một phần nghìn: 250 ÷ 1000 = 0,25 A."
+      },
+      {
+        "q": "Tụ ghi 470 nF bằng bao nhiêu µF?",
+        "o": [
+          "0,47 µF",
+          "47 µF",
+          "4,7 µF",
+          "470 µF"
+        ],
+        "a": 0,
+        "why": "1000 nF = 1 µF, nên 470 nF = 0,47 µF."
+      },
+      {
+        "q": "Điện áp 12 V đặt vào điện trở 2,2 kΩ. Dòng khoảng bao nhiêu?",
+        "o": [
+          "5,45 A",
+          "5,45 mA",
+          "545 mA",
+          "0,545 mA"
+        ],
+        "a": 1,
+        "why": "12 V ÷ 2,2 kΩ = 5,45 mA. V ÷ kΩ ra mA."
+      },
+      {
+        "q": "Chữ M hoa và chữ m thường khác nhau thế nào?",
+        "o": [
+          "M là mêga (triệu), m là mi-li (một phần nghìn)",
+          "Giống nhau",
+          "m lớn hơn M",
+          "M là mi-li"
+        ],
+        "a": 0,
+        "why": "Hai chữ khác nhau 10⁹ lần, đọc kỹ chữ hoa hay thường."
+      },
+      {
+        "q": "Tụ in mã 104 có điện dung bao nhiêu?",
+        "o": [
+          "0,1 µF",
+          "10 µF",
+          "100 µF",
+          "1 µF"
+        ],
+        "a": 0,
+        "why": "104 = 10 × 10⁴ pF = 100 000 pF = 100 nF = 0,1 µF."
+      }
+    ]
+  },
+  {
+    "id": "b12",
+    "n": 12,
+    "title": "Dùng VOM và ampe kìm đo điện áp, dòng",
+    "summary": "Mắc đồng hồ song song hay nối tiếp, chọn thang AC hay DC, hai lỗi làm cháy cầu chì đồng hồ, và vì sao ampe kìm tiện khi đo dòng lớn.",
+    "labs": [
+      "vom",
+      "ampekim"
+    ],
+    "keywords": "vom dong ho van nang do dien ap do dong dien song song noi tiep thang ac dc cong ma 10a cau chi ampe kim kep day hall dong khoi dong may nen",
+    "blocks": [
+      {
+        "h": "Mắc đúng chỗ",
+        "kw": "mac song song noi tiep do dien ap do dong dien do dien tro tat nguon",
+        "p": [
+          "Web đã dạy đo điện trở (Bài 1) và đo diode (Bài 4). Bài này thêm đo điện áp và đo dòng.",
+          "Đo điện áp: mắc SONG SONG với phần cần đo, đặt hai que lên hai đầu, không cần cắt mạch.",
+          "Đo dòng điện: mắc NỐI TIẾP, phải mở mạch để dòng chạy qua đồng hồ.",
+          "Đo điện trở: song song, và phải tắt nguồn."
+        ],
+        "img": {
+          "src": "img/b12-vom-mach.png",
+          "alt": "Mạch 12 V, R1 20 ohm nối tiếp R2 30 ohm với ba điểm D, A, C",
+          "cap": "Mạch ví dụ: nguồn 12 V, R1 = 20 Ω, R2 = 30 Ω. Dòng 240 mA, điện áp R2 = 7,2 V, R1 = 4,8 V"
+        }
+      },
+      {
+        "h": "Chọn đúng thang",
+        "kw": "thang dc ac chon thang cao nhat tu chon thang",
+        "p": [
+          "Thang V có đường kẻ thẳng là DC: pin, 12 V, 5 V, 3,3 V, điện áp bus sau cầu chỉnh lưu. Thang V có dấu lượn sóng là AC: ổ cắm 220 V, cuộn sơ cấp biến áp.",
+          "Chọn thang cao hơn giá trị cần đo một bậc. Không biết trước thì chọn thang cao nhất rồi giảm dần. Đồng hồ tự chọn thang thì không cần."
+        ]
+      },
+      {
+        "h": "Hai lỗi làm hỏng đồng hồ",
+        "kw": "loi hong dong ho cau chi que do cong dong cong ma 10a thang dien tro",
+        "p": [
+          "Que đỏ ở cổng đo dòng (mA hoặc 10 A) rồi đem đo điện áp: đồng hồ coi như một đoạn dây, tạo chập và thổi cầu chì bên trong. Đo dòng xong phải cắm que đỏ về cổng đo điện áp.",
+          "Cổng mA thường có giới hạn (ví dụ 200 mA hoặc 500 mA, xem nhãn trên máy). Dòng lớn hơn giới hạn thì thổi cầu chì. Không chắc dòng bao nhiêu thì dùng cổng 10 A.",
+          "Núm ở thang điện trở rồi đo vào điểm đang có điện: có thể hỏng đồng hồ hoặc mạch."
+        ]
+      },
+      {
+        "h": "Ampe kìm: vì sao hay dùng",
+        "kw": "ampe kim kep day khong cat mach dong lon an toan hall bien dong kep ca hai day quan nhieu vong",
+        "p": [
+          "Ampe kìm đo từ trường quanh dây mang dòng. Ưu điểm: không phải cắt mạch, an toàn hơn trên điện 220 V, đo được dòng lớn (máy nén, quạt, sấy) và không thêm điện trở vào mạch. VOM nối tiếp thường giới hạn 10 A.",
+          "Lưu ý 1: kẹp MỘT dây. Kẹp cả L và N cùng lúc thì dòng triệt tiêu, đồng hồ đọc gần 0.",
+          "Lưu ý 2: loại chỉ đo AC không đo được dòng DC. Dòng DC cần loại đo AC/DC.",
+          "Lưu ý 3: dòng rất nhỏ thì ampe kìm kém chính xác. Quấn dây 5 hoặc 10 vòng qua hàm kìm, số đo chia cho số vòng. Hoặc dùng VOM nối tiếp ở cổng mA.",
+          "Dòng khởi động máy nén vọt rất nhanh rồi hạ, cần chế độ giữ đỉnh (nếu có) để bắt được."
+        ]
+      },
+      {
+        "h": "Ví dụ số liệu trên mạch mẫu",
+        "kw": "vi du so lieu mach mau 12v 20 30 ohm 240ma 7,2v 4,8v",
+        "p": [
+          "Nguồn 12 V, R1 = 20 Ω nối tiếp R2 = 30 Ω. R tổng 50 Ω, dòng I = 12 ÷ 50 = 0,24 A = 240 mA.",
+          "Điện áp R2 = 0,24 × 30 = 7,2 V. Điện áp R1 = 0,24 × 20 = 4,8 V. Hai số cộng lại bằng 12 V.",
+          "Dòng 240 mA có thể vượt giới hạn cổng mA 200 mA, nên cổng 10 A an toàn hơn trong trường hợp này."
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "Muốn đo điện áp trên một điện trở, mắc đồng hồ thế nào?",
+        "o": [
+          "Song song với điện trở",
+          "Nối tiếp với điện trở",
+          "Chập hai đầu điện trở",
+          "Chỉ đo khi tháo điện trở ra"
+        ],
+        "a": 0,
+        "why": "Điện áp đo bằng cách đặt hai que lên hai đầu, song song, không cần cắt mạch."
+      },
+      {
+        "q": "Muốn đo dòng trong mạch bằng VOM, mắc thế nào?",
+        "o": [
+          "Nối tiếp, phải mở mạch",
+          "Song song với nguồn",
+          "Đặt lên hai đầu tải",
+          "Không cần mở mạch"
+        ],
+        "a": 0,
+        "why": "Dòng phải chạy qua đồng hồ nên đồng hồ mắc nối tiếp."
+      },
+      {
+        "q": "Mạch 12 V, R1 20 Ω nối tiếp R2 30 Ω. Dòng và điện áp trên R2 là bao nhiêu?",
+        "o": [
+          "600 mA và 12 V",
+          "120 mA và 3,6 V",
+          "240 mA và 7,2 V",
+          "240 mA và 4,8 V"
+        ],
+        "a": 2,
+        "why": "I = 12 ÷ 50 = 0,24 A. Vr2 = 0,24 × 30 = 7,2 V."
+      },
+      {
+        "q": "Đo dòng xong, quên đưa que đỏ về cổng V rồi đặt lên hai đầu nguồn. Chuyện gì xảy ra?",
+        "o": [
+          "Cầu chì đồng hồ có thể đứt do chập",
+          "Đồng hồ đọc đúng điện áp",
+          "Không có gì",
+          "Nguồn tự tăng điện áp"
+        ],
+        "a": 0,
+        "why": "Cổng đo dòng có điện trở rất nhỏ nên coi như dây dẫn nối thẳng hai đầu nguồn."
+      },
+      {
+        "q": "Kẹp ampe kìm quanh cả hai dây L và N của dây nguồn. Đồng hồ đọc gì?",
+        "o": [
+          "Gấp đôi dòng",
+          "Gần 0",
+          "Đúng dòng tải",
+          "Điện áp 220 V"
+        ],
+        "a": 1,
+        "why": "Dòng đi và về ngược chiều, từ trường triệt tiêu."
+      },
+      {
+        "q": "Đo dòng DC của quạt 12 V bằng ampe kìm chỉ đo AC. Kết quả?",
+        "o": [
+          "Không đọc được",
+          "Đọc đúng",
+          "Đọc gấp đôi",
+          "Cháy đồng hồ"
+        ],
+        "a": 0,
+        "why": "Loại chỉ đo AC dựa trên biến dòng nên không đo được DC."
+      },
+      {
+        "q": "Muốn đo dòng nhỏ (vài chục mA) bằng ampe kìm, làm thế nào?",
+        "o": [
+          "Quấn dây nhiều vòng qua hàm kìm, số đo chia cho số vòng",
+          "Kẹp cả hai dây",
+          "Đổi sang thang điện trở",
+          "Không thể đo bằng ampe kìm"
+        ],
+        "a": 0,
+        "why": "Quấn N vòng thì đồng hồ thấy N lần dòng thật nên chia lại cho N."
+      }
+    ]
+  },
+  {
+    "id": "b13",
+    "n": 13,
+    "title": "Điện xoay chiều: tần số, hiệu dụng và đỉnh",
+    "summary": "Sóng sin 220 V, chu kỳ và tần số, trị hiệu dụng và trị đỉnh 311 V. Vì sao linh kiện phải chịu trị đỉnh.",
+    "labs": [
+      "acsin"
+    ],
+    "keywords": "dien xoay chieu ac dc song sin tan so chu ky 50hz hieu dung rms dinh 311v 310v 1,414 220v tu chiu ap vom thang ac",
+    "blocks": [
+      {
+        "h": "Một chiều và xoay chiều",
+        "kw": "mot chieu xoay chieu dc ac pin o cam song sin",
+        "p": [
+          "Pin cho điện một chiều (DC): điện áp đứng yên ở một mức. Ổ cắm nhà cho điện xoay chiều (AC): điện áp đổi chiều liên tục theo hình sóng sin.",
+          "Điện xoay chiều có ưu điểm là dùng biến áp để đổi điện áp dễ dàng (Bài 7)."
+        ],
+        "img": {
+          "src": "img/b13-song-sin.png",
+          "alt": "Sóng sin 220 V 50 Hz, đỉnh 311 V, hiệu dụng 220 V, chu kỳ 20 ms",
+          "cap": "Sóng điện 220 V, 50 Hz"
+        }
+      },
+      {
+        "h": "Tần số và chu kỳ",
+        "kw": "tan so chu ky 50hz 60hz 20ms",
+        "p": [
+          "Tần số là số chu kỳ trong một giây, đơn vị héc (Hz). Lưới 50 Hz là 50 chu kỳ mỗi giây.",
+          "Chu kỳ là thời gian một lần lặp lại: T = 1 ÷ f. Với 50 Hz, T = 1 ÷ 50 = 0,02 s = 20 ms. Với 60 Hz, T khoảng 16,7 ms."
+        ]
+      },
+      {
+        "h": "Trị hiệu dụng và trị đỉnh",
+        "kw": "tri hieu dung rms tri dinh 311v 1,414 220 230 250",
+        "p": [
+          "Trị đỉnh là mức cao nhất sóng đạt tới. Trị hiệu dụng (RMS) là mức điện áp một chiều tạo ra cùng độ nóng trên điện trở. Con số ghi trên nhãn (220 V) là trị hiệu dụng.",
+          "Quan hệ: trị đỉnh = trị hiệu dụng × 1,414. Vậy 220 V có đỉnh khoảng 311 V. 230 V có đỉnh khoảng 325 V.",
+          "Đây cũng là lý do bus sau cầu chỉnh lưu và tụ lọc có khoảng 310 V DC (Bài 4, Bài 7)."
+        ]
+      },
+      {
+        "h": "Vì sao quan trọng khi sửa chữa",
+        "kw": "vi sao quan trong sua chua vom thang ac doc hieu dung tu chiu ap dinh nguy hiem",
+        "p": [
+          "VOM thang AC đọc trị hiệu dụng, nên đo ổ cắm ra 220 V. Đo điện áp một chiều trên tụ lọc bằng thang DC sẽ ra khoảng 310 V.",
+          "Linh kiện phải chịu trị đỉnh, không phải trị hiệu dụng. Tụ chỉ ghi chịu 250 V DC không dùng được trên lưới 220 V vì đỉnh 311 V vượt xa.",
+          "Điện lưới có thể dao động khoảng ±10%, nên chọn linh kiện chịu điện áp có dư an toàn."
+        ]
+      }
+    ],
+    "quiz": [
+      {
+        "q": "Nguồn 50 Hz thì một chu kỳ dài bao lâu?",
+        "o": [
+          "20 ms",
+          "50 ms",
+          "2 ms",
+          "200 ms"
+        ],
+        "a": 0,
+        "why": "T = 1 ÷ 50 = 0,02 s = 20 ms."
+      },
+      {
+        "q": "Nguồn 60 Hz thì chu kỳ khoảng bao nhiêu?",
+        "o": [
+          "16,7 ms",
+          "20 ms",
+          "60 ms",
+          "6 ms"
+        ],
+        "a": 0,
+        "why": "T = 1 ÷ 60 ≈ 0,0167 s = 16,7 ms."
+      },
+      {
+        "q": "Điện áp hiệu dụng 230 V. Trị đỉnh khoảng bao nhiêu?",
+        "o": [
+          "230 V",
+          "163 V",
+          "325 V",
+          "460 V"
+        ],
+        "a": 2,
+        "why": "230 × 1,414 ≈ 325 V."
+      },
+      {
+        "q": "Tụ chỉ ghi chịu 250 V DC. Có nên dùng trực tiếp trên lưới 220 V AC?",
+        "o": [
+          "Có, vì 220 V nhỏ hơn 250 V",
+          "Không, vì đỉnh 311 V vượt 250 V",
+          "Có, nếu lắp ngược cực",
+          "Tùy màu tụ"
+        ],
+        "a": 1,
+        "why": "Linh kiện phải chịu trị đỉnh 311 V, vượt mức ghi trên tụ."
+      },
+      {
+        "q": "VOM thang AC đo ổ cắm 220 V đọc giá trị nào?",
+        "o": [
+          "Trị hiệu dụng 220 V",
+          "Trị đỉnh 311 V",
+          "0 V",
+          "Điện áp đỉnh đến đỉnh 622 V"
+        ],
+        "a": 0,
+        "why": "Thang AC đọc trị hiệu dụng, ghi trên nhãn."
+      },
+      {
+        "q": "Đo bằng thang DC trên tụ lọc bus sau cầu chỉnh lưu (lưới 220 V). Khoảng bao nhiêu?",
+        "o": [
+          "Khoảng 310 V",
+          "220 V",
+          "Khoảng 156 V",
+          "0 V"
+        ],
+        "a": 0,
+        "why": "Tụ nạp tới gần trị đỉnh 311 V trừ gợn sóng."
+      }
+    ]
   }
 
 
@@ -578,5 +960,12 @@ window.GLOSSARY = [
   { t: "Mã in tụ và trở (cách đọc)", k: "ma in 334k 104k 2703 chu so cuoi so 0", d: "Chữ số cuối cho biết thêm bao nhiêu số 0 vào sau. Chữ R thay dấu phẩy. Tụ tính theo pF.", l: "b9" },
   { t: "Cảm biến nhiệt NTC", k: "cam bien nhiet ntc nhiet tro", d: "NTC dùng làm cảm biến: nóng thì điện trở giảm, lạnh thì tăng, mỗi °C đổi khoảng vài phần trăm.", l: "b10" },
   { t: "Cầu chia áp", k: "cau chia ap", d: "Hai điện trở nối tiếp, lấy điện áp ở điểm giữa. Vo = Vcc × R2 ÷ (R1 + R2).", l: "b10" },
-  { t: "ADC (bộ đổi tương tự sang số)", k: "adc analog digital", d: "Phần của MCU đổi điện áp thành con số. ADC 10 bit cho số từ 0 đến 1023.", l: "b10" }
+  { t: "ADC (bộ đổi tương tự sang số)", k: "adc analog digital", d: "Phần của MCU đổi điện áp thành con số. ADC 10 bit cho số từ 0 đến 1023.", l: "b10" },
+  { t: "Tiền tố đơn vị", k: "tien to don vi k m mega kilo mili micro", d: "Chữ đứng trước đơn vị để viết gọn: M triệu, k nghìn, m một phần nghìn, µ một phần triệu, n một phần tỉ.", l: "b11" },
+  { t: "Trị hiệu dụng (RMS)", k: "tri hieu dung rms", d: "Mức điện áp một chiều cho cùng độ nóng trên điện trở. Số ghi trên nhãn, ví dụ 220 V.", l: "b13" },
+  { t: "Trị đỉnh", k: "tri dinh dinh song", d: "Mức cao nhất của sóng. Bằng trị hiệu dụng × 1,414. Linh kiện phải chịu trị này.", l: "b13" },
+  { t: "Tần số (Hz)", k: "tan so hz hert", d: "Số chu kỳ mỗi giây. Lưới điện nhà thường 50 Hz.", l: "b13" },
+  { t: "Chu kỳ", k: "chu ky", d: "Thời gian một lần lặp lại, T = 1 ÷ f. Ở 50 Hz là 20 ms.", l: "b13" },
+  { t: "Ampe kìm", k: "ampe kim kep day", d: "Đồng hồ đo dòng bằng cách kẹp quanh một dây, không cần cắt mạch. Loại chỉ đo AC không đo được DC.", l: "b12" },
+  { t: "Thang AC, thang DC", k: "thang ac dc vom", d: "Thang AC (dấu lượn sóng) đo điện xoay chiều như ổ cắm. Thang DC (đường kẻ thẳng) đo pin, 12 V, 5 V, bus sau cầu chỉnh lưu.", l: "b12" }
 ];
