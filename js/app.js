@@ -1,4 +1,5 @@
-/* Khung ứng dụng: điều hướng bằng hash (#/hoc, #/bai/b1, #/lab/ohm, #/tn, #/hoi), bài học, bài tập, thuật ngữ, chat. */
+/* Khung ứng dụng: điều hướng bằng hash (#/hoc, #/bai/b1, #/lab/ohm, #/on, #/on/mix10, #/on/sai, #/on/the, #/on/kq, #/tn, #/hoi),
+   bài học, bài tập, ôn tập, thuật ngữ, chat. */
 (function () {
   "use strict";
   var LESSONS = window.LESSONS, GLOSSARY = window.GLOSSARY;
@@ -8,6 +9,7 @@
   var LAB_NAME = { ohm: "Ohm", mau: "Mã màu điện trở", mach: "Nối tiếp, song song", tu: "Tụ nạp, xả", doi: "Xả tụ đôi",
     diode: "Diode", cau: "Cầu chỉnh lưu", lanh: "Chu trình lạnh", rl: "Relay + transistor", tim: "Tìm lỗi quạt" };
   if (window.LAB_NAME_EXTRA) Object.keys(window.LAB_NAME_EXTRA).forEach(function (k) { LAB_NAME[k] = window.LAB_NAME_EXTRA[k]; });
+  window.LAB_NAME = LAB_NAME; // chat.js dùng để ghi tên mô phỏng
 
   function el(tag, attrs, kids) {
     var e = document.createElement(tag);
@@ -27,15 +29,49 @@
   function doneCount(p) { return LESSONS.filter(function (L) { return p[L.id] && p[L.id].total && p[L.id].score === p[L.id].total; }).length; } // 15/10/2026: phải có điểm bài tập, chỉ mở xem thì chưa tính
   function lessonById(id) { return LESSONS.filter(function (L) { return L.id === id; })[0]; }
 
+  // 23/10/2026: lưu thêm câu đã làm sai, điểm kiểm tra tổng hợp, tên, cỡ chữ, thẻ đã thuộc (chỉ trên máy này)
+  var KEY_WRONG = "hdt_wrong_v1", KEY_MIX = "hdt_mix_v1", KEY_NAME = "hdt_name_v1", KEY_FS = "hdt_fs_v1", KEY_KNOWN = "hdt_known_v1";
+  function load(k, def) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch (e) { return def; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* bỏ qua */ } }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function today() { var d = new Date(); return pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + "/" + d.getFullYear(); }
+  function btn(text, cls, fn) { var b = el("button", { class: cls || "btn2", type: "button", text: text }); if (fn) b.addEventListener("click", fn); return b; }
+  function markAnswer(qid, ok) { var w = load(KEY_WRONG, {}) || {}; if (ok) delete w[qid]; else w[qid] = 1; save(KEY_WRONG, w); }
+  function allQuestions() {
+    var out = [];
+    LESSONS.forEach(function (L) { L.quiz.forEach(function (q, i) { out.push({ q: q.q, o: q.o, a: q.a, why: q.why, qid: L.id + ":" + i, L: L }); }); });
+    return out;
+  }
+  function wrongQuestions() { var w = load(KEY_WRONG, {}) || {}; return allQuestions().filter(function (x) { return w[x.qid]; }); }
+
+  // thông báo nhỏ + chép chữ
+  var toastT = 0;
+  function toast(t) { var e = $("#toast"); e.textContent = t; e.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { e.hidden = true; }, 2200); }
+  function copyText(t, okMsg) {
+    function fallback() {
+      var ta = el("textarea"); ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); toast(okMsg); } catch (e) { toast("Không chép được, hãy chụp màn hình."); }
+      ta.remove();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { toast(okMsg); }, fallback); else fallback();
+  }
+
+  // cỡ chữ: nút Aa trên thanh trên, 3 mức
+  var FS_NAME = ["Vừa", "Lớn", "Rất lớn"];
+  function applyFs(n) { document.body.classList.remove("fs1", "fs2"); if (n) document.body.classList.add("fs" + n); }
+  applyFs(load(KEY_FS, 0) || 0);
+  $("#fs").addEventListener("click", function () { var n = ((load(KEY_FS, 0) || 0) + 1) % 3; save(KEY_FS, n); applyFs(n); toast("Cỡ chữ: " + FS_NAME[n]); });
+
   // ---- màn hình ----
-  var VIEWS = ["hoc", "bai", "lab", "tn", "hoi"];
-  function showView(name) {
+  var VIEWS = ["hoc", "bai", "lab", "on", "tn", "hoi"], backTo = null;
+  function showView(name, back) {
     VIEWS.forEach(function (v) { $("#v-" + v).hidden = v !== name; });
     var navKey = name === "bai" ? "hoc" : name;
     $$(".bottom a").forEach(function (a) {
       if (a.dataset.nav === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
-    $("#back").hidden = name !== "bai";
+    backTo = back || (name === "bai" ? "#/hoc" : null);
+    $("#back").hidden = !backTo;
   }
   function setTitle(t) { $("#title").textContent = t; document.title = t === TITLE ? TITLE : t + " · " + TITLE; }
   function updateChip() {
@@ -77,6 +113,19 @@
     bar.firstChild.style.width = (100 * n / LESSONS.length) + "%";
     box.appendChild(el("div", { class: "prog-row" }, [el("span", { text: "Đã hoàn thành " + n + " trên " + LESSONS.length + " bài" }), bar]));
 
+    // 23/10/2026: tìm trong mọi bài và thuật ngữ
+    var q = el("input", { class: "search", type: "search", placeholder: "Tìm: xả tụ, NTC, IGBT...", autocomplete: "off", enterkeyhint: "search", "aria-label": "Tìm trong giáo trình" });
+    var res = el("div", { class: "results" }), listWrap = el("div");
+    box.appendChild(q); box.appendChild(res); box.appendChild(listWrap);
+    q.addEventListener("input", function () {
+      res.textContent = ""; var v = q.value.trim(); listWrap.hidden = !!v; if (!v) return;
+      var r = searchAll(v);
+      if (!r.length) { res.appendChild(el("p", { class: "empty", text: "Không thấy trong giáo trình. Thử từ khóa ngắn hơn, hoặc hỏi ở mục Hỏi." })); return; }
+      res.appendChild(el("p", { class: "note", text: "Tìm thấy " + r.length + " mục" }));
+      r.slice(0, 30).forEach(function (x) { res.appendChild(el("a", { class: "hit", href: x.href }, [el("b", { text: x.t }), el("small", { text: x.s })])); });
+    });
+    box = listWrap;
+
     LESSONS.forEach(function (L) {
       var s2 = status(p, L);
       var a = el("a", { class: "lesson-card is-" + s2.k, href: "#/bai/" + L.id }, [
@@ -88,12 +137,30 @@
     box.appendChild(el("p", { class: "note", text: "Nội dung mang tính nguyên lý cơ bản. Khi sửa chữa thực tế, luôn xem tài liệu của hãng, cắt nguồn, xả tụ và đo xác nhận trước khi chạm vào." }));
   }
 
+  function searchAll(q) {
+    var f = window.Chat.fold(q), out = [];
+    if (f.length < 2) return out;
+    LESSONS.forEach(function (L) {
+      L.blocks.forEach(function (b, i) {
+        if (window.Chat.fold(b.h + " " + (b.kw || "") + " " + b.p.join(" ")).indexOf(f) >= 0)
+          out.push({ t: b.h, s: "Bài " + L.n + " · " + L.title, href: "#/bai/" + L.id + "/lt/" + i });
+      });
+    });
+    GLOSSARY.forEach(function (g) {
+      if (window.Chat.fold(g.t + " " + g.k + " " + g.d).indexOf(f) >= 0) out.push({ t: g.t, s: "Thuật ngữ · " + g.d, href: "#/bai/" + g.l });
+    });
+    Object.keys(LAB_NAME).forEach(function (k) {
+      if (window.Chat.fold(LAB_NAME[k] + " " + labLead(k)).indexOf(f) >= 0) out.push({ t: "Mô phỏng: " + LAB_NAME[k], s: labLead(k), href: "#/lab/" + k });
+    });
+    return out;
+  }
+
   // 15/10/2026: bài học chia 3 phần (Lý thuyết · Mô phỏng · Bài tập) bằng thanh chọn dính trên cùng,
   // để không phải cuộn cả bài dài mới tới bài tập. Đường dẫn: #/bai/b1/lt | /mp | /bt
   var PARTS = [["lt", "Lý thuyết"], ["mp", "Mô phỏng"], ["bt", "Bài tập"]];
   function labLead(id) { var e = $("#lab-" + id + " .lead"); return e ? e.textContent : ""; }
 
-  function renderBai(id, part) {
+  function renderBai(id, part, blk) {
     var L = lessonById(id), box = $("#v-bai");
     box.textContent = "";
     if (!L) { box.appendChild(el("p", { class: "empty", text: "Không tìm thấy bài này." })); return; }
@@ -142,6 +209,7 @@
         }
         box.appendChild(el("section", { class: "sec", id: "sec-" + i }, kids));
       });
+      if (blk != null) setTimeout(function () { var t = $("#sec-" + blk); if (t) { $("#main").scrollTop = t.offsetTop - 64; t.classList.add("flash-sec"); setTimeout(function () { t.classList.remove("flash-sec"); }, 1600); } }, 0);
       var next = el("div", { class: "nav-row" });
       next.appendChild((L.labs && L.labs.length) ? el("a", { class: "btn2", href: "#/bai/" + L.id + "/mp", text: "Xem mô phỏng" }) : el("span"));
       next.appendChild(el("a", { class: "btn2 primary", href: "#/bai/" + L.id + "/bt", text: "Làm bài tập" }));
@@ -159,30 +227,34 @@
   }
 
   // 15/10/2026: bài tập từng câu một — nút to, có thanh tiến độ, giải thích ngay sau khi chọn
-  function renderQuiz(L, box) {
-    var qi = 0, correct = 0, wrap = el("div", { class: "quiz" });
-    box.appendChild(wrap);
+  // 23/10/2026: dùng chung cho bài học, kiểm tra tổng hợp và ôn câu sai. Thứ tự đáp án được trộn mỗi lần làm
+  // (đáp án đúng trong dữ liệu dồn nhiều ở vị trí B), câu sai được ghi lại để ôn.
+  function quizRunner(wrap, items, opt) {
+    var qi = 0, correct = 0, results = [];
     function dots() {
       var d = el("div", { class: "qdots", "aria-hidden": "true" });
-      L.quiz.forEach(function (_, i) { d.appendChild(el("i", { class: i < qi ? "past" : i === qi ? "now" : "" })); });
+      items.forEach(function (_, i) { d.appendChild(el("i", { class: i < qi ? "past" : i === qi ? "now" : "" })); });
       return d;
     }
     function showQ() {
       wrap.textContent = "";
-      var q = L.quiz[qi], answered = false;
-      wrap.appendChild(el("p", { class: "qcount", text: "Câu " + (qi + 1) + " / " + L.quiz.length }));
+      var q = items[qi], answered = false;
+      wrap.appendChild(el("p", { class: "qcount", text: "Câu " + (qi + 1) + " / " + items.length }));
       wrap.appendChild(dots());
       var card = el("div", { class: "q" });
+      if (opt.tag) card.appendChild(el("span", { class: "qtag", text: "Bài " + q.L.n + " · " + q.L.title }));
       card.appendChild(el("p", { class: "qt", text: q.q }));
       var why = el("p", { class: "why", hidden: "" });
-      var go = el("button", { class: "btn2 primary qnext", type: "button", hidden: "", text: qi < L.quiz.length - 1 ? "Câu tiếp theo" : "Xem kết quả" });
-      go.addEventListener("click", function () { qi++; if (qi < L.quiz.length) { showQ(); $("#main").scrollTop = 0; } else showResult(); });
-      q.o.forEach(function (txt, oi) {
-        var b = el("button", { class: "opt", type: "button", text: txt });
+      var go = el("button", { class: "btn2 primary qnext", type: "button", hidden: "", text: qi < items.length - 1 ? "Câu tiếp theo" : "Xem kết quả" });
+      go.addEventListener("click", function () { qi++; if (qi < items.length) { showQ(); $("#main").scrollTop = 0; } else opt.onDone(correct, results, restart); });
+      shuffle(q.o.map(function (_, i) { return i; })).forEach(function (oi) {
+        var b = el("button", { class: "opt", type: "button", text: q.o[oi] });
+        b.dataset.oi = oi;
         b.addEventListener("click", function () {
           if (answered) return; answered = true;
           var ok = oi === q.a; if (ok) correct++;
-          $$(".opt", card).forEach(function (x, xi) { x.disabled = true; if (xi === q.a) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+          results.push({ q: q, ok: ok }); markAnswer(q.qid, ok);
+          $$(".opt", card).forEach(function (x) { x.disabled = true; if (+x.dataset.oi === q.a) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
           why.className = "why " + (ok ? "is-ok" : "is-bad");
           why.textContent = (ok ? "Đúng. " : "Chưa đúng. ") + q.why; why.hidden = false; go.hidden = false;
           go.scrollIntoView({ block: "nearest" });
@@ -193,7 +265,16 @@
       wrap.appendChild(card);
       wrap.appendChild(go);
     }
-    function showResult() {
+    function restart() { qi = 0; correct = 0; results = []; showQ(); }
+    showQ();
+  }
+
+  function renderQuiz(L, box) {
+    var wrap = el("div", { class: "quiz" });
+    box.appendChild(wrap);
+    var items = L.quiz.map(function (q, i) { return { q: q.q, o: q.o, a: q.a, why: q.why, qid: L.id + ":" + i, L: L }; });
+    quizRunner(wrap, items, { onDone: function (correct, _r, restart) { showResult(correct, restart); } });
+    function showResult(correct, restart) {
       var p = loadProg(), pr = p[L.id] || {}; pr.score = correct; pr.total = L.quiz.length; pr.seen = true; p[L.id] = pr; saveProg(p); updateChip();
       var all = correct === L.quiz.length, i = LESSONS.indexOf(L), nx = LESSONS[i + 1];
       wrap.textContent = "";
@@ -202,7 +283,7 @@
         el("p", { text: all ? "Làm đúng hết. Bài này đã hoàn thành." : "Chưa đúng hết. Đọc lại phần lý thuyết rồi làm lại để hoàn thành bài." })]));
       var row = el("div", { class: "nav-row" });
       var again = el("button", { class: "btn2", type: "button", text: "Làm lại" });
-      again.addEventListener("click", function () { qi = 0; correct = 0; showQ(); });
+      again.addEventListener("click", restart);
       row.appendChild(again);
       row.appendChild(all ? (nx ? el("a", { class: "btn2 primary", href: "#/bai/" + nx.id, text: "Sang Bài " + nx.n }) : el("a", { class: "btn2 primary", href: "#/hoc", text: "Về danh sách bài" }))
                           : el("a", { class: "btn2 primary", href: "#/bai/" + L.id + "/lt", text: "Đọc lại lý thuyết" }));
@@ -210,7 +291,149 @@
       // cập nhật nhãn điểm trên thanh chọn
       var t = $$(".segbar a")[2]; if (t) t.textContent = "Bài tập " + correct + "/" + L.quiz.length;
     }
-    showQ();
+  }
+
+  // ---- ÔN TẬP (23/10/2026) ----
+  function renderOnMenu(box) {
+    var w = wrongQuestions().length, mix = load(KEY_MIX, null), known = Object.keys(load(KEY_KNOWN, {}) || {}).length;
+    box.appendChild(el("p", { class: "lead2", text: "Ôn lại sau khi học. Mọi kết quả chỉ lưu trên điện thoại này." }));
+    function item(href, h, p, badge) {
+      return el("a", { class: "lesson-card", href: href }, [el("span", { class: "num ic", text: badge }), el("span", { class: "lc-body" }, [el("h3", { text: h }), el("p", { text: p })])]);
+    }
+    box.appendChild(item("#/on/mix10", "Kiểm tra nhanh 10 câu", "Câu hỏi lấy ngẫu nhiên từ cả " + LESSONS.length + " bài.", "10"));
+    box.appendChild(item("#/on/mix20", "Kiểm tra tổng hợp 20 câu", mix ? "Lần gần nhất: " + mix.score + "/" + mix.total + " (" + mix.date + ")" : "Chưa làm lần nào.", "20"));
+    box.appendChild(item("#/on/sai", "Ôn câu đã làm sai", w ? "Còn " + w + " câu cần ôn. Làm đúng thì câu đó được xóa khỏi danh sách." : "Chưa có câu sai nào.", w ? String(w) : "✓"));
+    box.appendChild(item("#/on/the", "Thẻ ghi nhớ thuật ngữ", "Lật thẻ để nhớ " + GLOSSARY.length + " thuật ngữ. Đã thuộc " + known + " thẻ.", "Aa"));
+    box.appendChild(item("#/on/kq", "Kết quả học tập", "Bảng điểm từng bài để chụp màn hình hoặc chép gửi người phụ trách training.", "★"));
+  }
+
+  function renderMix(box, n) {
+    var items = shuffle(allQuestions()).slice(0, n), wrap = el("div", { class: "quiz" });
+    box.appendChild(wrap);
+    quizRunner(wrap, items, { tag: true, onDone: function (c, res) {
+      if (n >= 20) save(KEY_MIX, { score: c, total: n, date: today() });
+      var by = {};
+      res.forEach(function (r) { var k = r.q.L.id; by[k] = by[k] || { L: r.q.L, ok: 0, n: 0 }; by[k].n++; if (r.ok) by[k].ok++; });
+      wrap.textContent = "";
+      wrap.appendChild(el("div", { class: "result" }, [el("span", { class: "result-led", text: c + "/" + n }),
+        el("p", { text: c === n ? "Đúng hết. Rất tốt!" : "Đúng " + Math.round(100 * c / n) + "%. Nên đọc lại các bài dưới đây." })]));
+      Object.keys(by).map(function (k) { return by[k]; }).filter(function (x) { return x.ok < x.n; }).forEach(function (x) {
+        wrap.appendChild(el("a", { class: "hit", href: "#/bai/" + x.L.id }, [el("b", { text: "Bài " + x.L.n + " · " + x.L.title }), el("small", { text: "Đúng " + x.ok + "/" + x.n + " câu" })]));
+      });
+      wrap.appendChild(el("div", { class: "nav-row" }, [btn("Làm đề khác", "btn2", function () { route(); }), el("a", { class: "btn2 primary", href: "#/on", text: "Về Ôn tập" })]));
+    } });
+  }
+
+  function renderSai(box) {
+    var items = wrongQuestions();
+    if (!items.length) {
+      box.appendChild(el("p", { class: "empty", text: "Chưa có câu sai nào để ôn. Khi làm bài tập mà trả lời sai, câu đó sẽ hiện ở đây." }));
+      box.appendChild(el("a", { class: "btn2 primary wide", href: "#/on/mix10", text: "Làm kiểm tra nhanh 10 câu" }));
+      return;
+    }
+    var wrap = el("div", { class: "quiz" }); box.appendChild(wrap);
+    quizRunner(wrap, shuffle(items), { tag: true, onDone: function (c) {
+      var left = wrongQuestions().length;
+      wrap.textContent = "";
+      wrap.appendChild(el("div", { class: "result" }, [el("span", { class: "result-led", text: c + "/" + items.length }),
+        el("p", { text: left ? "Còn " + left + " câu cần ôn tiếp." : "Đã hết câu sai. Rất tốt!" })]));
+      wrap.appendChild(el("div", { class: "nav-row" }, [left ? btn("Ôn tiếp", "btn2", function () { route(); }) : el("span"), el("a", { class: "btn2 primary", href: "#/on", text: "Về Ôn tập" })]));
+    } });
+  }
+
+  var fc = null; // trạng thái thẻ ghi nhớ
+  function renderThe(box) {
+    var known = load(KEY_KNOWN, {}) || {};
+    if (!fc) fc = { order: shuffle(GLOSSARY.map(function (_, i) { return i; })), i: 0, flip: false, onlyNew: true };
+    function deck() { return fc.order.filter(function (k) { return !fc.onlyNew || !known[GLOSSARY[k].t]; }); }
+    function draw() {
+      box.textContent = "";
+      var d = deck();
+      box.appendChild(el("p", { class: "lead2", text: "Chạm vào thẻ để lật. Đã thuộc " + Object.keys(known).length + "/" + GLOSSARY.length + " thẻ." }));
+      var tg = el("label", { class: "check" }, [el("input", { type: "checkbox" }), " Chỉ học thẻ chưa thuộc"]);
+      tg.firstChild.checked = fc.onlyNew;
+      tg.firstChild.addEventListener("change", function () { fc.onlyNew = tg.firstChild.checked; fc.i = 0; fc.flip = false; draw(); });
+      box.appendChild(tg);
+      if (!d.length) {
+        box.appendChild(el("p", { class: "empty", text: "Đã thuộc hết các thẻ. Rất tốt!" }));
+        box.appendChild(btn("Học lại từ đầu", "btn2 primary wide", function () { known = {}; save(KEY_KNOWN, known); fc.i = 0; draw(); }));
+        return;
+      }
+      if (fc.i >= d.length) fc.i = 0;
+      var g = GLOSSARY[d[fc.i]], L = lessonById(g.l);
+      var card = el("button", { class: "flash" + (fc.flip ? " back" : ""), type: "button", "aria-label": fc.flip ? "Mặt sau, chạm để lật lại" : "Mặt trước, chạm để lật" });
+      card.appendChild(el("small", { text: (fc.i + 1) + " / " + d.length + (L ? " · Bài " + L.n : "") }));
+      card.appendChild(el(fc.flip ? "p" : "b", { text: fc.flip ? g.d : g.t }));
+      card.appendChild(el("small", { class: "hint", text: fc.flip ? g.t : "Chạm để xem nghĩa" }));
+      card.addEventListener("click", function () { fc.flip = !fc.flip; draw(); });
+      box.appendChild(card);
+      function go(k) { fc.i = (fc.i + k + d.length) % d.length; fc.flip = false; draw(); }
+      box.appendChild(el("div", { class: "fc-row" }, [
+        btn("← Trước", "btn2", function () { go(-1); }),
+        btn("Đã thuộc ✓", "btn2 ok", function () { known[g.t] = 1; save(KEY_KNOWN, known); fc.flip = false; if (!fc.onlyNew) go(1); else draw(); }),
+        btn("Sau →", "btn2 primary", function () { go(1); })
+      ]));
+      box.appendChild(el("div", { class: "btn-row" }, [
+        btn("Trộn thẻ", "btn2", function () { fc.order = shuffle(fc.order); fc.i = 0; fc.flip = false; draw(); }),
+        L ? el("a", { class: "btn2", href: "#/bai/" + L.id, text: "Xem trong Bài " + L.n }) : el("span")
+      ]));
+    }
+    draw();
+  }
+
+  function resultText(name) {
+    var p = loadProg(), mix = load(KEY_MIX, null), lines = ["KẾT QUẢ HỌC ĐIỆN TỬ, ĐIỆN LẠNH", "Họ tên: " + (name || "(chưa nhập)"), "Ngày: " + today(),
+      "Hoàn thành: " + doneCount(p) + "/" + LESSONS.length + " bài", ""];
+    LESSONS.forEach(function (L) {
+      var pr = p[L.id];
+      lines.push("Bài " + L.n + ". " + L.title + ": " + (pr && pr.total ? pr.score + "/" + pr.total + (pr.score === pr.total ? " ✓" : "") : "chưa làm"));
+    });
+    lines.push("", "Kiểm tra tổng hợp 20 câu: " + (mix ? mix.score + "/" + mix.total + " (" + mix.date + ")" : "chưa làm"), "Câu sai còn cần ôn: " + wrongQuestions().length);
+    return lines.join("\n");
+  }
+  function renderKq(box) {
+    var p = loadProg(), mix = load(KEY_MIX, null);
+    var name = el("input", { class: "search", type: "text", placeholder: "Nhập họ tên của bạn", autocomplete: "name", "aria-label": "Họ tên" });
+    name.value = load(KEY_NAME, "") || "";
+    var nm = el("b", { text: name.value || "(chưa nhập tên)" });
+    name.addEventListener("input", function () { save(KEY_NAME, name.value.trim()); nm.textContent = name.value.trim() || "(chưa nhập tên)"; });
+    box.appendChild(name);
+    var sheet = el("div", { class: "sheet" });
+    sheet.appendChild(el("div", { class: "sheet-h" }, [el("span", { text: "KẾT QUẢ HỌC TẬP" }), el("small", { text: today() })]));
+    sheet.appendChild(el("p", { class: "sheet-n" }, [nm]));
+    sheet.appendChild(el("p", { class: "sheet-s", text: "Hoàn thành " + doneCount(p) + "/" + LESSONS.length + " bài · Kiểm tra 20 câu: " + (mix ? mix.score + "/" + mix.total : "chưa làm") + " · Câu sai cần ôn: " + wrongQuestions().length }));
+    var tb = el("table", { class: "tbl" });
+    tb.appendChild(el("tr", {}, [el("th", { text: "Bài" }), el("th", { text: "Điểm" }), el("th", { text: "" })]));
+    LESSONS.forEach(function (L) {
+      var pr = p[L.id], ok = pr && pr.total && pr.score === pr.total;
+      tb.appendChild(el("tr", {}, [el("td", { text: L.n + ". " + L.title }), el("td", { class: "num2", text: pr && pr.total ? pr.score + "/" + pr.total : "—" }),
+        el("td", { class: ok ? "good" : "", text: ok ? "✓" : "" })]));
+    });
+    sheet.appendChild(tb);
+    box.appendChild(sheet);
+    box.appendChild(el("p", { class: "note", text: "Chụp màn hình bảng này, hoặc bấm Chép kết quả rồi dán vào Zalo hay email để gửi người phụ trách training." }));
+    box.appendChild(el("div", { class: "nav-row" }, [
+      btn("Chép kết quả", "btn2 primary", function () { copyText(resultText(name.value.trim()), "Đã chép kết quả"); }),
+      el("a", { class: "btn2", href: "#/on/mix20", text: "Làm kiểm tra 20 câu" })
+    ]));
+    box.appendChild(el("details", { class: "reset" }, [el("summary", { text: "Xóa toàn bộ kết quả trên máy này" }),
+      el("p", { class: "note", text: "Dùng khi đưa điện thoại cho người khác học. Không lấy lại được." }),
+      btn("Xóa kết quả", "btn2 danger", function () {
+        if (!confirm("Xóa toàn bộ điểm, câu sai và thẻ đã thuộc trên máy này?")) return;
+        [KEY, KEY_WRONG, KEY_MIX, KEY_KNOWN].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { /* bỏ qua */ } });
+        fc = null; updateChip(); route(); toast("Đã xóa kết quả");
+      })]));
+  }
+
+  var ON_TITLE = { mix10: "Kiểm tra nhanh", mix20: "Kiểm tra tổng hợp", sai: "Ôn câu sai", the: "Thẻ ghi nhớ", kq: "Kết quả học tập" };
+  function renderOn(sub) {
+    var box = $("#v-on"); box.textContent = "";
+    if (sub === "mix10") renderMix(box, 10);
+    else if (sub === "mix20") renderMix(box, 20);
+    else if (sub === "sai") renderSai(box);
+    else if (sub === "the") renderThe(box);
+    else if (sub === "kq") renderKq(box);
+    else renderOnMenu(box);
   }
 
   // 15/10/2026: thuật ngữ — lọc theo bài + ô tìm, link "Xem trong bài" thành nút đủ to để bấm
@@ -340,7 +563,7 @@
   }
   function initChat() {
     if (chatReady) return; chatReady = true;
-    addMsg("bot", { title: "Trợ lý giáo trình", paras: ["Mình chỉ tra trong 13 bài của giáo trình này, không dùng AI và không đoán ngoài nội dung. Chọn một gợi ý hoặc gõ từ khóa:"],
+    addMsg("bot", { title: "Trợ lý giáo trình", paras: ["Mình chỉ tra trong " + LESSONS.length + " bài của giáo trình này, không dùng AI và không đoán ngoài nội dung. Gõ kiểu quen miệng cũng được (lốc, cục nóng, capa, sensor...). Chọn một gợi ý hoặc gõ từ khóa:"],
       chips: window.Chat.starters.map(function (s) { return { text: s, ask: s }; }) }, true);
   }
   $("#chat-form").addEventListener("submit", function (e) {
@@ -348,7 +571,7 @@
     var i = $("#chat-in"), v = i.value; i.value = ""; ask(v);
   });
   $("#tn-q").addEventListener("input", function (e) { renderTn(e.target.value); });
-  $("#back").addEventListener("click", function () { location.hash = "#/hoc"; });
+  $("#back").addEventListener("click", function () { location.hash = backTo || "#/hoc"; });
   $$(".tab").forEach(function (t) {
     t.addEventListener("click", function () { try { history.replaceState(null, "", "#/lab/" + t.dataset.lab); } catch (e) { /* bỏ qua */ } labContext(t.dataset.lab); });
   });
@@ -356,14 +579,16 @@
   // ---- điều hướng ----
   function route() {
     var parts = (location.hash || "#/hoc").replace(/^#\/?/, "").split("/");
-    var page = parts[0] || "hoc", arg = parts[1], sub = parts[2];
+    var page = parts[0] || "hoc", arg = parts[1], sub = parts[2], blk = parts[3];
     var main = $("#main");
     window.Labs.leave();
     if (page === "bai" && lessonById(arg)) {
-      showView("bai"); renderBai(arg, sub); setTitle("Bài " + lessonById(arg).n);
+      showView("bai"); renderBai(arg, sub, blk); setTitle("Bài " + lessonById(arg).n);
     } else if (page === "lab") {
       showView("lab"); setTitle("Thực hành"); window.Labs.enter(arg);
       var cur = $(".tab[aria-selected=\"true\"]"); labContext(cur ? cur.dataset.lab : arg);
+    } else if (page === "on") {
+      showView("on", ON_TITLE[arg] ? "#/on" : null); setTitle(ON_TITLE[arg] || "Ôn tập"); renderOn(arg);
     } else if (page === "tn") {
       showView("tn"); setTitle("Thuật ngữ"); renderTn($("#tn-q").value);
     } else if (page === "hoi") {
@@ -371,14 +596,25 @@
     } else {
       showView("hoc"); setTitle(TITLE); renderHoc();
     }
-    main.scrollTop = 0;
+    if (blk == null) main.scrollTop = 0;
     updateChip();
   }
   window.addEventListener("hashchange", route);
   route();
 
   // ---- dùng offline ----
+  // 23/10/2026: đang mở app mà có bản mới thì báo "Đã có bản mới" (mới mở trang thì đã là bản mới từ mạng, không báo)
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
-    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () { /* không sao */ }); });
+    var t0 = Date.now();
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").then(function (reg) {
+        reg.addEventListener("updatefound", function () {
+          if (!navigator.serviceWorker.controller || Date.now() - t0 < 15000) return;
+          $("#update").hidden = false;
+        });
+        document.addEventListener("visibilitychange", function () { if (!document.hidden) reg.update().catch(function () { /* mất mạng */ }); });
+      }).catch(function () { /* không sao */ });
+    });
+    $("#update-go").addEventListener("click", function () { location.reload(); });
   }
 })();
