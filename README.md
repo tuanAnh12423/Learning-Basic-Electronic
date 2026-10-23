@@ -38,3 +38,6 @@ Câu nào không khớp đủ thì trả lời "Chưa có trong giáo trình" th
 - `js/real3.js` (Bài 7–9, 17 mô phỏng): nền là **ảnh chụp thật** linh kiện trên bo (`img/parts`), lớp phủ đánh dấu linh kiện,
   dòng điện chạy, chỗ nóng, tia lửa; đồng hồ bên phải. Tất cả đọc thẳng kết quả mô phỏng bên dưới (`HDT.labs[id].data`)
   tại con trỏ đồ thị, nên kéo thanh trượt nào thì ảnh đổi theo. Thêm cảnh mới: thêm 1 mục vào `SCENES` (ảnh, khung, đường dòng, điểm sáng, đồng hồ).
+- `js/real4.js` (Bài 10–13, 5 mô phỏng): vẽ dụng cụ thật — cảm biến kẹp trên ống đồng dàn lạnh, bộ nguồn + đồng hồ đo dòng,
+  VOM trên bo cắm (que, cổng, núm xoay đúng theo cách đo; cầu chì đứt khi đo sai), ampe kìm kẹp dây, ổ cắm 220 V + máy hiện sóng + tụ lọc.
+  Đọc mô phỏng bên dưới qua `HDT.labs[id].data` và `.p` (giá trị thanh trượt/nút, mở trong `labkit.js`).
