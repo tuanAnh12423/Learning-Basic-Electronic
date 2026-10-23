@@ -159,6 +159,98 @@
   var PARTS = [["lt", "Lý thuyết"], ["mp", "Mô phỏng"], ["bt", "Bài tập"]];
   function labLead(id) { var e = $("#lab-" + id + " .lead"); return e ? e.textContent : ""; }
 
+  // ---- trình bày đoạn chữ: tách danh sách đánh số, bước, mã in, triệu chứng... (không đổi nội dung, chỉ đổi cách hiển thị) ----
+  var GROUP_COLOR = { "Cam": "#C2570C", "Đỏ": "#C4000F", "Vàng": "#A16207", "Xanh lá": "#15803D", "Tím": "#7C3AED", "Xanh dương": "#1D4ED8" };
+  var ITEM_START = /([.)])\s+(?=\d{1,2}(?: \(\d+ con\))?(?: (?:và|đến) \d{1,2})?: )/g;
+  var ITEM_HEAD = /^(\d{1,2}(?: \(\d+ con\))?(?: (?:và|đến) \d{1,2})?): ([\s\S]+)$/;
+  function sentences(t) { return t.split(/\.\s+(?=[A-ZÀ-Ỵa-z0-9])/).map(function (x) { return x.replace(/\.$/, "").trim(); }).filter(Boolean); }
+  function boldHead(txt) { // in đậm cụm đầu (trước dấu phẩy đầu tiên ngoài ngoặc) nếu đủ ngắn
+    var depth = 0, i;
+    for (i = 0; i < txt.length; i++) {
+      var c = txt[i];
+      if (c === "(") depth++; else if (c === ")") depth = Math.max(0, depth - 1);
+      else if (c === "," && !depth) break;
+    }
+    if (i < txt.length && i <= 46) return [el("b", { text: txt.slice(0, i) }), txt.slice(i)];
+    return [txt];
+  }
+  function itemList(parts, color) {
+    var ul = el("ul", { class: "items" });
+    parts.forEach(function (it) {
+      var m = ITEM_HEAD.exec(it);
+      var num = el("span", { class: "no", text: m[1].replace(" đến ", "–").replace(" và ", " + ") });
+      if (color) num.style.background = color;
+      var body = el("span", { class: "tx" }, boldHead(m[2].replace(/\.$/, "") + "."));
+      ul.appendChild(el("li", {}, [num, body]));
+    });
+    return ul;
+  }
+  // Bài nào cần trình bày dạng danh sách số, bảng mã, hàng triệu chứng thì thêm id vào đây (các bài khác giữ nguyên đoạn văn)
+  var RICH_LESSONS = ["b9"];
+  function para(t, rich) {
+    var m;
+    // 1) ghi chú đầu bài / cảnh báo / mẹo
+    if ((m = /^(Mẹo|An toàn|Lưu ý|Chú ý|Cảnh báo)\s*:\s*([\s\S]+)$/.exec(t))) {
+      var warn = /^(An toàn|Cảnh báo)$/.test(m[1]);
+      return el("div", { class: "callout " + (warn ? "warn2" : "tip") }, [el("b", { text: m[1] }), m[2].charAt(0).toUpperCase() + m[2].slice(1)]);
+    }
+    if (/^(Nội dung dựa trên|Dưới đây là suy luận|Tài liệu và ảnh có vài chỗ|Hình cắt từ ảnh)/.test(t)) return el("p", { class: "note", text: t });
+    // 2) Bước N.
+    if (rich && (m = /^Bước (\d+)\.\s*([\s\S]+)$/.exec(t))) {
+      return el("div", { class: "step" }, [el("span", { class: "no", text: m[1] }), el("span", { class: "tx" }, boldHead2(m[2]))]);
+    }
+    // 3) danh sách đánh số: "Cam. 1: ... 2: ..." hoặc "1: ... 2: ..."
+    var grp = null, body = t;
+    if ((m = /^([A-ZÀ-Ỵ][\p{L} ]{1,11})\.\s+(?=\d{1,2}[ :(])/u.exec(t)) && GROUP_COLOR[m[1]]) { grp = m[1]; body = t.slice(m[0].length); }
+    var parts = body.replace(ITEM_START, "$1\u0001").split("\u0001");
+    if (rich && parts.length >= 1 && parts.every(function (x) { return ITEM_HEAD.test(x); })) {
+      var box = el("div", { class: "grp" });
+      if (grp) { var h = el("div", { class: "gh" }, [el("i"), grp]); h.firstChild.style.background = GROUP_COLOR[grp]; box.appendChild(h); }
+      box.appendChild(itemList(parts, grp ? GROUP_COLOR[grp] : ""));
+      return box;
+    }
+    // 4) "Nhãn: a, b, c, d" dạng chuỗi nối tiếp (đường hồi tiếp)
+    if (rich && (m = /^(Đường [^:.]{2,24}): ([\s\S]+)$/.exec(t))) {
+      var chain = m[2].replace(/\.$/, "").split(/,\s+/);
+      if (chain.length >= 4) {
+        var fl = el("div", { class: "flow" });
+        chain.forEach(function (c, i) { fl.appendChild(el("span", { class: "fc", text: (i ? "› " : "") + c })); });
+        return el("div", { class: "flowbox" }, [el("b", { text: m[1] }), fl]);
+      }
+    }
+    // 5) bảng đọc mã: "2703 = 270 kΩ. 6803 = ..."
+    var label = "", rest = t;
+    if (rich && (m = /^([^:.=]{2,28}):\s+(?=[0-9A-Z]{3,6} = )/.exec(t))) { label = m[1]; rest = t.slice(m[0].length); }
+    var ss = sentences(rest);
+    var CODE = /^[0-9A-Z]{3,6} = /;
+    if (rich && ss.length >= 1 && ss.every(function (x) { return CODE.test(x); })) {
+      var tb = el("div", { class: "codes" });
+      if (label) tb.appendChild(el("div", { class: "cl", text: label }));
+      ss.forEach(function (x) { var k = x.indexOf(" = "); tb.appendChild(el("div", { class: "cr" }, [el("code", { text: x.slice(0, k) }), el("span", { text: x.slice(k + 3) })])); });
+      return tb;
+    }
+    // 6) hàng "triệu chứng → nghi ngờ"
+    ss = sentences(t);
+    if (rich && ss.length >= 2 && ss.every(function (x) { var k = x.indexOf(": "); return k > 3 && k <= 80; })) {
+      var rows = el("div", { class: "sym" });
+      ss.forEach(function (x) { var k = x.indexOf(": "); rows.appendChild(el("div", { class: "sr" }, [el("b", { text: x.slice(0, k) }), el("span", { text: x.slice(k + 2) + "." })])); });
+      return rows;
+    }
+    // 7) đoạn dài bình thường: xuống dòng theo câu để không dính thành một khối
+    if (t.length > 300 && ss.length >= 3) {
+      var wrap = el("div", { class: "lines" });
+      ss.forEach(function (x) { wrap.appendChild(el("p", { text: x + "." })); });
+      return wrap;
+    }
+    return el("p", { text: t });
+  }
+  function boldHead2(txt) { // câu đầu của một bước in đậm
+    var k = txt.indexOf(": "); var d = txt.indexOf(". ");
+    var cut = (k > 0 && (d < 0 || k < d)) ? k + 1 : (d > 0 && d <= 70 ? d + 1 : -1);
+    return cut > 0 ? [el("b", { text: txt.slice(0, cut) }), " " + txt.slice(cut).trim()] : [txt];
+  }
+  function hasItems(b, rich) { return rich && b.p.some(function (t) { return para(t, true).className === "grp"; }); }
+
   function renderBai(id, part, blk) {
     var L = lessonById(id), box = $("#v-bai");
     box.textContent = "";
@@ -192,12 +284,21 @@
         box.appendChild(toc);
       }
       L.blocks.forEach(function (b, i) {
-        var kids = [el("h3", { text: b.h })].concat(b.p.map(function (t) { return el("p", { text: t }); }));
+        var kids = [el("h3", { text: b.h })];
+        var figNode = null;
         if (b.img) {
-          kids.push(el("figure", { class: "fig" }, [
+          figNode = el("figure", { class: "fig" }, [
             el("a", { href: b.img.src, target: "_blank", rel: "noopener" }, [el("img", { src: b.img.src, alt: b.img.alt, loading: "lazy" })]),
-            el("figcaption", { text: b.img.cap + " (chạm vào hình để mở lớn)" })]));
+            el("figcaption", { text: b.img.cap + " (chạm vào hình để mở lớn)" })]);
         }
+        // bài có danh sách đánh số thì đặt hình ngay sau đoạn mở đầu để vừa đọc vừa nhìn số trên hình
+        var rich = RICH_LESSONS.indexOf(L.id) >= 0;
+        var figFirst = figNode && hasItems(b, rich);
+        b.p.forEach(function (t, pi) {
+          kids.push(para(t, rich));
+          if (figFirst && pi === 0) kids.push(figNode);
+        });
+        if (figNode && !figFirst) kids.push(figNode);
         if (b.parts) {
           b.parts.forEach(function (pt) {
             kids.push(el("figure", { class: "fig part" }, [
