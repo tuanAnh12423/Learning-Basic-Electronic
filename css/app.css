@@ -167,10 +167,6 @@ h2{font-size:18px}
 .term .term-link{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:999px;background:var(--soft);color:#C4000F;font-size:14px;font-weight:600;text-decoration:none}
 
 /* Thực hành: thanh tab có viền mờ báo còn tab bên phải + dòng "Thuộc bài" */
-#v-lab .tabs{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:28px}
-.lab-ctx{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-6px 0 12px;font-size:13.5px;color:var(--muted)}
-.lab-ctx span{min-width:0}
-.lab-ctx a{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:#C4000F;font-weight:600;text-decoration:none}
 
 .fig a{display:block}
 .read small{font-size:13px}
@@ -244,8 +240,6 @@ svg.sk{margin:0 0 10px}
 .part h4{padding-bottom:0;border:0}
 
 /* 23/10/2026: Ôn tập, thẻ ghi nhớ, bảng kết quả, tìm kiếm, nút cỡ chữ, báo bản mới. Giữ giao diện sáng. */
-.bottom{grid-template-columns:repeat(5,1fr)}
-.bottom a{font-size:11.5px}
 .fs-btn{margin-left:0;margin-right:-8px;font-size:16px;font-weight:600}
 .btn2.wide{display:flex;width:100%;margin:0 0 12px;text-align:center}
 .btn2.ok{border-color:var(--ok);color:var(--ok)}
@@ -290,3 +284,35 @@ body.fs1 .sec h3,body.fs1 .lesson-card h3{font-size:19px}
 body.fs2 .lead2,body.fs2 .sec p,body.fs2 .q .qt,body.fs2 .q .opt,body.fs2 .q .why,body.fs2 .term p,body.fs2 .msg,body.fs2 .lesson-card p,body.fs2 .hit small,body.fs2 .lead,body.fs2 .try,body.fs2 .note,body.fs2 figcaption{font-size:20.5px}
 body.fs2 .sec h3,body.fs2 .lesson-card h3{font-size:21.5px}
 body.fs2 .flash p{font-size:20px}
+
+/* 23/10/2026: trình bày lại — trang Học chia 3 phần, Thực hành là danh sách theo bài, Tra cứu gộp thuật ngữ + trợ lý */
+.group-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:20px 2px 8px;font-size:15.5px;font-weight:700;line-height:1.3}
+.group-h small{flex:none;font-size:13px;font-weight:500;color:var(--muted)}
+.prog-row + .group-h,.lead2 + .group-h{margin-top:8px}
+.lesson-card{padding:12px;margin-bottom:8px}
+.lesson-card .num{width:36px;height:36px}
+.lesson-card p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lesson-card .st{margin-top:6px}
+.ask-card{border-color:#F3C2C6;margin-bottom:12px}
+.ask-card h3{overflow-wrap:anywhere}
+.lab-grp{margin:12px 2px 6px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.lab-row{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;margin-bottom:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none}
+.lab-row:active{background:var(--soft)}
+.lab-row::after{content:"›";flex:none;color:var(--accent);font-size:24px;line-height:1}
+.lab-row .lr-b{flex:1;min-width:0}
+.lab-row b{display:block;font-size:15.5px;font-weight:600}
+.lab-row small{display:block;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#v-lab .bar{display:none}
+.lab-head{margin:0 0 12px}
+.lab-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px}
+.eyebrow{margin:0;font-size:13px;font-weight:600;color:#C4000F}
+#v-lab .lab-head h2{margin:2px 0 6px;font-size:19px;line-height:1.3}
+.lab-head .lead{margin:0;font-size:15px;color:var(--ink)}
+.lab-nav{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:6px;margin-top:10px}
+.lab-nav a{display:flex;align-items:center;justify-content:center;min-height:42px;padding:0 8px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap}
+.lab-nav a.go-bai{color:#C4000F}
+.lab-nav a:active{background:var(--soft)}
+#v-lab .sub-h{margin:0 0 6px;font-size:13px;font-weight:600;line-height:1.4;color:var(--muted)}
+details.more{margin-top:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+details.more summary{min-height:44px;display:flex;align-items:center;padding:0 12px;font-size:14px;font-weight:600;color:#C4000F;cursor:pointer}
+details.more > :not(summary){margin:0 12px 10px}
