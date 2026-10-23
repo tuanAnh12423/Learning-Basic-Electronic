@@ -1,5 +1,5 @@
-/* Khung ứng dụng: điều hướng bằng hash (#/hoc, #/bai/b1, #/lab/ohm, #/on, #/on/mix10, #/on/sai, #/on/the, #/on/kq, #/tn, #/hoi),
-   bài học, bài tập, ôn tập, thuật ngữ, chat. */
+/* Khung ứng dụng: điều hướng bằng hash (#/hoc, #/bai/b1, #/lab, #/lab/ohm, #/on, #/on/mix10, #/on/sai, #/on/the, #/on/kq,
+   #/tra, #/tra/hoi; link cũ #/tn, #/hoi vẫn chạy), bài học, bài tập, ôn tập, tra cứu (thuật ngữ + trợ lý). */
 (function () {
   "use strict";
   var LESSONS = window.LESSONS, GLOSSARY = window.GLOSSARY;
@@ -63,10 +63,11 @@
   $("#fs").addEventListener("click", function () { var n = ((load(KEY_FS, 0) || 0) + 1) % 3; save(KEY_FS, n); applyFs(n); toast("Cỡ chữ: " + FS_NAME[n]); });
 
   // ---- màn hình ----
-  var VIEWS = ["hoc", "bai", "lab", "on", "tn", "hoi"], backTo = null;
+  var VIEWS = ["hoc", "bai", "labs", "lab", "on", "tn", "hoi"], backTo = null;
+  var NAV_OF = { bai: "hoc", labs: "lab", tn: "tra", hoi: "tra" };
   function showView(name, back) {
     VIEWS.forEach(function (v) { $("#v-" + v).hidden = v !== name; });
-    var navKey = name === "bai" ? "hoc" : name;
+    var navKey = NAV_OF[name] || name;
     $$(".bottom a").forEach(function (a) {
       if (a.dataset.nav === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
@@ -113,29 +114,27 @@
     bar.firstChild.style.width = (100 * n / LESSONS.length) + "%";
     box.appendChild(el("div", { class: "prog-row" }, [el("span", { text: "Đã hoàn thành " + n + " trên " + LESSONS.length + " bài" }), bar]));
 
-    // 23/10/2026: tìm trong mọi bài và thuật ngữ
-    var q = el("input", { class: "search", type: "search", placeholder: "Tìm: xả tụ, NTC, IGBT...", autocomplete: "off", enterkeyhint: "search", "aria-label": "Tìm trong giáo trình" });
-    var res = el("div", { class: "results" }), listWrap = el("div");
-    box.appendChild(q); box.appendChild(res); box.appendChild(listWrap);
-    q.addEventListener("input", function () {
-      res.textContent = ""; var v = q.value.trim(); listWrap.hidden = !!v; if (!v) return;
-      var r = searchAll(v);
-      if (!r.length) { res.appendChild(el("p", { class: "empty", text: "Không thấy trong giáo trình. Thử từ khóa ngắn hơn, hoặc hỏi ở mục Hỏi." })); return; }
-      res.appendChild(el("p", { class: "note", text: "Tìm thấy " + r.length + " mục" }));
-      r.slice(0, 30).forEach(function (x) { res.appendChild(el("a", { class: "hit", href: x.href }, [el("b", { text: x.t }), el("small", { text: x.s })])); });
-    });
-    box = listWrap;
-
-    LESSONS.forEach(function (L) {
-      var s2 = status(p, L);
-      var a = el("a", { class: "lesson-card is-" + s2.k, href: "#/bai/" + L.id }, [
-        el("span", { class: "num", text: s2.k === "done" ? "✓" : String(L.n) }),
-        el("span", { class: "lc-body" }, [el("h3", { text: L.title }), el("p", { text: L.summary }), el("small", { class: "st st-" + s2.k, text: s2.t })])
-      ]);
-      box.appendChild(a);
+    // 23/10/2026: 13 bài chia 3 phần; thẻ bài gọn, chỉ ghi trạng thái khi đã bắt đầu (xong thì số bài thành ✓)
+    groupsOf(LESSONS).forEach(function (g) {
+      var dn = g.ls.filter(function (L) { return status(p, L).k === "done"; }).length;
+      box.appendChild(groupHead(g.t, dn + "/" + g.ls.length + " bài xong"));
+      g.ls.forEach(function (L) {
+        var s2 = status(p, L), body = [el("h3", { text: L.title }), el("p", { text: L.summary })];
+        if (s2.k === "seen" || s2.k === "quiz") body.push(el("small", { class: "st st-" + s2.k, text: s2.t }));
+        box.appendChild(el("a", { class: "lesson-card is-" + s2.k, href: "#/bai/" + L.id }, [
+          el("span", { class: "num", text: s2.k === "done" ? "✓" : String(L.n) }), el("span", { class: "lc-body" }, body)]));
+      });
     });
     box.appendChild(el("p", { class: "note", text: "Nội dung mang tính nguyên lý cơ bản. Khi sửa chữa thực tế, luôn xem tài liệu của hãng, cắt nguồn, xả tụ và đo xác nhận trước khi chạm vào." }));
   }
+
+  // 3 phần của giáo trình (bài thêm sau số 13 tự vào phần cuối)
+  var GROUPS = [["Phần 1 · Điện cơ bản", 1, 6], ["Phần 2 · Bo nguồn inverter", 7, 9], ["Phần 3 · Cảm biến và đo lường", 10, 999]];
+  function groupsOf(list) {
+    return GROUPS.map(function (g) { return { t: g[0], ls: list.filter(function (L) { return L.n >= g[1] && L.n <= g[2]; }) }; })
+      .filter(function (g) { return g.ls.length; });
+  }
+  function groupHead(t, right) { return el("h2", { class: "group-h" }, [el("span", { text: t }), el("small", { text: right })]); }
 
   function searchAll(q) {
     var f = window.Chat.fold(q), out = [];
@@ -437,9 +436,20 @@
   }
 
   // 15/10/2026: thuật ngữ — lọc theo bài + ô tìm, link "Xem trong bài" thành nút đủ to để bấm
-  var tnLesson = "";
+  // 23/10/2026: thành trang Tra cứu — một ô tìm cho thuật ngữ, bài và mô phỏng; nút hỏi trợ lý ngay dưới ô tìm
+  var tnLesson = "", askLater = "";
+  function renderAsk(q) {
+    var box = $("#tn-ask");
+    box.textContent = "";
+    var a = el("a", { class: "lesson-card ask-card", href: "#/tra/hoi" }, [el("span", { class: "num ic", text: "?" }),
+      el("span", { class: "lc-body" }, [el("h3", { text: q ? "Hỏi trợ lý: “" + q + "”" : "Hỏi trợ lý giáo trình" }),
+        el("p", { text: q ? "Trợ lý tìm trong " + LESSONS.length + " bài và trả lời gọn." : "Gõ kiểu quen miệng cũng được: lốc, capa, xả tụ, cục nóng..." })])]);
+    a.addEventListener("click", function () { askLater = q || ""; });
+    box.appendChild(a);
+  }
   function renderTn(q) {
-    var list = $("#tn-list"), f = window.Chat.fold(q || ""), n = 0;
+    q = (q || "").trim(); renderAsk(q);
+    var list = $("#tn-list"), f = window.Chat.fold(q), n = 0;
     var chips = $("#tn-chips");
     if (!chips.childNodes.length) {
       [["", "Tất cả"]].concat(LESSONS.map(function (L) { return [L.id, "Bài " + L.n]; })).forEach(function (x) {
@@ -457,17 +467,76 @@
       list.appendChild(el("div", { class: "term" }, [el("b", { text: g.t }), el("p", { text: g.d }),
         el("a", { class: "term-link", href: "#/bai/" + g.l, text: "Xem trong Bài " + (L ? L.n : "") })]));
     });
-    if (!n) list.appendChild(el("p", { class: "empty", text: "Không có thuật ngữ này trong giáo trình. Thử từ ngắn hơn, ví dụ: tụ, relay, gas." }));
+    var hits = q ? searchAll(q).filter(function (x) { return x.s.indexOf("Thuật ngữ") !== 0; }) : [];
+    if (hits.length) {
+      list.appendChild(el("p", { class: "lab-grp", text: "Trong bài và mô phỏng (" + hits.length + ")" }));
+      hits.slice(0, 30).forEach(function (x) { list.appendChild(el("a", { class: "hit", href: x.href }, [el("b", { text: x.t }), el("small", { text: x.s })])); });
+    }
+    if (!n && !hits.length) list.appendChild(el("p", { class: "empty", text: "Không thấy trong giáo trình. Thử từ ngắn hơn (tụ, relay, gas) hoặc bấm Hỏi trợ lý ở trên." }));
   }
 
-  // 15/10/2026: dưới thanh mô phỏng ghi mô phỏng này thuộc bài nào + lối quay về bài
-  function labContext(id) {
-    var L = LESSONS.filter(function (x) { return (x.labs || []).indexOf(id) >= 0; })[0], box = $("#lab-ctx");
+  // ---- THỰC HÀNH (23/10/2026) ----
+  // Bỏ dải 32 tab vuốt ngang: #/lab là danh sách mô phỏng chia theo bài, #/lab/id mở một mô phỏng.
+  // Mỗi mô phỏng có phần đầu chung (thuộc bài nào, tên, giới thiệu, nút Trước / Bài / Sau), hình thực tế ngay dưới.
+  function lessonOfLab(id) { return LESSONS.filter(function (x) { return (x.labs || []).indexOf(id) >= 0; })[0]; }
+  var LAB_ORDER = [];
+  LESSONS.forEach(function (L) { (L.labs || []).forEach(function (id) { if ($("#lab-" + id) && LAB_ORDER.indexOf(id) < 0) LAB_ORDER.push(id); }); });
+  $$("section.lab").forEach(function (s) { var id = s.id.slice(4); if (LAB_ORDER.indexOf(id) < 0) LAB_ORDER.push(id); });
+
+  function tidyLabs() {
+    LAB_ORDER.forEach(function (id, i) {
+      var sec = $("#lab-" + id), L = lessonOfLab(id);
+      var sim = sec.querySelector(".card:not(.real)"), real = sec.querySelector(".card.real");
+      var h = sim && sim.querySelector(":scope > h2"), ld = sim && sim.querySelector(":scope > .lead");
+      var name = (h ? h.textContent : LAB_NAME[id] || id).replace(/^Bài \d+(, câu \d+)?:\s*/, "");
+      var head = el("div", { class: "lab-head" });
+      var eb = L ? "Bài " + L.n + " · mô phỏng " + (L.labs.indexOf(id) + 1) + "/" + L.labs.length : "Mô phỏng";
+      head.appendChild(el("div", { class: "lab-top" }, [el("p", { class: "eyebrow", text: eb })]));
+      head.appendChild(el("h2", { text: name }));
+      if (ld) head.appendChild(ld);
+      var prev = LAB_ORDER[i - 1], next = LAB_ORDER[i + 1];
+      head.appendChild(el("nav", { class: "lab-nav", "aria-label": "Chuyển mô phỏng" }, [
+        prev ? el("a", { href: "#/lab/" + prev, title: LAB_NAME[prev] || "", text: "‹ Trước" }) : el("span"),
+        L ? el("a", { class: "go-bai", href: "#/bai/" + L.id, text: "Mở Bài " + L.n }) : el("span"),
+        next ? el("a", { href: "#/lab/" + next, title: LAB_NAME[next] || "", text: "Sau ›" }) : el("span")]));
+      sec.insertBefore(head, sec.firstChild);
+      if (h) h.replaceWith(el("p", { class: "sub-h", text: "Sơ đồ và số đo" }));
+      if (real) {
+        var rh = real.querySelector(":scope > h2");
+        if (rh) { rh.className = "sub-h"; rh.textContent = "Hình thực tế · " + rh.textContent.replace(/^Hình thực tế:\s*/, ""); }
+      }
+      // "Thử", ghi chú phụ: gom vào một mục mở ra khi cần, cảnh báo an toàn vẫn để hiện
+      var extra = sim ? $$(":scope > .try, :scope > .lab-note, :scope > p.note:not([id])", sim) : [];
+      if (extra.length) {
+        var d = el("details", { class: "more" }, [el("summary", { text: "Gợi ý thử và ghi chú" })]);
+        extra[0].parentNode.insertBefore(d, extra[0]);
+        extra.forEach(function (x) { d.appendChild(x); });
+      }
+    });
+  }
+  tidyLabs();
+
+  function labEnter(id) {
+    var top = $("#lab-" + id + " .lab-top");
+    if (top) top.appendChild($("#pause")); // một nút Tạm dừng dùng chung, đặt vào mô phỏng đang mở
+  }
+
+  function renderLabMenu() {
+    var box = $("#v-labs");
     box.textContent = "";
-    if (!L) { box.hidden = true; return; }
-    box.hidden = false;
-    box.appendChild(el("span", { text: "Thuộc Bài " + L.n + ": " + L.title }));
-    box.appendChild(el("a", { href: "#/bai/" + L.id, text: "Mở bài" }));
+    box.appendChild(el("p", { class: "lead2", text: LAB_ORDER.length + " mô phỏng, xếp theo bài. Mỗi mô phỏng có hình thực tế và sơ đồ để thử." }));
+    groupsOf(LESSONS.filter(function (L) { return (L.labs || []).length; })).forEach(function (g) {
+      var n = 0; g.ls.forEach(function (L) { n += L.labs.length; });
+      box.appendChild(groupHead(g.t, n + " mô phỏng"));
+      g.ls.forEach(function (L) {
+        box.appendChild(el("p", { class: "lab-grp", text: "Bài " + L.n + " · " + L.title }));
+        L.labs.forEach(function (id) {
+          if (!$("#lab-" + id)) return;
+          box.appendChild(el("a", { class: "lab-row", href: "#/lab/" + id }, [
+            el("span", { class: "lr-b" }, [el("b", { text: LAB_NAME[id] || id }), el("small", { text: labLead(id) })])]));
+        });
+      });
+    });
   }
 
   // ---- chat ----
@@ -572,9 +641,6 @@
   });
   $("#tn-q").addEventListener("input", function (e) { renderTn(e.target.value); });
   $("#back").addEventListener("click", function () { location.hash = backTo || "#/hoc"; });
-  $$(".tab").forEach(function (t) {
-    t.addEventListener("click", function () { try { history.replaceState(null, "", "#/lab/" + t.dataset.lab); } catch (e) { /* bỏ qua */ } labContext(t.dataset.lab); });
-  });
 
   // ---- điều hướng ----
   function route() {
@@ -584,15 +650,17 @@
     window.Labs.leave();
     if (page === "bai" && lessonById(arg)) {
       showView("bai"); renderBai(arg, sub, blk); setTitle("Bài " + lessonById(arg).n);
+    } else if (page === "lab" && arg && $("#lab-" + arg)) {
+      showView("lab", "#/lab"); setTitle("Thực hành"); window.Labs.enter(arg); labEnter(arg);
     } else if (page === "lab") {
-      showView("lab"); setTitle("Thực hành"); window.Labs.enter(arg);
-      var cur = $(".tab[aria-selected=\"true\"]"); labContext(cur ? cur.dataset.lab : arg);
+      showView("labs"); setTitle("Thực hành"); renderLabMenu();
     } else if (page === "on") {
       showView("on", ON_TITLE[arg] ? "#/on" : null); setTitle(ON_TITLE[arg] || "Ôn tập"); renderOn(arg);
-    } else if (page === "tn") {
-      showView("tn"); setTitle("Thuật ngữ"); renderTn($("#tn-q").value);
-    } else if (page === "hoi") {
-      showView("hoi"); setTitle("Hỏi giáo trình"); initChat();
+    } else if (page === "hoi" || ((page === "tra" || page === "tn") && arg === "hoi")) {
+      showView("hoi", "#/tra"); setTitle("Hỏi trợ lý"); initChat();
+      if (askLater) { var a = askLater; askLater = ""; ask(a); }
+    } else if (page === "tra" || page === "tn") {
+      showView("tn"); setTitle("Tra cứu"); renderTn($("#tn-q").value);
     } else {
       showView("hoc"); setTitle(TITLE); renderHoc();
     }

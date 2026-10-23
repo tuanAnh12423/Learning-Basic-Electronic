@@ -1,10 +1,11 @@
 # Học Điện Tử, Điện Lạnh (web điện thoại)
 
-Web tĩnh, thiết kế cho điện thoại trước: tab dưới cùng (Học · Thực hành · Thuật ngữ · Hỏi), mở được offline sau lần đầu.
+Web tĩnh, thiết kế cho điện thoại trước: tab dưới cùng (Học · Thực hành · Ôn tập · Tra cứu), mở được offline sau lần đầu.
 Chỉ có nội dung điện tử và điện lạnh cơ bản. Không có mã lỗi, sản phẩm, trò chuyện ngoài lề.
 
 ## Chạy thử trên máy
 Mở thư mục này trong terminal rồi chạy `python -m http.server 8000`, vào http://localhost:8000.
+Máy không có Python: trong VS Code cài tiện ích Live Server, chuột phải `index.html` › Open with Live Server.
 (Mở thẳng file index.html cũng được, chỉ riêng chế độ offline cần địa chỉ http.)
 
 ## Đưa lên GitHub Pages
@@ -41,3 +42,14 @@ Câu nào không khớp đủ thì trả lời "Chưa có trong giáo trình" th
 - `js/real4.js` (Bài 10–13, 5 mô phỏng): vẽ dụng cụ thật — cảm biến kẹp trên ống đồng dàn lạnh, bộ nguồn + đồng hồ đo dòng,
   VOM trên bo cắm (que, cổng, núm xoay đúng theo cách đo; cầu chì đứt khi đo sai), ampe kìm kẹp dây, ổ cắm 220 V + máy hiện sóng + tụ lọc.
   Đọc mô phỏng bên dưới qua `HDT.labs[id].data` và `.p` (giá trị thanh trượt/nút, mở trong `labkit.js`).
+
+## Trình bày lại (23/10/2026, đợt 2)
+- Thanh dưới còn 4 mục: **Học · Thực hành · Ôn tập · Tra cứu**.
+- **Học**: 13 bài chia 3 phần (Điện cơ bản 1–6, Bo nguồn inverter 7–9, Cảm biến và đo lường 10–13). Thẻ bài gọn,
+  chỉ ghi trạng thái khi đã bắt đầu học. Ô tìm chuyển sang trang Tra cứu. Phần thêm bài sau số 13 tự vào phần 3 (`GROUPS` trong `js/app.js`).
+- **Thực hành** (`#/lab`): bỏ dải 32 tab vuốt ngang, thay bằng danh sách mô phỏng theo bài. Mở một mô phỏng (`#/lab/id`) có phần đầu chung:
+  thuộc bài nào, tên, giới thiệu, nút ‹ Trước / Mở bài / Sau ›; rồi tới hình thực tế, rồi "Sơ đồ và số đo".
+  Mục "Thử" và ghi chú phụ gom vào ô **Gợi ý thử và ghi chú** (bấm mở); cảnh báo an toàn vẫn hiện sẵn.
+  Việc sắp xếp này làm lúc mở trang (`tidyLabs()` trong `js/app.js`), nên `index.html`, `labs*.js`, `real*.js` vẫn viết như cũ.
+- **Tra cứu** (`#/tra`): một ô tìm cho thuật ngữ, bài và mô phỏng; nút **Hỏi trợ lý** ngay dưới ô tìm, bấm thì mở trợ lý (`#/tra/hoi`) và hỏi luôn chữ đang gõ.
+  Link cũ `#/tn`, `#/hoi` vẫn mở đúng trang.

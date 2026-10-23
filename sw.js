@@ -1,5 +1,5 @@
 /* Cho phép dùng offline sau lần mở đầu. Đổi số VERSION mỗi khi sửa file để điện thoại tải bản mới. */
-var VERSION = "hdt-v19";
+var VERSION = "hdt-v20";
 var FILES = [
   "./", "index.html", "css/labs.css", "css/app.css",
   "data/lessons.js", "js/labs.js","js/labkit.js","js/labs-nguon.js","js/labs-bo.js","js/labs-co-ban.js", "js/real.js", "js/real2.js", "js/real3.js", "js/real4.js", "js/chat.js", "js/app.js",
