@@ -34,3 +34,7 @@ Câu nào không khớp đủ thì trả lời "Chưa có trong giáo trình" th
 - `js/real2.js`: hình thực tế cho 7 mô phỏng Bài 1–6 (mã màu, nối tiếp/song song, tụ nạp xả, tụ đôi, diode, cầu chỉnh lưu, tìm lỗi quạt).
   Cùng cách làm với `js/real.js`. Hình "Tìm lỗi quạt" dùng chung đề với sơ đồ bên dưới.
 - Nhãn đường chuẩn trên đồ thị tự dời khi sát nhau và có nền mờ; chữ trên sơ đồ nguyên lý to hơn.
+
+- `js/real3.js` (Bài 7–9, 17 mô phỏng): nền là **ảnh chụp thật** linh kiện trên bo (`img/parts`), lớp phủ đánh dấu linh kiện,
+  dòng điện chạy, chỗ nóng, tia lửa; đồng hồ bên phải. Tất cả đọc thẳng kết quả mô phỏng bên dưới (`HDT.labs[id].data`)
+  tại con trỏ đồ thị, nên kéo thanh trượt nào thì ảnh đổi theo. Thêm cảnh mới: thêm 1 mục vào `SCENES` (ảnh, khung, đường dòng, điểm sáng, đồng hồ).
