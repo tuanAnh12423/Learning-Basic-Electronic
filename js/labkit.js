@@ -159,6 +159,7 @@
     window.LAB_NAME_EXTRA[spec.id] = spec.tab;
 
     var L = { spec: spec, cv: cv, dv: dv ? { cv: dv } : null, u: 0, data: null };
+    L.p = p; // 23/10/2026: real4.js đọc giá trị thanh trượt/nút (cách đo, cách kẹp, tải...) để vẽ hình thực tế
     if (dv) {
       L.dv = { c: dv, g: null, w: 0, h: 0 };
     }
