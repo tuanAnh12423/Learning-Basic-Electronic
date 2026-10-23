@@ -496,7 +496,7 @@
     lead: 'MCU chỉ chịu được 3,3 V nên không thể nối thẳng vào bus 310 V. Chuỗi trở 680 kΩ nối tiếp hạ điện áp xuống vài vôn. Dùng nhiều trở nối tiếp để mỗi trở chỉ chịu một phần điện áp. Hỏng một trở là MCU đọc sai và báo lỗi áp.',
     svg: S.open(360, 130, 'Bốn trở 680 kΩ nối tiếp từ bus xuống một trở nhỏ, điểm giữa nối vào ADC của MCU') +
       S.T(8, 16, 'Bus 310 V', 'sk-t') + S.L(60, 12, 60, 18) + S.R(60, 18, 22, true) + S.R(60, 40, 22, true) + S.R(60, 62, 22, true) + S.R(60, 84, 22, true) + S.dot(60, 106) + S.L(60, 106, 60, 112) + S.R(60, 112, 14, true) + S.gnd(60, 126) +
-      S.T(76, 32, 'R78, R79, R80, R82: 680 kΩ mỗi trở', 'sk-m') + S.L(60, 106, 200, 106) + S.T(206, 110, 'về ADC (tối đa 3,3 V)', 'sk-t') + S.T(76, 120, 'trở dưới (giá trị chưa biết, giả định)', 'sk-m') + S.close,
+      S.T(76, 32, 'R78, R79, R80, R82: 680 kΩ mỗi trở', 'sk-m') + S.L(60, 106, 200, 106) + S.T(206, 100, 'về ADC (tối đa 3,3 V)', 'sk-t') + S.T(76, 124, 'trở dưới (giá trị chưa biết, giả định)', 'sk-m') + S.close,
     ctrls: [
       { id: 'Rb', label: 'Trở dưới (giả định)', min: 5, max: 60, val: 18, log: true, fmt: function (v) { return nf(v, 1) + ' kΩ'; } },
       { id: 'fault', seg: true, label: 'Sự cố', val: 'none', opts: [{ v: 'none', t: 'Bình thường' }, { v: 'open', t: 'Một trở trên hở' }, { v: 'short', t: 'Một trở trên chập' }, { v: 'rbo', t: 'Trở dưới hở' }] }

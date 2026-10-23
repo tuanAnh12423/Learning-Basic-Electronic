@@ -24,3 +24,13 @@ Câu nào không khớp đủ thì trả lời "Chưa có trong giáo trình" th
 
 ## Nguồn nội dung
 13 bài đã học trong project "Tự Học Điện Tử, Điện Lạnh Cơ Bản" và các mô phỏng "Thực hành điện tử". Số liệu trong mô phỏng chỉ minh họa nguyên lý.
+
+## Cập nhật 23/10/2026
+- Tab **Ôn tập**: kiểm tra 10/20 câu ngẫu nhiên, ôn lại câu đã làm sai, thẻ ghi nhớ thuật ngữ, bảng kết quả có tên (chụp màn hình hoặc chép gửi Zalo).
+- Đáp án bài tập được trộn mỗi lần làm (trong dữ liệu, đáp án đúng dồn nhiều ở vị trí B).
+- Ô tìm kiếm ở trang Học tìm trong mọi bài, thuật ngữ và mô phỏng. Nút **Aa** đổi cỡ chữ. Đang mở app mà có bản mới thì hiện "Đã có bản mới".
+- Chatbot hiểu cách nói quen của KTV (lốc, block, cục nóng, capa, sensor, IPM...), tìm được cả trong mô phỏng (bootstrap, dead time),
+  báo rõ khi hỏi ngoài phạm vi (giá, mã lỗi, bảo hành). Bảng từ đồng nghĩa: `SYN` trong `js/chat.js`.
+- `js/real2.js`: hình thực tế cho 7 mô phỏng Bài 1–6 (mã màu, nối tiếp/song song, tụ nạp xả, tụ đôi, diode, cầu chỉnh lưu, tìm lỗi quạt).
+  Cùng cách làm với `js/real.js`. Hình "Tìm lỗi quạt" dùng chung đề với sơ đồ bên dưới.
+- Nhãn đường chuẩn trên đồ thị tự dời khi sát nhau và có nền mờ; chữ trên sơ đồ nguyên lý to hơn.

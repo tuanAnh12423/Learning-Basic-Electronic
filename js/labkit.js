@@ -61,10 +61,12 @@
       });
       g.strokeStyle = PAL.muted; g.lineWidth = 1; g.strokeRect(px0, top, px1 - px0, LY.PH);
       // đường ngang chuẩn
+      // 23/10/2026: nhãn đường chuẩn vẽ sau đường dữ liệu, có nền mờ, và tự dời khi hai nhãn sát nhau
+      var hl = [];
       (p.hlines || []).forEach(function (h) {
         if (h.y < lo || h.y > hi) return;
         var yy = Y(h.y); g.strokeStyle = h.c || PAL.bad; g.lineWidth = 1.3; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(px0, yy); g.lineTo(px1, yy); g.stroke(); g.setLineDash([]);
-        g.fillStyle = h.c || PAL.bad; g.font = '10.5px ' + FONT; g.textAlign = 'right'; g.fillText(h.t, px1 - 3, yy < top + 14 ? yy + 12 : yy - 3);
+        hl.push({ t: h.t, c: h.c || PAL.bad, y: yy < top + 14 ? yy + 12 : yy - 3 });
       });
       // đường dữ liệu
       p.series.forEach(function (s) {
@@ -76,6 +78,15 @@
         g.strokeStyle = s.c; g.lineWidth = s.w || 1.9; g.lineJoin = 'round'; if (s.dash) g.setLineDash(s.dash);
         g.beginPath(); for (var j = 0; j < N; j++) { var yy = Y(clamp(s.y[j], lo - (hi - lo), hi + (hi - lo))); if (j) g.lineTo(X(xs[j]), yy); else g.moveTo(X(xs[j]), yy); }
         g.stroke(); g.setLineDash([]);
+      });
+      var used = [];
+      hl.sort(function (u, v) { return u.y - v.y; }).forEach(function (h) {
+        var ly = h.y; while (used.some(function (u) { return Math.abs(u - ly) < 12; })) ly += 12;
+        if (ly > bot - 2) ly = h.y - 12;
+        used.push(ly);
+        g.font = '10.5px ' + FONT; g.textAlign = 'right';
+        var tw = g.measureText(h.t).width; g.fillStyle = PAL.surface; g.globalAlpha = 0.85; g.fillRect(px1 - 5 - tw, ly - 9.5, tw + 4, 12.5); g.globalAlpha = 1;
+        g.fillStyle = h.c; g.fillText(h.t, px1 - 3, ly);
       });
       // tiêu đề và chú thích kèm giá trị tại con trỏ
       g.textAlign = 'left'; g.font = '600 12px ' + FONT; g.fillStyle = PAL.ink; g.fillText(p.title + (p.unit ? ' (' + p.unit + ')' : ''), px0, top - 22);
