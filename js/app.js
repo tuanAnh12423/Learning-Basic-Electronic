@@ -1,8 +1,8 @@
 /* Khung ứng dụng: điều hướng bằng hash (#/hoc, #/bai/b1, #/lab, #/lab/ohm, #/on, #/on/mix10, #/on/sai, #/on/the, #/on/kq,
-   #/tra, #/tra/hoi; link cũ #/tn, #/hoi vẫn chạy), bài học, bài tập, ôn tập, tra cứu (thuật ngữ + trợ lý). */
+   #/lk, #/lk/dien-tro, #/tra, #/tra/hoi; link cũ #/tn, #/hoi vẫn chạy), bài học, bài tập, linh kiện, ôn tập, tra cứu. */
 (function () {
   "use strict";
-  var LESSONS = window.LESSONS, GLOSSARY = window.GLOSSARY;
+  var LESSONS = window.LESSONS, GLOSSARY = window.GLOSSARY, COMPS = window.PARTS || [], PART_GROUPS = window.PART_GROUPS || [];
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var TITLE = "Học Điện Tử, Điện Lạnh";
@@ -63,7 +63,7 @@
   $("#fs").addEventListener("click", function () { var n = ((load(KEY_FS, 0) || 0) + 1) % 3; save(KEY_FS, n); applyFs(n); toast("Cỡ chữ: " + FS_NAME[n]); });
 
   // ---- màn hình ----
-  var VIEWS = ["hoc", "bai", "labs", "lab", "on", "tn", "hoi"], backTo = null;
+  var VIEWS = ["hoc", "bai", "labs", "lab", "lk", "on", "tn", "hoi"], backTo = null;
   var NAV_OF = { bai: "hoc", labs: "lab", tn: "tra", hoi: "tra" };
   function showView(name, back) {
     VIEWS.forEach(function (v) { $("#v-" + v).hidden = v !== name; });
@@ -150,6 +150,10 @@
     });
     Object.keys(LAB_NAME).forEach(function (k) {
       if (window.Chat.fold(LAB_NAME[k] + " " + labLead(k)).indexOf(f) >= 0) out.push({ t: "Mô phỏng: " + LAB_NAME[k], s: labLead(k), href: "#/lab/" + k });
+    });
+    COMPS.forEach(function (P) {
+      if (window.Chat.fold(P.n + " " + P.aka + " " + P.look.join(" ") + " " + P.how.join(" ")).indexOf(f) >= 0)
+        out.push({ t: "Linh kiện: " + P.n, s: PART_GROUPS[P.g] + " · " + P.how[0], href: "#/lk/" + P.id });
     });
     return out;
   }
@@ -310,6 +314,13 @@
         box.appendChild(el("section", { class: "sec", id: "sec-" + i }, kids));
       });
       if (blk != null) setTimeout(function () { var t = $("#sec-" + blk); if (t) { $("#main").scrollTop = t.offsetTop - 64; t.classList.add("flash-sec"); setTimeout(function () { t.classList.remove("flash-sec"); }, 1600); } }, 0);
+      var lk = COMPS.filter(function (P) { return P.l.indexOf(L.id) >= 0; });
+      if (lk.length) {
+        var lkBox = el("div", { class: "pchips" });
+        lk.forEach(function (P) { lkBox.appendChild(el("a", { href: "#/lk/" + P.id, text: P.n })); });
+        box.appendChild(el("section", { class: "sec" }, [el("h3", { text: "Linh kiện trong bài" }),
+          el("p", { class: "note", text: "Xem cách nhận dạng, nguyên lý, đo kiểm và hư hỏng thường gặp:" }), lkBox]));
+      }
       var next = el("div", { class: "nav-row" });
       next.appendChild((L.labs && L.labs.length) ? el("a", { class: "btn2", href: "#/bai/" + L.id + "/mp", text: "Xem mô phỏng" }) : el("span"));
       next.appendChild(el("a", { class: "btn2 primary", href: "#/bai/" + L.id + "/bt", text: "Làm bài tập" }));
@@ -640,6 +651,72 @@
     });
   }
 
+  // ---- LINH KIỆN (26/10/2026) ----
+  // #/lk: danh sách 4 nhóm, có ô lọc. #/lk/id: nhận dạng + ký hiệu, nguyên lý, công dụng, đo kiểm từng bước, hư hỏng, an toàn.
+  function partById(id) { return COMPS.filter(function (P) { return P.id === id; })[0]; }
+  function symNode(key, cls) { var s = el("span", { class: cls || "psym-wrap", "aria-hidden": "true" }); s.innerHTML = window.PartSym(key); return s; } // SVG cố định trong js/parts-sym.js
+  var lkQuery = "";
+  function renderPartList() {
+    var box = $("#v-lk");
+    box.textContent = "";
+    box.appendChild(el("p", { class: "lead2", text: COMPS.length + " linh kiện thường gặp trên máy lạnh, tủ lạnh, máy giặt, máy lọc nước. Mỗi linh kiện có nhận dạng, nguyên lý, cách đo kiểm và hư hỏng thường gặp." }));
+    var q = el("input", { class: "search", type: "search", placeholder: "Lọc: tụ, diode, van, bơm...", autocomplete: "off", enterkeyhint: "search", "aria-label": "Lọc linh kiện" });
+    q.value = lkQuery;
+    var list = el("div");
+    box.appendChild(q); box.appendChild(list);
+    function draw() {
+      list.textContent = "";
+      var f = window.Chat.fold(lkQuery), n = 0;
+      [1, 2, 3, 4].forEach(function (g) {
+        var ps = COMPS.filter(function (P) { return P.g === g && (!f || window.Chat.fold(P.n + " " + P.aka).indexOf(f) >= 0); });
+        if (!ps.length) return;
+        n += ps.length;
+        list.appendChild(groupHead(PART_GROUPS[g], ps.length + " linh kiện"));
+        ps.forEach(function (P) {
+          list.appendChild(el("a", { class: "lab-row part-row", href: "#/lk/" + P.id }, [symNode(P.sym, "psym-ico"),
+            el("span", { class: "lr-b" }, [el("b", { text: P.n }), el("small", { text: P.how[0] })])]));
+        });
+      });
+      if (!n) list.appendChild(el("p", { class: "empty", text: "Không có linh kiện này. Thử từ ngắn hơn, hoặc tìm ở trang Tra cứu." }));
+    }
+    q.addEventListener("input", function () { lkQuery = q.value.trim(); draw(); });
+    draw();
+  }
+  function renderPart(id) {
+    var P = partById(id), box = $("#v-lk"), i = COMPS.indexOf(P);
+    box.textContent = "";
+    var head = el("div", { class: "lab-head" }, [el("p", { class: "eyebrow", text: PART_GROUPS[P.g] + " · " + (i + 1) + "/" + COMPS.length }), el("h2", { class: "part-h", text: P.n })]);
+    var prev = COMPS[i - 1], next = COMPS[i + 1];
+    head.appendChild(el("nav", { class: "lab-nav", "aria-label": "Chuyển linh kiện" }, [
+      prev ? el("a", { href: "#/lk/" + prev.id, title: prev.n, text: "‹ Trước" }) : el("span"),
+      el("a", { class: "go-bai", href: "#/lk", text: "Danh sách" }),
+      next ? el("a", { href: "#/lk/" + next.id, title: next.n, text: "Sau ›" }) : el("span")]));
+    box.appendChild(head);
+
+    var fig = el("div", { class: "pfig" }, [el("figure", { class: "psym-card" }, [symNode(P.sym, "psym-big"), el("figcaption", { text: "Ký hiệu trên sơ đồ" })])]);
+    if (P.img) fig.appendChild(el("figure", { class: "pphoto" }, [el("a", { href: P.img, target: "_blank", rel: "noopener" }, [el("img", { src: P.img, alt: "Ảnh thật: " + P.n, loading: "lazy" })]),
+      el("figcaption", { text: "Ảnh thật trên bo inverter (Bài 9)" })]));
+    box.appendChild(fig);
+
+    function sec(h, kids) { box.appendChild(el("section", { class: "sec psec" }, [el("h3", { text: h })].concat(kids))); }
+    function bullets(arr) { return el("ul", { class: "plist" }, arr.map(function (t) { return el("li", { text: t }); })); }
+    sec("Nhận dạng", [bullets(P.look)]);
+    sec("Đọc mã và thông số", [bullets(P.code)]);
+    sec("Nguyên lý hoạt động", [bullets(P.how)]);
+    sec("Công dụng trên máy", [bullets(P.use)]);
+    sec("Đo kiểm từng bước", [el("div", { class: "psteps" }, P.test.map(function (t) {
+      var m = /^Bước (\d+)\.\s*([\s\S]+)$/.exec(t);
+      return el("div", { class: "step" }, [el("span", { class: "no", text: m ? m[1] : "•" }), el("span", { class: "tx", text: m ? m[2] : t })]);
+    }))]);
+    sec("Hư hỏng thường gặp", [el("div", { class: "sym" }, P.fail.map(function (x) { return el("div", { class: "sr" }, [el("b", { text: x[0] }), el("span", { text: x[1] })]); }))]);
+    if (P.safe) box.appendChild(el("div", { class: "callout warn2 psafe" }, [el("b", { text: "An toàn" }), P.safe]));
+    var rel = el("div", { class: "pchips" });
+    P.l.forEach(function (lid) { var L = lessonById(lid); if (L) rel.appendChild(el("a", { href: "#/bai/" + L.id, text: "Bài " + L.n + ": " + L.title })); });
+    P.labs.forEach(function (lab) { if ($("#lab-" + lab)) rel.appendChild(el("a", { class: "lab", href: "#/lab/" + lab, text: "Mô phỏng: " + (LAB_NAME[lab] || lab) })); });
+    if (rel.childNodes.length) sec("Học thêm", [rel]);
+    box.appendChild(el("p", { class: "note", text: "Số đo là giá trị thường gặp để tham khảo. Mỗi model có thông số riêng: khi sửa máy thật, xem tài liệu service của hãng." }));
+  }
+
   // ---- chat ----
   // 13/10/2026: giống web Tra cứu mã lỗi — "Đang suy nghĩ" + 3 chấm, rồi CHỮ HIỆN DẦN (~90 chữ/giây,
   // bài dài nhanh dần để xong trong ~3,6 giây, dừng ở cuối từ), con trỏ nhấp nháy.
@@ -755,6 +832,10 @@
       showView("lab", "#/lab"); setTitle("Thực hành"); window.Labs.enter(arg); labEnter(arg);
     } else if (page === "lab") {
       showView("labs"); setTitle("Thực hành"); renderLabMenu();
+    } else if (page === "lk" && arg && partById(arg)) {
+      showView("lk", "#/lk"); setTitle("Linh kiện"); renderPart(arg);
+    } else if (page === "lk") {
+      showView("lk"); setTitle("Linh kiện"); renderPartList();
     } else if (page === "on") {
       showView("on", ON_TITLE[arg] ? "#/on" : null); setTitle(ON_TITLE[arg] || "Ôn tập"); renderOn(arg);
     } else if (page === "hoi" || ((page === "tra" || page === "tn") && arg === "hoi")) {

@@ -316,3 +316,26 @@ body.fs2 .flash p{font-size:20px}
 details.more{margin-top:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
 details.more summary{min-height:44px;display:flex;align-items:center;padding:0 12px;font-size:14px;font-weight:600;color:#C4000F;cursor:pointer}
 details.more > :not(summary){margin:0 12px 10px}
+
+/* 26/10/2026: tab Linh kiện (5 mục ở thanh dưới) */
+.bottom{grid-template-columns:repeat(5,1fr)}
+.bottom a{font-size:11.5px;padding:6px 0}
+.part-row{gap:12px}
+.psym-ico{flex:none;display:grid;place-items:center;width:58px;height:34px;border-radius:8px;background:var(--soft);color:var(--ink)}
+.psym-ico svg{width:50px;height:25px}
+#v-lk .part-h{margin:2px 0 0;font-size:21px;line-height:1.3}
+.pfig{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:12px}
+.pfig figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.pfig figcaption{margin-top:6px;font-size:13px;color:var(--muted)}
+.psym-big svg{display:block;width:100%;max-width:260px;height:auto;margin:6px auto 0;color:var(--ink)}
+.pphoto img{display:block;width:100%;max-height:260px;object-fit:contain;border-radius:10px;background:#000}
+@media (min-width:560px){.pfig{grid-template-columns:1fr 1fr}}
+.plist{margin:0;padding-left:20px}
+.plist li{margin-bottom:6px;line-height:1.55}
+.plist li:last-child{margin-bottom:0}
+.psteps{display:flex;flex-direction:column;gap:10px}
+.psafe{margin-bottom:12px}
+.pchips{display:flex;flex-wrap:wrap;gap:6px}
+.pchips a{display:inline-flex;align-items:center;min-height:40px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:#C4000F;font-size:14px;font-weight:600;text-decoration:none}
+.pchips a.lab{color:var(--ink)}
+.pchips a:active{background:var(--soft)}

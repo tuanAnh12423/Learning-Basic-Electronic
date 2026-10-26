@@ -1,6 +1,6 @@
 # Học Điện Tử, Điện Lạnh (web điện thoại)
 
-Web tĩnh, thiết kế cho điện thoại trước: tab dưới cùng (Học · Thực hành · Ôn tập · Tra cứu), mở được offline sau lần đầu.
+Web tĩnh, thiết kế cho điện thoại trước: tab dưới cùng (Học · Thực hành · Linh kiện · Ôn tập · Tra cứu), mở được offline sau lần đầu.
 Chỉ có nội dung điện tử và điện lạnh cơ bản. Không có mã lỗi, sản phẩm, trò chuyện ngoài lề.
 
 ## Chạy thử trên máy
@@ -53,3 +53,12 @@ Câu nào không khớp đủ thì trả lời "Chưa có trong giáo trình" th
   Việc sắp xếp này làm lúc mở trang (`tidyLabs()` trong `js/app.js`), nên `index.html`, `labs*.js`, `real*.js` vẫn viết như cũ.
 - **Tra cứu** (`#/tra`): một ô tìm cho thuật ngữ, bài và mô phỏng; nút **Hỏi trợ lý** ngay dưới ô tìm, bấm thì mở trợ lý (`#/tra/hoi`) và hỏi luôn chữ đang gõ.
   Link cũ `#/tn`, `#/hoi` vẫn mở đúng trang.
+
+## Tab Linh kiện (26/10/2026)
+- `#/lk`: 39 linh kiện chia 4 nhóm (thụ động; bán dẫn và IC; điện cơ, điện lạnh; máy giặt, máy lọc nước), có ô lọc.
+- `#/lk/id`: ký hiệu sơ đồ, ảnh thật (nếu có trong `img/parts`), nhận dạng, đọc mã và thông số, nguyên lý, công dụng,
+  đo kiểm từng bước, hư hỏng thường gặp, an toàn, link sang bài và mô phỏng liên quan.
+- Dữ liệu: `data/parts.js` (mỗi linh kiện một object; mục `test` viết dạng "Bước 1. ..."). Ký hiệu: `js/parts-sym.js`.
+  Thêm linh kiện: thêm 1 object vào `PARTS`; nếu cần ký hiệu mới thì thêm 1 mục vào `S` trong `parts-sym.js`.
+- Bài học có mục "Linh kiện trong bài" (theo trường `l`). Tra cứu và trợ lý tìm được linh kiện.
+- Số đo trong thư viện là giá trị thường gặp để tham khảo; khi sửa máy thật xem tài liệu service của hãng.
