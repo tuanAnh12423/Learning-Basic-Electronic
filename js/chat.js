@@ -1,9 +1,9 @@
 /* Trợ lý tra giáo trình — chạy hoàn toàn trên máy, KHÔNG dùng AI, KHÔNG gọi mạng.
-   Chỉ trả lời bằng nội dung có sẵn trong data/lessons.js (bài học + thuật ngữ).
+   Chỉ trả lời bằng nội dung có sẵn trong data/lessons.js (bài học + thuật ngữ) và data/parts.js (linh kiện).
    Không tìm thấy thì nói rõ là chưa có trong giáo trình, không đoán. */
 (function () {
   "use strict";
-  var LESSONS = window.LESSONS || [], GLOSSARY = window.GLOSSARY || [];
+  var LESSONS = window.LESSONS || [], GLOSSARY = window.GLOSSARY || [], PARTS = window.PARTS || [];
   function labName(id) { return (window.LAB_NAME || {})[id] || id; } // app.js gán window.LAB_NAME (gồm cả LAB_NAME_EXTRA)
 
   // Bỏ dấu, hạ chữ thường, chỉ giữ chữ-số.
@@ -52,6 +52,11 @@
     var L = LESSONS.filter(function (x) { return x.id === g.l; })[0];
     docs.push({ type: "term", term: g, lesson: L, id: "t:" + i,
       strong: tokens(g.t + " " + g.k), weak: tokens(g.d), text: fold(g.t + " " + g.k + " " + g.d) });
+  });
+  // 26/10/2026: tìm cả trong thư viện linh kiện (tên + tên gọi khác = mạnh, nhận dạng + nguyên lý + đo kiểm = yếu)
+  PARTS.forEach(function (P) {
+    var head = P.n + " " + P.aka, rest = P.look.concat(P.how, P.use, P.test).join(" ");
+    docs.push({ type: "part", part: P, id: "p:" + P.id, strong: tokens(head), weak: tokens(rest), text: fold(head + " " + rest) });
   });
   // 23/10/2026: tìm cả trong các mô phỏng (tiêu đề + đoạn giới thiệu), để hỏi "bootstrap", "dead time"... vẫn ra
   Array.prototype.forEach.call(typeof document !== "undefined" && document.querySelectorAll ? document.querySelectorAll("section.lab") : [], function (s) {
@@ -107,8 +112,8 @@
     return LESSONS.map(function (L) { return { text: "Bài " + L.n + ": " + L.title, ask: "bài " + L.n }; });
   }
   var STARTERS = ["Định luật Ohm", "Xả tụ an toàn", "Chu trình làm lạnh", "Nguồn xung", "Opto và TL431", "NTC chia áp", "Ampe kìm đo dòng"];
-  function docLabel(d) { return d.type === "term" ? d.term.t : d.type === "lab" ? "Mô phỏng: " + labName(d.lab) : d.block.h; }
-  function docAsk(d) { return d.type === "term" ? d.term.t : d.type === "lab" ? d.h : d.lesson.title + " " + d.block.h; }
+  function docLabel(d) { return d.type === "term" ? d.term.t : d.type === "lab" ? "Mô phỏng: " + labName(d.lab) : d.type === "part" ? "Linh kiện: " + d.part.n : d.block.h; }
+  function docAsk(d) { return d.type === "term" ? d.term.t : d.type === "lab" ? d.h : d.type === "part" ? d.part.n : d.lesson.title + " " + d.block.h; }
 
   function answer(text) {
     var f = fold(text);
@@ -163,6 +168,10 @@
       r.paras = [top.lead];
       r.links = [{ text: "Mở mô phỏng", href: "#/lab/" + top.lab }];
       if (top.lesson) r.links.push({ text: "Mở bài " + top.lesson.n, href: "#/bai/" + top.lesson.id });
+    } else if (top.type === "part") {
+      r.title = "Linh kiện · " + top.part.n;
+      r.paras = top.part.how.slice(0, 2);
+      r.links = [{ text: "Xem đo kiểm, hư hỏng", href: "#/lk/" + top.part.id }];
     } else if (top.type === "term") {
       r.title = "Thuật ngữ · " + top.term.t;
       r.paras.push(top.term.d);
